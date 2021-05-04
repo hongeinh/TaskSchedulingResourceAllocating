@@ -1,10 +1,13 @@
 package solution;
 
 import component.Variable;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.List;
 
-
+@Getter
+@Setter
 public class Solution {
 	private List<Variable> variables;
 	private double[] objectives;

@@ -1,12 +1,15 @@
 package problem;
 
 import component.Variable;
+import lombok.Getter;
+import lombok.Setter;
 import solution.Solution;
 
 import java.util.List;
 import java.util.Map;
 
-
+@Getter
+@Setter
 public abstract class Problem {
 
 	protected Map<Object, Object> parameters;
@@ -19,7 +22,5 @@ public abstract class Problem {
 
 	public abstract double[] evaluateConstraints(Solution solution);
 
-	abstract class VariableController {
-		public abstract List<Variable> createVariables(Map<Object, Object> parameters);
-	}
+	public abstract List<Variable> createVariables(Map<Object, Object> parameters);
 }
