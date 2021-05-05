@@ -1,14 +1,14 @@
 package component;
 
 import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
 
+@Getter
+@Setter
 @AllArgsConstructor
 public class Skill {
 
 	private int id;
 	private double experienceLevel;
-
-	public String toString() {
-		return "Skill " + this.id + " has exp level of " + this.experienceLevel;
-	}
 }

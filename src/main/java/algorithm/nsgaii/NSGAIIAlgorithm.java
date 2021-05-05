@@ -18,7 +18,7 @@ public class NSGAIIAlgorithm extends Algorithm {
 
 	public List<Solution> executeAlgorithm(Problem problem) {
 		List<Solution> solutions = createInitialSolutionSet(problem);
-		solutions = evaluateSolutionSet(solutions);
+		solutions = evaluateSolutionSet(problem, solutions);
 		List<Solution> offspringSolutions = reproduceOffspringSolutionSet(solutions);
 		List<Solution> jointSolutions = Stream.concat(solutions.stream(), offspringSolutions.stream())
 				.collect(Collectors.toList());
@@ -29,7 +29,7 @@ public class NSGAIIAlgorithm extends Algorithm {
 		return null;
 	}
 
-	public List<Solution> evaluateSolutionSet(List<Solution> solutions) {
+	public List<Solution> evaluateSolutionSet(Problem problem, List<Solution> solutions) {
 		return null;
 	}
 

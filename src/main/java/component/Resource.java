@@ -12,14 +12,19 @@ import java.util.List;
 public class Resource {
 
 	private int id;
-	private int status;
+	private STATUS status;
 	private List<Skill> skills;
 
 	public Resource(int id) {
 		this.id = id;
 		this.skills = new ArrayList<>();
+		this.status = STATUS.NOT_ASSIGNED;
 	}
-	public String toString() {
-		return "Resource " + this.id + " is " + (this.status == 0 ? "available" : "unavailable");
-	}
+
+	public enum STATUS {
+		ASSIGNED,
+		NOT_ASSIGNED,
+		USEFUL,
+		NOT_USEFUL
+	};
 }
