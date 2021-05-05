@@ -12,7 +12,6 @@ import problem.Problem;
 import problem.impl.TaskSchedulingResourceAllocatingProblem;
 import solution.Solution;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
