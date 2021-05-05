@@ -1,8 +1,8 @@
 package component;
 
-public interface Variable {
+public abstract class Variable {
 
-	Object get();
-	void set(Object value);
+	public abstract Object get();
+	public abstract void set(Object value);
 
 }

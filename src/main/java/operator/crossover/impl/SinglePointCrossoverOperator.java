@@ -1,4 +1,16 @@
 package operator.crossover.impl;
 
-public class SinglePointCrossoverOperator {
+import operator.Operator;
+import operator.crossover.CrossoverOperator;
+
+public class SinglePointCrossoverOperator extends CrossoverOperator {
+
+	public SinglePointCrossoverOperator() {
+		super();
+	}
+
+	@Override
+	public Object execute(Object solutions) {
+		return solutions;
+	}
 }

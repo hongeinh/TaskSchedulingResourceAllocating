@@ -4,8 +4,11 @@ import operator.selection.SelectionOperator;
 
 public class BinaryTournamentOperator extends SelectionOperator {
 
-	public Object execute(Object object) {
-		return null;
+	public BinaryTournamentOperator() {
+		super();
+	}
+	public Object execute(Object solutions) {
+		return solutions;
 	}
 
 }

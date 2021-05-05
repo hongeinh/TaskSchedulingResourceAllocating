@@ -22,8 +22,8 @@ public class TaskSchedulingResourceAllocatingProblem extends Problem {
 	 *                   treq:				int[][] 		Task - Skill matrix
 	 *                   lexp: 				double[][]		Resource - Skill matrix
 	 *                   tasks: 			int[][]			Task matrix
-	 *                   numberOfTask: 		int				number of tasks in this problem
-	 *                   numberOfResource: 	int				number of resources in this problem
+	 *                   numberOfTasks: 	int				number of tasks in this problem
+	 *                   numberOfResources: int				number of resources in this problem
 	 *                   numberOfSkills: 	int				number of skills in this problem
 	 *                   scheduledTimes: 	List<Integer>	list of scheduled time for variables
 	 *                   durations: 		List<Integer>	list of durations for variables
@@ -38,6 +38,10 @@ public class TaskSchedulingResourceAllocatingProblem extends Problem {
 
 	@Override
 	public double[] evaluate(Solution solution) {
+		double [] objectives = new double[(Integer) this.getParameters().get("numberOfObjectives")];
+		objectives[0] = evaluateDuration(solution);
+		objectives[1] = evaluateExperience(solution);
+		objectives[2] = evaluateAssignment(solution);
 		return new double[0];
 	}
 
@@ -46,5 +50,13 @@ public class TaskSchedulingResourceAllocatingProblem extends Problem {
 		return new double[0];
 	}
 
-
+	public double evaluateDuration(Solution solution) {
+		return 0;
+	}
+	public double evaluateAssignment(Solution solution) {
+		return 0;
+	}
+	public double evaluateExperience(Solution solution) {
+		return 0;
+	}
 }

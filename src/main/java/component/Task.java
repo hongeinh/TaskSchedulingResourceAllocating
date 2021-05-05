@@ -10,7 +10,7 @@ import java.util.Map;
 
 @Getter
 @Setter
-public class Task implements Variable{
+public class Task extends Variable{
 
 	private int id;
 	private double scheduledTime;
@@ -29,13 +29,6 @@ public class Task implements Variable{
 		this.resources = new ArrayList<>();
 	}
 
-
-	public String toString() {
-		return "Task " + this.id + ":" +
-				"\n\tDuration: " + this.duration +
-				"\n\tScheduled start: " + this.scheduledTime +
-				"\n\tStart: " + this.start;
-	}
 
 	@Override
 	public Object get() {
@@ -57,10 +50,22 @@ public class Task implements Variable{
 		if (value instanceof HashMap ) {
 			HashMap<String, Object> parameters = (HashMap <String, Object>) value;
 			this.id = (Integer) parameters.get("id");
-			this.duration =  (Integer) parameters.get("duration");
-			this.scheduledTime = (Integer) parameters.get("scheduledTime");
+			this.duration =  (Double) parameters.get("duration");
+			this.scheduledTime = (Double) parameters.get("scheduledTime");
 		}
-
 	}
 
+
+	public String toString() {
+		StringBuilder stringBuilder = new StringBuilder("Task " + this.id + ":" +
+				"\n\tDuration: " + this.duration +
+				"\n\tScheduled start: " + this.scheduledTime +
+				"\n\tStart: " + this.start +
+				"\n\tResource: ");
+		for (Resource resource: resources) {
+			if (resource.getStatus() == Resource.STATUS.ASSIGNED)
+				stringBuilder.append(resource.getId() + "\t");
+		}
+		return stringBuilder.toString();
+	}
 }

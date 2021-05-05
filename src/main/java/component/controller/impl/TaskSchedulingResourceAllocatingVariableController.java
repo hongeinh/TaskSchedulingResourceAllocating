@@ -13,7 +13,6 @@ import java.util.Map;
 
 public class TaskSchedulingResourceAllocatingVariableController extends VariableController {
 
-    @Override
     public Variable setVariableParameters(Variable variable, double k) {
         variable = setVariableTime(variable, k);
         variable = setVariableResource(variable);
@@ -88,12 +87,12 @@ public class TaskSchedulingResourceAllocatingVariableController extends Variable
         for (int i = 0; i < numberOfTasks; i++) {
             Map<String, Object> params = new HashMap<>();
 
-            int scheduledTime = ( (List<Integer>) parameters.get("scheduledTimes")).get(i);
-            int duration = ( (List<Integer>) parameters.get("durations")).get(i);
+            double scheduledTime = ((double[])parameters.get("scheduledTimes") )[i];
+            double duration = ( (double[]) parameters.get("durations"))[i];
 
             params.put("id", i);
-            parameters.put("duration", duration);
-            parameters.put("scheduledTime", scheduledTime);
+            params.put("duration", duration);
+            params.put("scheduledTime", scheduledTime);
 
             Variable variable = new Task();
             variable.set(params);
@@ -104,8 +103,8 @@ public class TaskSchedulingResourceAllocatingVariableController extends Variable
         int numberOfResources = (Integer) parameters.get("numberOfResources");
 
         variables = setNeighbours(variables, (int [][]) parameters.get("tasks"));
-        variables = setSkills(variables, (int [][]) parameters.get("skills"), numberOfSkills );
-        variables = setResources(variables, (double [][]) parameters.get("resources"), numberOfSkills, numberOfResources);
+        variables = setSkills(variables, (int [][]) parameters.get("treq"), numberOfSkills );
+        variables = setResources(variables, (double [][]) parameters.get("lexp"), numberOfSkills, numberOfResources);
 
         for (Variable variable: variables)
             this.setVariableParameters(variable, k);
