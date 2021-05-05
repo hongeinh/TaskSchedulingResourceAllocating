@@ -19,6 +19,16 @@ public class NSGAIIAlgorithm extends Algorithm {
 	protected int matingPoolSize;
 	protected RankingAndCrowdingDistanceComparator comparator;
 
+	public NSGAIIAlgorithm() {
+		super();
+		this.comparator = new RankingAndCrowdingDistanceComparator();
+		this.matingPoolSize = 10;
+	}
+
+	public NSGAIIAlgorithm(int solutionSetSize) {
+		super(solutionSetSize);
+	}
+
 	public List<Solution> executeAlgorithm(Problem problem) {
 		/* Step 1: Create initial solution set*/
 		List<Solution> solutions = createInitialSolutionSet(problem);

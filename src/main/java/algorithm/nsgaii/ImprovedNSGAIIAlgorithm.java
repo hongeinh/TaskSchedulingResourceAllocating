@@ -9,6 +9,13 @@ import java.util.List;
 
 public class ImprovedNSGAIIAlgorithm extends NSGAIIAlgorithm{
 
+	public ImprovedNSGAIIAlgorithm() {
+		super();
+	}
+
+	public ImprovedNSGAIIAlgorithm(int solutionSetSize) {
+		super(solutionSetSize);
+	}
 
 	public List<Solution> createInitialSolutionSet(Problem problem) {
 		List<Solution> solutions = new ArrayList<>();

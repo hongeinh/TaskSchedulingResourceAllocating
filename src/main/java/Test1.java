@@ -25,21 +25,19 @@ public class Test1 {
 		VariableController variableController = new TaskSchedulingResourceAllocatingVariableController();
 		Problem problem = new TaskSchedulingResourceAllocatingProblem(params, variableController);
 
-		ImprovedNSGAIIAlgorithm algorithm = new ImprovedNSGAIIAlgorithm();
-		algorithm.setSolutionSetSize(20);
-		List<Operator> operators = new ArrayList<>();
-		operators.add(new BinaryTournamentOperator());
-		operators.add(new SinglePointCrossoverOperator());
-		operators.add(new MutationOperator());
-		algorithm.setOperators(operators);
+		ImprovedNSGAIIAlgorithm algorithm = new ImprovedNSGAIIAlgorithm(20);
+//		algorithm.setSolutionSetSize(20);
+		algorithm.addOperator(new BinaryTournamentOperator());
+		algorithm.addOperator(new SinglePointCrossoverOperator());
+		algorithm.addOperator(new MutationOperator());
 		algorithm.setComparator(new RankingAndCrowdingDistanceComparator());
 		algorithm.setMatingPoolSize(10);
 
 		System.out.println("Executing algorithm");
 		List<Solution> solutions = algorithm.executeAlgorithm(problem);
 
-//		for (Solution solution: solutions)
-//			System.out.println(solution.toString());
+		for (Solution solution: solutions)
+			System.out.println(solution.toString());
 		System.out.println("Finish flow");
 	}
 
