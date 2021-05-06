@@ -50,13 +50,48 @@ public class TaskSchedulingResourceAllocatingProblem extends Problem {
 		return new double[0];
 	}
 
+	/**
+	 * TODO: Fix the return type to update idle time for each task in the solution
+	 *
+	 * */
 	public double evaluateDuration(Solution solution) {
-		return 0;
+		double duration = 0;
+		for (Variable var: solution.getVariables()) {
+			double idle = ((Task) var).getScheduledTime() - ((Task) var).getStart();
+			idle = idle < 0 ? 0 : (1/(1 + idle));
+			duration += idle;
+		}
+		return duration/solution.getVariables().size();
 	}
+
+
 	public double evaluateAssignment(Solution solution) {
+		List<Variable> variables = solution.getVariables();
+		int [][] resourceAssignmentMatrix = this.calculateResourceAssignmentMatrix(variables);
+
 		return 0;
 	}
+
+
 	public double evaluateExperience(Solution solution) {
+		double treq = 0;
+
 		return 0;
+	}
+
+	/*
+	* TODO: If the relationship among components changes, need to change this code.
+	* */
+	public int[][] calculateResourceAssignmentMatrix(List<Variable> variables) {
+		int [][] resourceAssignedMatrix = new int[variables.size()][((Task) variables).getResources().size()];
+		for (Variable variable: variables) {
+			for (Resource resource: ((Task) variable).getResources()) {
+				if (resource.getStatus() == Resource.STATUS.ASSIGNED)
+					resourceAssignedMatrix[((Task) variable).getId()][resource.getId()] = 1;
+				else if (resource.getStatus() == Resource.STATUS.NOT_ASSIGNED)
+					resourceAssignedMatrix[((Task) variable).getId()][resource.getId()] = 0;
+			}
+		}
+		return resourceAssignedMatrix;
 	}
 }

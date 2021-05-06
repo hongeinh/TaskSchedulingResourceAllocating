@@ -39,12 +39,9 @@ public class ImprovedNSGAIIAlgorithm extends NSGAIIAlgorithm{
 //	public Solution createOffspringSolution(Problem problem, double k){}
 
 	public List<Solution> evaluateSolutionSet(Problem problem, List<Solution> solutions) {
-		double[] objectives = new double[(Integer) problem.getParameters().get("numberOfObjectives")];
 		for (Solution solution: solutions) {
-			objectives = problem.evaluate(solution);
-			solution.setObjectives(objectives);
+			solution.setObjectives(problem.evaluate(solution));
 		}
-
 		this.getComparator().computeRank(solutions);
 		return solutions;
 	}
