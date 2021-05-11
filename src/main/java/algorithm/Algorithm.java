@@ -28,7 +28,7 @@ public abstract class Algorithm {
 	}
 
 
-	public abstract List<Solution> executeAlgorithm(Problem problem);
+	public abstract List<Solution> executeAlgorithm(Problem problem) throws CloneNotSupportedException;
 
 	public void addOperator(Operator operator) {
 		this.operators.add(operator);

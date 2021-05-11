@@ -6,7 +6,6 @@ import lombok.Setter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @Getter
 @Setter
@@ -19,30 +18,18 @@ public class Task extends Variable{
 	private double idle;
 	private List<Variable> predecessors;
 	private List<Variable> descendants;
-	private List<Skill> skills;
-	private List<Resource> resources;
+	private List<SkillsInResource> requiredSkillsInResources;
 
 	public Task() {
 		this.predecessors = new ArrayList<>();
 		this.descendants = new ArrayList<>();
-		this.skills = new ArrayList<>();
-		this.resources = new ArrayList<>();
+		this.requiredSkillsInResources = new ArrayList<>();
 	}
 
 
 	@Override
 	public Object get() {
-		Map<String, Object> fields = new HashMap<>();
-		fields.put("id", this.id);
-		fields.put("scheduledTime", this.scheduledTime);
-		fields.put("duration", this.duration);
-		fields.put("start", this.start);
-		fields.put("idle", this.idle);
-		fields.put("predecessors", this.predecessors);
-		fields.put("descendants", this.descendants);
-		fields.put("skills", this.skills);
-		fields.put("resources", this.resources);
-		return fields;
+		return this.getRequiredSkillsInResources();
 	}
 
 	@Override
@@ -62,10 +49,48 @@ public class Task extends Variable{
 				"\n\tScheduled start: " + this.scheduledTime +
 				"\n\tStart: " + this.start +
 				"\n\tResource: ");
-		for (Resource resource: resources) {
-			if (resource.getStatus() == Resource.STATUS.ASSIGNED)
-				stringBuilder.append(resource.getId() + "\t");
+		for (SkillsInResource skillsInResource: requiredSkillsInResources) {
+			if (skillsInResource.getResource().getStatus() == Resource.STATUS.ASSIGNED)
+				stringBuilder.append(skillsInResource.getResource().getId() + "\t");
 		}
 		return stringBuilder.toString();
+	}
+
+	@Override
+	public int compareTo(Variable o) {
+		if (this.getDescendants().contains(o)) {
+			return 1;
+		} else if (((Task) o).getDescendants().contains(this)) {
+			return -1;
+		} else {
+			return (int) Math.floor(((Task) o).getStart() - this.getStart());
+		}
+	}
+
+	public double getMaxExperienceForSkill(int i) {
+		double maxExperience = 0.0;
+		for(SkillsInResource skillsInResource: requiredSkillsInResources) {
+			double exp = skillsInResource.getRequiredSkills().get(i).getExperienceLevel();
+			maxExperience = (maxExperience > exp) ? maxExperience : exp;
+		}
+
+		return maxExperience;
+	}
+
+	public double getTotalExperienceForSkill(int i) {
+		double totalExperience = 0.0;
+		for(SkillsInResource skillsInResource: requiredSkillsInResources) {
+			totalExperience += skillsInResource.getRequiredSkills().get(i).getExperienceLevel();
+		}
+		return totalExperience;
+	}
+
+	public int getNumberOfAssignedResources() {
+		int resourceCount = 0;
+		for (SkillsInResource skillsInResource: requiredSkillsInResources) {
+			if (skillsInResource.getResource().getStatus() == Resource.STATUS.ASSIGNED)
+				resourceCount++;
+		}
+		return resourceCount;
 	}
 }

@@ -1,13 +1,11 @@
-import algorithm.Algorithm;
 import algorithm.nsgaii.ImprovedNSGAIIAlgorithm;
 import common.TSRAParams;
 import comparator.RankingAndCrowdingDistanceComparator;
 import component.controller.VariableController;
 import component.controller.impl.TaskSchedulingResourceAllocatingVariableController;
-import operator.Operator;
 import operator.crossover.impl.SinglePointCrossoverOperator;
 import operator.mutation.MutationOperator;
-import operator.selection.impl.BinaryTournamentOperator;
+import operator.selection.impl.RouletteWheelSelectionOperator;
 import problem.Problem;
 import problem.impl.TaskSchedulingResourceAllocatingProblem;
 import solution.Solution;
@@ -17,7 +15,7 @@ import java.util.List;
 import java.util.Map;
 
 public class Test1 {
-	public static void main(String[] args) {
+	public static void main(String[] args) throws CloneNotSupportedException {
 
 		System.out.println("Start flow");
 		Map<Object, Object> params = createParams();
@@ -26,7 +24,7 @@ public class Test1 {
 
 		ImprovedNSGAIIAlgorithm algorithm = new ImprovedNSGAIIAlgorithm(20);
 //		algorithm.setSolutionSetSize(20);
-		algorithm.addOperator(new BinaryTournamentOperator());
+		algorithm.addOperator(new RouletteWheelSelectionOperator());
 		algorithm.addOperator(new SinglePointCrossoverOperator());
 		algorithm.addOperator(new MutationOperator());
 		algorithm.setComparator(new RankingAndCrowdingDistanceComparator());

@@ -4,6 +4,7 @@ import algorithm.Algorithm;
 import comparator.RankingAndCrowdingDistanceComparator;
 import lombok.Getter;
 import lombok.Setter;
+import operator.Operator;
 import problem.Problem;
 import solution.Solution;
 
@@ -27,9 +28,11 @@ public class NSGAIIAlgorithm extends Algorithm {
 
 	public NSGAIIAlgorithm(int solutionSetSize) {
 		super(solutionSetSize);
+		this.comparator = new RankingAndCrowdingDistanceComparator();
+		this.matingPoolSize = 10;
 	}
 
-	public List<Solution> executeAlgorithm(Problem problem) {
+	public List<Solution> executeAlgorithm(Problem problem) throws CloneNotSupportedException {
 		/* Step 1: Create initial solution set*/
 		List<Solution> solutions = createInitialSolutionSet(problem);
 
@@ -37,7 +40,7 @@ public class NSGAIIAlgorithm extends Algorithm {
 		solutions = evaluateSolutionSet(problem, solutions);
 
 		/* Step 3: Rank the solution set*/
-		solutions = this.getComparator().computeRank(solutions);
+		solutions = this.getComparator().computeRankAndDistance(solutions);
 
 		/* Step 4: Create offspring solution set*/
 		List<Solution> offspringSolutions = reproduceOffspringSolutionSet(solutions);
@@ -50,38 +53,11 @@ public class NSGAIIAlgorithm extends Algorithm {
 				.collect(Collectors.toList());
 
 		/* Step 6: Rank and distance sort for solution set to find Pareto solution set*/
-		jointSolutions = this.getComparator().computeRank(jointSolutions);
-		List<List<Solution>> rankedSolutions = divideIntoRanks(jointSolutions);
+		jointSolutions = this.getComparator().computeRankAndDistance(jointSolutions);
 
 		System.out.println("Computing final results");
-		List<Solution> finalSolutions = new ArrayList<>();
-		int numberOfSolutions = 0;
-		int currentRank = 1;
-		while (numberOfSolutions < this.getSolutionSetSize()) {
+		List<Solution> finalSolutions = jointSolutions.subList(0, solutionSetSize + 1);
 
-			int size = rankedSolutions.get(currentRank - 1).size();
-			if (numberOfSolutions + size <=  this.getSolutionSetSize()) {
-				finalSolutions.addAll(rankedSolutions.get(currentRank));
-				numberOfSolutions += rankedSolutions.get(currentRank).size();
-			} else {
-				int slots = numberOfSolutions + size - this.getSolutionSetSize();
-				List<Solution> lastSolutions = rankedSolutions.get(currentRank);
-				lastSolutions = this.getComparator().computeDistance(lastSolutions);
-				// TODO: Delete this part becuz it is only for testing
-				numberOfSolutions = this.getSolutionSetSize();
-				for (Solution solution: lastSolutions) {
-
-					if (numberOfSolutions <= this.getSolutionSetSize()) {
-						lastSolutions.add(solution);
-						slots--;
-						numberOfSolutions++;
-					} else {
-						break;
-					}
-				}
-			}
-
-		}
 		return finalSolutions;
 	}
 
@@ -90,13 +66,32 @@ public class NSGAIIAlgorithm extends Algorithm {
 	}
 
 	public List<Solution> evaluateSolutionSet(Problem problem, List<Solution> solutions) {
+		for (Solution solution: solutions) {
+			solution = problem.evaluate(solution);
+		}
+		this.getComparator().computeRankAndDistance(solutions);
 		return solutions;
 	}
 
-	public List<Solution> reproduceOffspringSolutionSet(List<Solution> solutions) {
-		return solutions;
+	public List<Solution> reproduceOffspringSolutionSet(List<Solution> solutions) throws CloneNotSupportedException {
+
+		List<Operator> operators = this.getOperators();
+
+		/* Selection */
+		operators.get(0).getParameters().put("matingPoolSize", this.getMatingPoolSize());
+		List<Solution> matingParentSolutions = (List<Solution>) operators.get(0).execute(solutions);
+
+		/* Crossover */
+		operators.get(1).getParameters().put("solutionSetSize", this.getSolutionSetSize());
+		List<Solution> offspringSolutions = (List<Solution>) operators.get(1).execute(matingParentSolutions);
+
+		/* Mutation */
+		offspringSolutions = (List<Solution>) operators.get(2).execute(offspringSolutions);
+
+		return offspringSolutions;
 	}
 
+	@Deprecated
 	public List<List<Solution>> divideIntoRanks(List<Solution> solutions) {
 
 		List<List<Solution>> rankedSolutions = new ArrayList<>();

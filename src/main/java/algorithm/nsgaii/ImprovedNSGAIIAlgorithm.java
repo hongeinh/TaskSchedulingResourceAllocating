@@ -9,21 +9,19 @@ import java.util.List;
 
 public class ImprovedNSGAIIAlgorithm extends NSGAIIAlgorithm{
 
-	public ImprovedNSGAIIAlgorithm() {
-		super();
-	}
 
 	public ImprovedNSGAIIAlgorithm(int solutionSetSize) {
 		super(solutionSetSize);
 	}
 
+	@Override
 	public List<Solution> createInitialSolutionSet(Problem problem) {
 		List<Solution> solutions = new ArrayList<>();
 		int maxDuration = (Integer) problem.getParameters().get("maxDuration");
 
 		for (int i  = 0; i < this.getSolutionSetSize(); i++) {
 
-			solutions.add(createInitialSolution(problem, maxDuration*i/this.getSolutionSetSize()));
+			solutions.add(createInitialSolution(problem, i/this.getSolutionSetSize()));
 		}
 		return solutions;
 	}
@@ -35,34 +33,5 @@ public class ImprovedNSGAIIAlgorithm extends NSGAIIAlgorithm{
 		solution.setVariables(problem.getVariableController().createVariables(problem.getParameters(), k));
 		return solution;
 	}
-
-//	public Solution createOffspringSolution(Problem problem, double k){}
-
-	public List<Solution> evaluateSolutionSet(Problem problem, List<Solution> solutions) {
-		for (Solution solution: solutions) {
-			solution.setObjectives(problem.evaluate(solution));
-		}
-		this.getComparator().computeRank(solutions);
-		return solutions;
-	}
-
-	public List<Solution> reproduceOffspringSolutionSet(List<Solution> solutions) {
-
-		List<Operator> operators = this.getOperators();
-
-		/* Selection */
-		operators.get(0).getParameters().put("matingPoolSize", this.getMatingPoolSize());
-		List<Solution> matingParentSolutions = (List<Solution>) operators.get(0).execute(solutions);
-
-		/* Crossover */
-		operators.get(1).getParameters().put("solutionSetSize", this.getSolutionSetSize());
-		List<Solution> offspringSolutions = (List<Solution>) operators.get(1).execute(matingParentSolutions);
-
-		/* Mutation */
-		offspringSolutions = (List<Solution>) operators.get(2).execute(offspringSolutions);
-
-		return offspringSolutions;
-	}
-
 
 }

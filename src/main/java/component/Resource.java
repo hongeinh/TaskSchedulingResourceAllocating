@@ -13,12 +13,10 @@ public class Resource {
 
 	private int id;
 	private STATUS status;
-	private List<Skill> skills;
 
 	public Resource(int id) {
 		this.id = id;
-		this.skills = new ArrayList<>();
-		this.status = STATUS.NOT_ASSIGNED;
+		this.status = STATUS.NOT_USEFUL;
 	}
 
 	public enum STATUS {

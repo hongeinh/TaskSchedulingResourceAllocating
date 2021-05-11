@@ -1,15 +1,9 @@
 package component.controller.impl;
 
-import component.Resource;
-import component.Skill;
-import component.Task;
-import component.Variable;
+import component.*;
 import component.controller.VariableController;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class TaskSchedulingResourceAllocatingVariableController extends VariableController {
 
@@ -37,51 +31,44 @@ public class TaskSchedulingResourceAllocatingVariableController extends Variable
 
 
     public Variable setVariableResource(Variable variable) {
-        List<Resource> resources = ((Task) variable).getResources();
-        List<Skill> skills = ((Task) variable).getSkills();
 
-        resources = this.isUseful(resources, skills);
+        List<SkillsInResource> skillsInResources = ((Task) variable).getRequiredSkillsInResources();
+        skillsInResources = this.isUseful(skillsInResources);
 
-        for (Resource resource: resources) {
-            if (resource.getStatus() == Resource.STATUS.NOT_USEFUL)
-                resource.setStatus(Resource.STATUS.NOT_ASSIGNED);
+        for (SkillsInResource skillsInResource: skillsInResources) {
+            if (skillsInResource.getResource().getStatus() == Resource.STATUS.NOT_USEFUL)
+                skillsInResource.getResource().setStatus(Resource.STATUS.NOT_ASSIGNED);
             else {
                 double rand = Math.random();
                 if (rand >= 0.5)
-                    resource.setStatus(Resource.STATUS.ASSIGNED);
+                    skillsInResource.getResource().setStatus(Resource.STATUS.ASSIGNED);
                 else
-                    resource.setStatus(Resource.STATUS.NOT_ASSIGNED);
+                    skillsInResource.getResource().setStatus(Resource.STATUS.NOT_ASSIGNED);
             }
         }
 
-        ((Task) variable).setResources(resources);
+        ((Task) variable).setRequiredSkillsInResources(skillsInResources);
         return variable;
     }
 
-    public List<Resource> isUseful(List<Resource> resources, List<Skill> skills) {
-        int[] isUsefulMatrix = new int[resources.size()];
-        for (Resource resource: resources) {
-            List<Skill> resourceSkill = resource.getSkills();
-            for (Skill skill: skills) {
-                for (Skill rSkill: resourceSkill) {
-                    if(rSkill.getExperienceLevel() > 0 && skill.getId() == rSkill.getId()) {
-                        resource.setStatus(Resource.STATUS.USEFUL);
-                        isUsefulMatrix[resource.getId()] = 1;
-                        break;
-                    }
-                }
-                if (isUsefulMatrix[resource.getId()] == 1)
+    public List<SkillsInResource> isUseful(List<SkillsInResource> skillsInResources) {
+        for (SkillsInResource skillsInResource : skillsInResources) {
+            List<Skill> skills = skillsInResource.getRequiredSkills();
+            for (Skill rSkill : skills) {
+                if (rSkill.getExperienceLevel() > 0) {
+                    skillsInResource.getResource().setStatus(Resource.STATUS.USEFUL);
                     break;
+                }
             }
         }
-        return resources;
+        return skillsInResources;
     }
+
 
     @Override
     public List<Variable> createVariables(Map<Object, Object> parameters, double k) {
 
         Integer numberOfTasks = (Integer) parameters.get("numberOfTasks");
-
         List<Variable> variables = new ArrayList<>();
 
         for (int i = 0; i < numberOfTasks; i++) {
@@ -102,12 +89,12 @@ public class TaskSchedulingResourceAllocatingVariableController extends Variable
         int numberOfSkills = (Integer) parameters.get("numberOfSkills");
         int numberOfResources = (Integer) parameters.get("numberOfResources");
 
-        variables = setNeighbours(variables, (int [][]) parameters.get("tasks"));
-        variables = setSkills(variables, (int [][]) parameters.get("treq"), numberOfSkills );
-        variables = setResources(variables, (double [][]) parameters.get("lexp"), numberOfSkills, numberOfResources);
+        variables = setNeighbours(variables, (int[][]) parameters.get("tasks"));
+        variables = setResourcesAndSkills(variables, (int[][]) parameters.get("treq"), (double[][]) parameters.get("lexp"), numberOfSkills, numberOfResources);
 
-        for (Variable variable: variables)
-            this.setVariableParameters(variable, k);
+        for (Variable variable : variables)
+            this.setVariableParameters(variable, k * (Double) parameters.get("maxDuration"));
+        Collections.sort(variables);
         return variables;
     }
 
@@ -142,50 +129,33 @@ public class TaskSchedulingResourceAllocatingVariableController extends Variable
         return variables;
     }
 
-
     /**
-     * This method sets the skills needed for each variable:
-     * @param variables			List		Set of variables
-     * @param skills			int[][]	   	Task-Skill matrix
-     * @param numberOfSkills	int			The maximum number of skills a variable may have
-     * @implNote    skills[i][j] = 1 means Variable i needs Skill j
+     * This method sets the resources and skills for each variable. Only adds the required skills
      *
-     * @return variables		The same variables with set skills for each variable.
+     * @param variables         List		Set of variables
+     * @param treq              int[][]     Task-Skill matrix
+     * @param lexp              double[][]	Resource-Skill matrix
+     * @param numberOfSkills    int			The maximum number of skills a variable may have
+     * @param numberOfResources int			The total number of resources
+     * @return variables        The same variables with set skills for each variable.
      *
-     * */
-    public List<Variable> setSkills(List<Variable> variables, int[][] skills, int numberOfSkills) {
-
-        for (Variable variable: variables) {
-            for	(int j = 0; j < numberOfSkills; j++ ) {
-                if (skills[((Task) variable).getId()][j] == 1) {
-                    ((Task) variable).getSkills().add(new Skill(j, 0.0));
-                }
-            }
-        }
-        return variables;
-    }
-
-    /**
-     * This method sets the resources for each variable: predecessors and descendents
-     * @param variables			List		Set of variables
-     * @param resources			double[][]	Resource-Skill matrix
-     * @param numberOfSkills	int			The maximum number of skills a variable may have
-     * @param numberOfResources	int			The total number of resources
-     * @implNote    skills[i][j] = 1 means Variable i needs Skill j
      *
-     * @return variables		The same variables with set skills for each variable.
-     *
-     * */
-    public List<Variable> setResources(List<Variable> variables, double[][] resources, int numberOfSkills, int numberOfResources) {
-        for (Variable variable: variables) {
+     * @implNote skills[i][j] = 1 means Variable i needs Skill j
+     */
+    public List<Variable> setResourcesAndSkills(List<Variable> variables, int[][] treq, double[][] lexp, int numberOfSkills, int numberOfResources) {
+        for (Variable variable : variables) {
             for (int i = 0; i < numberOfResources; i++) {
-                Resource resource = new Resource(i);
+                SkillsInResource skillsInResource = new SkillsInResource();
+                skillsInResource.setResource(new Resource(i));
+                List<Skill> skills = skillsInResource.getRequiredSkills();
                 for (int j = 0; j < numberOfSkills; j++) {
-                    if (resources[i][j] > 0) {
-                        resource.getSkills().add(new Skill(j, resources[i][j]));
+                    /* Only add skill to resource if the skill is necessary to the task */
+                    if (treq[((Task) variable).getId()][j] == 1) {
+                        skills.add(new Skill(j, lexp[i][j]));
                     }
                 }
-                ((Task) variable).getResources().add(resource);
+                skillsInResource.setRequiredSkills(skills);
+                ((Task) variable).getRequiredSkillsInResources().add(skillsInResource);
             }
         }
         return variables;

@@ -23,6 +23,6 @@ public abstract class Operator {
 		return this.parameters;
 	}
 
-	public abstract Object execute(Object solutions);
+	public abstract Object execute(Object solutions) throws CloneNotSupportedException;
 
 }
