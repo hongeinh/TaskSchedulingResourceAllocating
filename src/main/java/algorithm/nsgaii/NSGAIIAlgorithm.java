@@ -1,7 +1,7 @@
 package algorithm.nsgaii;
 
 import algorithm.Algorithm;
-import comparator.RankingAndCrowdingDistanceComparator;
+import algorithm.comparator.RankingAndCrowdingDistanceComparator;
 import lombok.Getter;
 import lombok.Setter;
 import operator.Operator;
@@ -45,6 +45,8 @@ public class NSGAIIAlgorithm extends Algorithm {
 		System.out.println("- Rank initial solution set");
 		solutions = this.getComparator().computeRankAndDistance(solutions);
 
+		displaySolutions(solutions);
+
 		/* Step 4: Create offspring solution set*/
 		System.out.println("\n- Create offspring solution set");
 		List<Solution> offspringSolutions = reproduceOffspringSolutionSet(solutions);
@@ -52,6 +54,8 @@ public class NSGAIIAlgorithm extends Algorithm {
 		/* Step 4: Evaluate the offspring solution set, calculate objectives for each solution */
 		System.out.println("- Evaluate offspring solution set");
 		offspringSolutions = evaluateSolutionSet(problem, offspringSolutions);
+
+		displaySolutions(offspringSolutions);
 
 		/* Step 5: Join two achieved solution sets into one jointSolution set*/
 		System.out.println("\n- Combine solution sets");
@@ -62,9 +66,9 @@ public class NSGAIIAlgorithm extends Algorithm {
 		System.out.println("- Evaluate combined solution set");
 		jointSolutions = this.getComparator().computeRankAndDistance(jointSolutions);
 
-		System.out.println("Computing final results");
-		List<Solution> finalSolutions = jointSolutions.subList(0, solutionSetSize + 1);
-
+		System.out.println("- Computing final results---------------------------------------------------------------------");
+		List<Solution> finalSolutions = jointSolutions.subList(0, solutionSetSize);
+		displaySolutions(finalSolutions);
 		return finalSolutions;
 	}
 
@@ -118,4 +122,5 @@ public class NSGAIIAlgorithm extends Algorithm {
 
 		return rankedSolutions;
 	}
+
 }

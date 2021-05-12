@@ -40,4 +40,12 @@ public abstract class Algorithm {
 		}
 	}
 
+	public void displaySolutions(List<Solution> solutions) {
+		int i = 1;
+		for (Solution solution: solutions) {
+			System.out.println(i + ". " + solution.toString() + "\n");
+			i++;
+		}
+	}
+
 }

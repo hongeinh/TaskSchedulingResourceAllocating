@@ -1,4 +1,4 @@
-package comparator;
+package algorithm.comparator;
 
 import solution.Solution;
 
@@ -29,13 +29,14 @@ public class RankingAndCrowdingDistanceComparator {
 			// This set contains the solutions that are dominated by the currently considered solution
 			List<Solution> dominatedSolutions = new ArrayList<>();
 			int dominationCount = 0;
+			Solution soli = solutions.get(i);
 			for (int j = 0; j < solutionSetSize; j++) {
 				if (i != j) {
-
-					if(solutions.get(i).compareTo(solutions.get(j)) > 0) {
+					Solution solj = solutions.get(j);
+					if(soli.compareTo(solj) > 0) {
 						// Solution i dominates solution j
-						dominatedSolutions.add(solutions.get(j));
-					} else if (solutions.get(i).compareTo(solutions.get(j)) < 0) {
+						dominatedSolutions.add(solj);
+					} else if (soli.compareTo(solj) < 0) {
 						// Solution i is dominated by solution j
 						dominationCount++;
 					}
@@ -47,11 +48,10 @@ public class RankingAndCrowdingDistanceComparator {
 
 			// Step 2b: If the dominationCount of one solution is zero, it is put into the first rank
 			if (dominationCount == 0) {
-				System.out.println("------ Step 2b: If the dominationCount of one solution is zero, it is put into the first rank");
 				double []fitness = solutions.get(i).getFitness();
 				fitness[0] = frontCounter;
 				solutions.get(i).setFitness(fitness);
-				currentFront.add(solutions.get(i));
+				currentFront.add(soli);
 			}
 		}
 
@@ -62,9 +62,11 @@ public class RankingAndCrowdingDistanceComparator {
 		// Step 4: Find fronts for other solutions
 		System.out.println("--- Step 4: Find fronts for other solutions");
 		while (!currentFront.isEmpty()) {
+			System.out.println("--------- Rank " + frontCounter);
 			List<Solution> nextFront = new ArrayList<>();
 			for (Solution currentSolution: currentFront) {
-				for (Solution solution1: currentSolution.getDominatedSolutions()) {
+				List<Solution> dominatedSolutions = currentSolution.getDominatedSolutions();
+				for (Solution solution1: dominatedSolutions) {
 					solution1.setDominationCount(solution1.getDominationCount()-1);
 					if (solution1.getDominationCount() == 0) {
 						double []fitness = solution1.getFitness();
@@ -75,8 +77,8 @@ public class RankingAndCrowdingDistanceComparator {
 				}
 			}
 			frontCounter++;
-			System.out.println("--------- Rank " + frontCounter);
-			rankSortedSolutions.addAll(sortByDistance(computeDistance(nextFront)));
+			if (!nextFront.isEmpty())
+				rankSortedSolutions.addAll(sortByDistance(computeDistance(nextFront)));
 			currentFront = nextFront;
 		}
 		return rankSortedSolutions;
@@ -86,7 +88,7 @@ public class RankingAndCrowdingDistanceComparator {
 	 * Computes the density around each solution in the list (assume that they are in the same front)
 	 *
 	 * */
-	public List<Solution> computeDistance(List<Solution> solutions) {
+	public List<Solution> computeDistance(@org.jetbrains.annotations.NotNull List<Solution> solutions) {
 		int solutionSetSize = solutions.size();
 		int objectiveSize = solutions.get(0).getObjectives().length;
 
@@ -111,8 +113,8 @@ public class RankingAndCrowdingDistanceComparator {
 
 			for (int j = 1; j < solutionSetSize - 1; j++) {
 				fitness = solutions.get(j).getFitness();
-				fitness[1] = fitness[1] + (solutions.get(j+1).getObjectives()[1] - solutions.get(j - 1).getObjectives()[1]) /
-						(solutions.get(solutionSetSize - 1).getObjectives()[1] - solutions.get(0).getObjectives()[1]);
+				fitness[1] = fitness[1] + (solutions.get(j+1).getObjectives()[i] - solutions.get(j - 1).getObjectives()[i]) /
+						(solutions.get(solutionSetSize - 1).getObjectives()[i] - solutions.get(0).getObjectives()[i]);
 				solutions.get(j).setFitness(fitness);
 			}
 		}
@@ -128,10 +130,10 @@ public class RankingAndCrowdingDistanceComparator {
 		int solutionSetSize = solutions.size();
 		for (int i = 0; i < solutionSetSize - 1; i++) {
 			for (int j = 0; j < solutionSetSize - 1 - i; j++) {
-				Solution currentSolution = solutions.get(i);
-				Solution nextSolution = solutions.get(i + 1);
+				Solution currentSolution = solutions.get(j);
+				Solution nextSolution = solutions.get(j + 1);
 				if (currentSolution.getObjectives()[objectiveValueIndex] > nextSolution.getObjectives()[objectiveValueIndex]) {
-					Collections.swap(solutions, i, i+1);
+					Collections.swap(solutions, j, j+1);
 				}
 			}
 		}
@@ -146,10 +148,10 @@ public class RankingAndCrowdingDistanceComparator {
 		int solutionSetSize = solutions.size();
 		for (int i = 0; i < solutionSetSize - 1; i++) {
 			for (int j = 0; j < solutionSetSize - 1 - i; j++) {
-				Solution currentSolution = solutions.get(i);
-				Solution nextSolution = solutions.get(i + 1);
-				if (currentSolution.getFitness()[1] > nextSolution.getFitness()[1] ) {
-					Collections.swap(solutions, i, i+1);
+				Solution currentSolution = solutions.get(j);
+				Solution nextSolution = solutions.get(j + 1);
+				if (currentSolution.getFitness()[1] < nextSolution.getFitness()[1] ) {
+					Collections.swap(solutions, j, j+1);
 				}
 			}
 		}

@@ -15,16 +15,21 @@ public class TaskSchedulingResourceAllocatingVariableController extends Variable
 
     public Variable setVariableTime(Variable variable, double  k) {
         List<Variable> predescessors = ((Task) variable).getPredecessors();
-
+        Task currentVariable = (Task) variable;
         for (Variable pre: predescessors) {
-            double start = ((Task) variable).getStart() > ((Task) pre).getStart() + ((Task) pre).getDuration() ?
-                            ((Task) variable).getStart() :
-                            ((Task) pre).getStart() + ((Task) pre).getDuration();
+            Task predecessor = (Task) pre;
+            double start = 0;
+            if(currentVariable.getStart() > predecessor.getStart() + predecessor.getDuration()) {
+                start = currentVariable.getStart();
+            } else {
+                start = (predecessor.getStart() + predecessor.getDuration());
+            }
 
-            double rand = Math.floor(Math.random()*k);
+            double rand = Math.random()*k;
 
-            ((Task) variable).setDuration(start);
-            ((Task) variable).setScheduledTime(start + rand);
+            ((Task) variable).setStart(start);
+            start = start + rand;
+            ((Task) variable).setScheduledTime(start);
         }
         return variable;
     }
@@ -89,13 +94,15 @@ public class TaskSchedulingResourceAllocatingVariableController extends Variable
         int numberOfSkills = (Integer) parameters.get("numberOfSkills");
         int numberOfResources = (Integer) parameters.get("numberOfResources");
 
+
         variables = setNeighbours(variables, (int[][]) parameters.get("tasks"));
+        Collections.sort(variables);
         variables = setResourcesAndSkills(variables, (int[][]) parameters.get("treq"), (double[][]) parameters.get("lexp"), numberOfSkills, numberOfResources);
 
         int maxDuration = (int) parameters.get("maxDuration");
         for (Variable variable : variables)
             this.setVariableParameters(variable, k * maxDuration);
-        Collections.sort(variables);
+
         return variables;
     }
 
@@ -115,14 +122,16 @@ public class TaskSchedulingResourceAllocatingVariableController extends Variable
         int size = variables.size();
 
         for (int i = 0; i < size; i++) {
-            for (int j = 0; j < size; j++) {
+            for (int j = i + 1; j < size; j++) {
                 if (i != j) {
+                    Task ti = (Task) variables.get(i);
+                    Task tj = (Task) variables.get(j);
                     if ( tasks[i][j] == 1) {
-                        ((Task) variables.get(i)).getDescendants().add(variables.get(j));
-                        ((Task) variables.get(j)).getPredecessors().add(variables.get(j));
+                        ti.getDescendants().add(tj);
+                        tj.getPredecessors().add(ti);
                     } else if (tasks[j][i] == 1) {
-                        ((Task) variables.get(i)).getPredecessors().add(variables.get(j));
-                        ((Task) variables.get(j)).getDescendants().add(variables.get(j));
+                        ti.getPredecessors().add(tj);
+                        tj.getDescendants().add(ti);
                     }
                 }
             }

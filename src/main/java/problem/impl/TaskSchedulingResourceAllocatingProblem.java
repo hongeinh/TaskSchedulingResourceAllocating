@@ -103,7 +103,7 @@ public class TaskSchedulingResourceAllocatingProblem extends Problem {
 		int resourceSize = ((Task) solution.getVariables().get(0)).getRequiredSkillsInResources().size();
 		for (int i = 0; i < resourceSize; i++) {
 			double resourceAssignmentCount = countResourceAssignedTimes(solution.getVariables(), i);
-			double rjAssignment = 0;
+			double rjAssignment;
 			if (resourceAssignmentCount > 0) {
 				rjAssignment = countResourceConflict(solution.getVariables(), i)/resourceAssignmentCount;
 				assignment += rjAssignment;
@@ -148,10 +148,21 @@ public class TaskSchedulingResourceAllocatingProblem extends Problem {
 		Resource resource2 = ((Task) var2).getRequiredSkillsInResources().get(resourceId).getResource();
 		if (resource1.getStatus() == resource2.getStatus() && resource1.getStatus() == Resource.STATUS.ASSIGNED) {
 			double start1 = ((Task) var1).getStart(); double end1 = ((Task) var1).getDuration() + start1;
-			double start2 = ((Task) var1).getStart(); double end2 = ((Task) var1).getDuration() + start1;
-
-			if ( (start1 < start2 && start2 < end1) || (start2 < start1 && start1 < end2)) {
-				return true;
+			double start2 = ((Task) var2).getStart(); double end2 = ((Task) var2).getDuration() + start2;
+			if(start1 == start2) {
+				if(end1 <= end2 || end2 <= end1 ) {
+					return true;
+				}
+			} else if (start1 < start2) {
+				if (start2 < end1) {
+					if(end1 <= end2 || end2 <= end1)
+						return true;
+				}
+			} else if (start2 < start1) {
+				if (start1 < end2) {
+					if (end1 <= end2 || end2 <= end1)
+						return true;
+				}
 			}
 		}
 		return false;

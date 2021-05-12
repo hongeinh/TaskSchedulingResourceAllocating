@@ -44,14 +44,14 @@ public class Task extends Variable{
 
 
 	public String toString() {
-		StringBuilder stringBuilder = new StringBuilder("Task " + this.id + ":" +
-				"\n\tDuration: " + this.duration +
-				"\n\tScheduled start: " + this.scheduledTime +
-				"\n\tStart: " + this.start +
-				"\n\tResource: ");
+		StringBuilder stringBuilder = new StringBuilder("*** Task " + this.id + ":" +
+				"\tScheduled start: " + this.scheduledTime +
+				"\tStart: " + this.start +
+				"\tDuration: " + this.duration +
+				"\tResource: ");
 		for (SkillsInResource skillsInResource: requiredSkillsInResources) {
 			if (skillsInResource.getResource().getStatus() == Resource.STATUS.ASSIGNED)
-				stringBuilder.append(skillsInResource.getResource().getId() + "\t");
+				stringBuilder.append(skillsInResource.getResource().getId() + " ");
 		}
 		return stringBuilder.toString();
 	}
@@ -59,11 +59,11 @@ public class Task extends Variable{
 	@Override
 	public int compareTo(Variable o) {
 		if (this.getDescendants().contains(o)) {
-			return 1;
-		} else if (((Task) o).getDescendants().contains(this)) {
 			return -1;
+		} else if (((Task) o).getDescendants().contains(this)) {
+			return 1;
 		} else {
-			return (int) Math.floor(((Task) o).getStart() - this.getStart());
+			return (int) (this.getScheduledTime() - ((Task) o).getScheduledTime());
 		}
 	}
 

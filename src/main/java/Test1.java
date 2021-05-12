@@ -1,10 +1,10 @@
 import algorithm.nsgaii.ImprovedNSGAIIAlgorithm;
 import common.TSRAParams;
-import comparator.RankingAndCrowdingDistanceComparator;
+import algorithm.comparator.RankingAndCrowdingDistanceComparator;
 import component.controller.VariableController;
 import component.controller.impl.TaskSchedulingResourceAllocatingVariableController;
+import operator.crossover.impl.ProposedCrossoverOperator1;
 import operator.crossover.impl.SinglePointCrossoverOperator;
-import operator.mutation.MutationOperator;
 import operator.mutation.impl.BitInversionMutationOperator;
 import operator.selection.impl.RouletteWheelSelectionOperator;
 import problem.Problem;
@@ -24,9 +24,8 @@ public class Test1 {
 		Problem problem = new TaskSchedulingResourceAllocatingProblem(params, variableController);
 
 		ImprovedNSGAIIAlgorithm algorithm = new ImprovedNSGAIIAlgorithm(20);
-//		algorithm.setSolutionSetSize(20);
 		algorithm.addOperator(new RouletteWheelSelectionOperator());
-		algorithm.addOperator(new SinglePointCrossoverOperator());
+		algorithm.addOperator(new ProposedCrossoverOperator1());
 		algorithm.addOperator(new BitInversionMutationOperator());
 		algorithm.setComparator(new RankingAndCrowdingDistanceComparator());
 		algorithm.setMatingPoolSize(10);
@@ -34,8 +33,6 @@ public class Test1 {
 		System.out.println("Executing algorithm");
 		List<Solution> solutions = algorithm.executeAlgorithm(problem);
 
-		for (Solution solution: solutions)
-			System.out.println(solution.toString());
 		System.out.println("Finish flow");
 	}
 

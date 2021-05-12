@@ -5,17 +5,18 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
 @Setter
 public class Solution implements Comparable  {
+	private int id;
 	private List<Variable> variables;
 	private double[] objectives;
 	private double[] fitness;
 	private int dominationCount;
 	private List<Solution> dominatedSolutions;
-
 
 	public List<Variable> getVariables() {
 		return variables;
@@ -48,12 +49,12 @@ public class Solution implements Comparable  {
 
 		stringBuilder.append("Fitness: ");
 		for (int i = 0; i < sz; i++)
-			stringBuilder.append(fitness[i] + "\t");
+			stringBuilder.append(fitness[i] + "  ");
 
-		stringBuilder.append("\nObjectives: ");
+		stringBuilder.append("\tObjectives: ");
 		sz = this.getObjectives().length;
 		for (int i = 0; i < sz; i++)
-			stringBuilder.append(objectives[i] + "\t");
+			stringBuilder.append(objectives[i] + "  ");
 
 		stringBuilder.append("\nVariables:\n");
 		for (Variable variable: this.variables)
@@ -64,6 +65,7 @@ public class Solution implements Comparable  {
 
 	public static Solution copy(Solution anotherSolution) throws CloneNotSupportedException {
 		Solution solution = new Solution();
+		solution.setVariables(new ArrayList<>() );
 		for (Variable variable: anotherSolution.getVariables()) {
 			solution.getVariables().add((Variable) variable.clone());
 		}
@@ -86,18 +88,29 @@ public class Solution implements Comparable  {
 		int objectiveSize = this.getObjectives().length;
 		Solution sol = (Solution) o;
 		int greaterCount = 0;
+		int equalCount = 0;
+		int lesserCount = 0;
 		for (int i = 0; i < objectiveSize; i++) {
 			if (this.getObjectives()[i] < sol.getObjectives()[i])
 				greaterCount++;
+			else if(this.getObjectives()[i] == sol.getObjectives()[i])
+				equalCount++;
+			else if(this.getObjectives()[i] > sol.getObjectives()[i])
+				lesserCount++;
 		}
 
 		if (greaterCount == objectiveSize)
 			return 1;
-		else if (greaterCount == 0)
+		else if (lesserCount == objectiveSize)
 			return -1;
+		else if (equalCount == objectiveSize)
+			return 0;
+		else if (lesserCount > 0 && equalCount > 0 && greaterCount == 0)
+			return -1;
+		else if (greaterCount > 0 && equalCount > 0 && lesserCount == 0)
+			return 1;
 		else
 			return 0;
-
 	}
 
 }

@@ -19,7 +19,7 @@ public class ImprovedNSGAIIAlgorithm extends NSGAIIAlgorithm{
 		List<Solution> solutions = new ArrayList<>();
 		int maxDuration = (Integer) problem.getParameters().get("maxDuration");
 
-		for (int i  = 0; i < this.getSolutionSetSize(); i++) {
+		for (int i  = 1; i <= this.getSolutionSetSize(); i++) {
 
 			solutions.add(createInitialSolution(problem, (double) i/this.getSolutionSetSize()));
 		}
