@@ -11,12 +11,13 @@ import problem.Problem;
 import problem.impl.TaskSchedulingResourceAllocatingProblem;
 import solution.Solution;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public class Test1 {
-	public static void main(String[] args) throws CloneNotSupportedException {
+	public static void main(String[] args) throws CloneNotSupportedException, IOException {
 
 		System.out.println("Start flow");
 		Map<Object, Object> params = createParams();

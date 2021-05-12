@@ -6,6 +6,9 @@ import operator.Operator;
 import problem.Problem;
 import solution.Solution;
 
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,7 +31,7 @@ public abstract class Algorithm {
 	}
 
 
-	public abstract List<Solution> executeAlgorithm(Problem problem) throws CloneNotSupportedException;
+	public abstract List<Solution> executeAlgorithm(Problem problem) throws CloneNotSupportedException, IOException;
 
 	public void addOperator(Operator operator) {
 		this.operators.add(operator);
@@ -40,10 +43,16 @@ public abstract class Algorithm {
 		}
 	}
 
-	public void displaySolutions(List<Solution> solutions) {
+	public void displaySolutions(List<Solution> solutions, String filename) throws IOException {
+		String currentPath = System.getProperty("user.dir") +"/src/main/java";
+		System.out.println(currentPath);
+		FileWriter fileWriter = new FileWriter(currentPath +  filename);
+		PrintWriter printWriter = new PrintWriter(fileWriter);
+		printWriter.println(filename);
 		int i = 1;
 		for (Solution solution: solutions) {
-			System.out.println(i + ". " + solution.toString() + "\n");
+			printWriter.println(i + ". " + solution.toString() +"\n");
+//			System.out.println(i + ". " + solution.toString() + "\n");
 			i++;
 		}
 	}

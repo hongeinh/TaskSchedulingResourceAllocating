@@ -8,6 +8,7 @@ import operator.Operator;
 import problem.Problem;
 import solution.Solution;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -32,7 +33,7 @@ public class NSGAIIAlgorithm extends Algorithm {
 		this.matingPoolSize = 10;
 	}
 
-	public List<Solution> executeAlgorithm(Problem problem) throws CloneNotSupportedException {
+	public List<Solution> executeAlgorithm(Problem problem) throws CloneNotSupportedException, IOException {
 		/* Step 1: Create initial solution set*/
 		System.out.println("- Create initial solution set");
 		List<Solution> solutions = createInitialSolutionSet(problem);
@@ -45,7 +46,7 @@ public class NSGAIIAlgorithm extends Algorithm {
 		System.out.println("- Rank initial solution set");
 		solutions = this.getComparator().computeRankAndDistance(solutions);
 
-		displaySolutions(solutions);
+		displaySolutions(solutions, "//result/parent.txt");
 
 		/* Step 4: Create offspring solution set*/
 		System.out.println("\n- Create offspring solution set");
@@ -55,7 +56,7 @@ public class NSGAIIAlgorithm extends Algorithm {
 		System.out.println("- Evaluate offspring solution set");
 		offspringSolutions = evaluateSolutionSet(problem, offspringSolutions);
 
-		displaySolutions(offspringSolutions);
+		displaySolutions(offspringSolutions, "/result/offspring.txt");
 
 		/* Step 5: Join two achieved solution sets into one jointSolution set*/
 		System.out.println("\n- Combine solution sets");
@@ -65,10 +66,11 @@ public class NSGAIIAlgorithm extends Algorithm {
 		/* Step 6: Rank and distance sort for solution set to find Pareto solution set*/
 		System.out.println("- Evaluate combined solution set");
 		jointSolutions = this.getComparator().computeRankAndDistance(jointSolutions);
+		displaySolutions(jointSolutions, "/result/combine.txt");
 
 		System.out.println("- Computing final results---------------------------------------------------------------------");
 		List<Solution> finalSolutions = jointSolutions.subList(0, solutionSetSize);
-		displaySolutions(finalSolutions);
+		displaySolutions(finalSolutions, "/result/final.txt");
 		return finalSolutions;
 	}
 

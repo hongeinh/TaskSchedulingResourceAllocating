@@ -37,7 +37,7 @@ public class ProposedCrossoverOperator1 extends CrossoverOperator {
             position2 = (int) Math.floor(Math.random() * a.getVariables().size());
         }
 
-        for (int i = position1; i <= position2; i++) {
+        for (int i = position1; i < position2; i++) {
             Task varA = (Task) a.getVariables().get(i);
             Task varB = (Task) b.getVariables().get(i);
             double diff = varA.getScheduledTime() - varB.getScheduledTime();

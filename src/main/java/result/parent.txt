@@ -1,0 +1,222 @@
+//result/parent.txt
+1. Fitness: 1.0  1.7976931348623157E308  	Objectives: 0.16856566528680264  0.6165  0.21818181818181817  
+Variables:
+*** Task 1:	Scheduled start: 0.0	Start: 0.0	Duration: 26.0	Resource: 5 9 10 
+*** Task 9:	Scheduled start: 23.0	Start: 0.0	Duration: 27.0	Resource: 1 
+*** Task 0:	Scheduled start: 35.39870121512325	Start: 26.0	Duration: 24.0	Resource: 5 6 10 
+*** Task 11:	Scheduled start: 32.0	Start: 0.0	Duration: 18.0	Resource: 2 4 5 7 8 9 
+*** Task 2:	Scheduled start: 50.0	Start: 0.0	Duration: 20.0	Resource: 2 3 5 10 
+*** Task 5:	Scheduled start: 52.0	Start: 0.0	Duration: 18.0	Resource: 6 9 
+*** Task 8:	Scheduled start: 64.77049920970698	Start: 50.0	Duration: 20.0	Resource: 0 3 5 6 8 
+*** Task 3:	Scheduled start: 72.81259962958143	Start: 70.0	Duration: 12.0	Resource: 1 3 4 
+*** Task 4:	Scheduled start: 87.64575816806578	Start: 82.0	Duration: 15.0	Resource: 3 10 
+*** Task 7:	Scheduled start: 104.61887960921918	Start: 97.0	Duration: 15.0	Resource: 1 2 3 
+*** Task 6:	Scheduled start: 86.95147564419615	Start: 82.0	Duration: 15.0	Resource: 0 1 2 4 5 
+*** Task 10:	Scheduled start: 128.87084466506323	Start: 112.0	Duration: 10.0	Resource: 0 2 8 
+
+
+2. Fitness: 1.0  1.7976931348623157E308  	Objectives: 0.12970036099896365  1.5314999999999996  0.3893939393939394  
+Variables:
+*** Task 1:	Scheduled start: 0.0	Start: 0.0	Duration: 26.0	Resource: 3 6 7 
+*** Task 9:	Scheduled start: 23.0	Start: 0.0	Duration: 27.0	Resource: 1 2 3 5 7 9 
+*** Task 0:	Scheduled start: 46.37680965417002	Start: 26.0	Duration: 24.0	Resource: 10 
+*** Task 11:	Scheduled start: 32.0	Start: 0.0	Duration: 18.0	Resource: 2 6 8 9 
+*** Task 2:	Scheduled start: 50.0	Start: 0.0	Duration: 20.0	Resource: 0 2 5 6 8 
+*** Task 5:	Scheduled start: 52.0	Start: 0.0	Duration: 18.0	Resource: 3 7 8 9 10 
+*** Task 8:	Scheduled start: 62.81694311569098	Start: 50.0	Duration: 20.0	Resource: 0 2 
+*** Task 3:	Scheduled start: 80.79111059873252	Start: 70.0	Duration: 12.0	Resource: 0 1 
+*** Task 4:	Scheduled start: 96.11925437046526	Start: 82.0	Duration: 15.0	Resource: 3 6 
+*** Task 7:	Scheduled start: 118.17688967084446	Start: 97.0	Duration: 15.0	Resource: 3 4 5 6 7 8 9 10 
+*** Task 6:	Scheduled start: 92.08643614108064	Start: 82.0	Duration: 15.0	Resource: 1 2 3 4 5 10 
+*** Task 10:	Scheduled start: 135.65391206847946	Start: 112.0	Duration: 10.0	Resource: 0 1 2 4 5 7 8 10 
+
+
+3. Fitness: 1.0  1.7976931348623157E308  	Objectives: 0.27942480069551295  0.4335  0.5757575757575758  
+Variables:
+*** Task 1:	Scheduled start: 0.0	Start: 0.0	Duration: 26.0	Resource: 0 2 5 9 10 
+*** Task 9:	Scheduled start: 23.0	Start: 0.0	Duration: 27.0	Resource: 1 2 3 5 9 
+*** Task 0:	Scheduled start: 27.550570012747983	Start: 26.0	Duration: 24.0	Resource: 3 5 6 
+*** Task 11:	Scheduled start: 32.0	Start: 0.0	Duration: 18.0	Resource: 0 1 3 4 6 9 10 
+*** Task 2:	Scheduled start: 50.0	Start: 0.0	Duration: 20.0	Resource: 3 6 8 10 
+*** Task 5:	Scheduled start: 52.0	Start: 0.0	Duration: 18.0	Resource: 0 2 3 9 10 
+*** Task 8:	Scheduled start: 53.03492174806723	Start: 50.0	Duration: 20.0	Resource: 2 
+*** Task 3:	Scheduled start: 73.04007614452789	Start: 70.0	Duration: 12.0	Resource: 0 7 
+*** Task 4:	Scheduled start: 83.17456575519607	Start: 82.0	Duration: 15.0	Resource: 3 6 
+*** Task 7:	Scheduled start: 98.74909462428323	Start: 97.0	Duration: 15.0	Resource: 
+*** Task 6:	Scheduled start: 84.537036033977	Start: 82.0	Duration: 15.0	Resource: 0 2 5 6 
+*** Task 10:	Scheduled start: 115.01790522281999	Start: 112.0	Duration: 10.0	Resource: 0 5 
+
+
+4. Fitness: 1.0  1.6140986668534325  	Objectives: 0.1415850581688062  1.3484999999999998  0.493073593073593  
+Variables:
+*** Task 1:	Scheduled start: 0.0	Start: 0.0	Duration: 26.0	Resource: 0 3 6 7 8 9 10 
+*** Task 9:	Scheduled start: 23.0	Start: 0.0	Duration: 27.0	Resource: 0 3 7 9 
+*** Task 0:	Scheduled start: 46.24302486153938	Start: 26.0	Duration: 24.0	Resource: 5 
+*** Task 11:	Scheduled start: 32.0	Start: 0.0	Duration: 18.0	Resource: 0 3 4 5 9 10 
+*** Task 2:	Scheduled start: 50.0	Start: 0.0	Duration: 20.0	Resource: 2 5 6 8 10 
+*** Task 5:	Scheduled start: 52.0	Start: 0.0	Duration: 18.0	Resource: 0 2 3 6 10 
+*** Task 8:	Scheduled start: 59.871570707425086	Start: 50.0	Duration: 20.0	Resource: 0 2 10 
+*** Task 3:	Scheduled start: 85.49008987863812	Start: 70.0	Duration: 12.0	Resource: 0 1 3 8 10 
+*** Task 4:	Scheduled start: 105.13844891136154	Start: 82.0	Duration: 15.0	Resource: 3 10 
+*** Task 7:	Scheduled start: 108.25284782719329	Start: 97.0	Duration: 15.0	Resource: 1 4 5 7 9 
+*** Task 6:	Scheduled start: 85.83382096774214	Start: 82.0	Duration: 15.0	Resource: 0 3 6 8 10 
+*** Task 10:	Scheduled start: 127.9611105196205	Start: 112.0	Duration: 10.0	Resource: 0 1 4 5 7 8 9 
+
+
+5. Fitness: 2.0  1.7976931348623157E308  	Objectives: 0.2561744167743977  0.9824999999999999  0.274025974025974  
+Variables:
+*** Task 1:	Scheduled start: 0.0	Start: 0.0	Duration: 26.0	Resource: 2 5 7 9 
+*** Task 9:	Scheduled start: 23.0	Start: 0.0	Duration: 27.0	Resource: 1 9 
+*** Task 0:	Scheduled start: 28.41256795943596	Start: 26.0	Duration: 24.0	Resource: 3 10 
+*** Task 11:	Scheduled start: 32.0	Start: 0.0	Duration: 18.0	Resource: 3 5 7 9 10 
+*** Task 2:	Scheduled start: 50.0	Start: 0.0	Duration: 20.0	Resource: 5 
+*** Task 5:	Scheduled start: 52.0	Start: 0.0	Duration: 18.0	Resource: 6 7 9 
+*** Task 8:	Scheduled start: 53.95705625684982	Start: 50.0	Duration: 20.0	Resource: 5 6 
+*** Task 3:	Scheduled start: 72.62111645326725	Start: 70.0	Duration: 12.0	Resource: 0 4 
+*** Task 4:	Scheduled start: 83.65007278470428	Start: 82.0	Duration: 15.0	Resource: 5 6 10 
+*** Task 7:	Scheduled start: 99.38187969945984	Start: 97.0	Duration: 15.0	Resource: 1 3 5 6 8 
+*** Task 6:	Scheduled start: 84.19969170474137	Start: 82.0	Duration: 15.0	Resource: 0 3 5 10 
+*** Task 10:	Scheduled start: 115.82740242785346	Start: 112.0	Duration: 10.0	Resource: 0 3 6 8 9 
+
+
+6. Fitness: 2.0  1.7976931348623157E308  	Objectives: 0.171332832257594  0.9824999999999999  0.2917748917748918  
+Variables:
+*** Task 1:	Scheduled start: 0.0	Start: 0.0	Duration: 26.0	Resource: 0 2 5 6 8 10 
+*** Task 9:	Scheduled start: 23.0	Start: 0.0	Duration: 27.0	Resource: 0 2 3 6 7 
+*** Task 0:	Scheduled start: 37.44265468133523	Start: 26.0	Duration: 24.0	Resource: 3 5 10 
+*** Task 11:	Scheduled start: 32.0	Start: 0.0	Duration: 18.0	Resource: 1 2 5 6 
+*** Task 2:	Scheduled start: 50.0	Start: 0.0	Duration: 20.0	Resource: 5 6 10 
+*** Task 5:	Scheduled start: 52.0	Start: 0.0	Duration: 18.0	Resource: 0 2 6 9 10 
+*** Task 8:	Scheduled start: 59.165822743593196	Start: 50.0	Duration: 20.0	Resource: 0 3 5 8 9 10 
+*** Task 3:	Scheduled start: 72.44273788830932	Start: 70.0	Duration: 12.0	Resource: 7 
+*** Task 4:	Scheduled start: 97.46170568005739	Start: 82.0	Duration: 15.0	Resource: 10 
+*** Task 7:	Scheduled start: 105.148886421768	Start: 97.0	Duration: 15.0	Resource: 0 2 4 5 6 7 9 10 
+*** Task 6:	Scheduled start: 85.14946362433223	Start: 82.0	Duration: 15.0	Resource: 0 1 2 3 5 8 10 
+*** Task 10:	Scheduled start: 126.31404421542113	Start: 112.0	Duration: 10.0	Resource: 0 3 4 5 6 
+
+
+7. Fitness: 2.0  1.7976931348623157E308  	Objectives: 0.5301079464756118  0.7995  0.6075757575757575  
+Variables:
+*** Task 1:	Scheduled start: 0.0	Start: 0.0	Duration: 26.0	Resource: 0 2 3 5 8 9 
+*** Task 9:	Scheduled start: 23.0	Start: 0.0	Duration: 27.0	Resource: 0 1 2 5 7 10 
+*** Task 0:	Scheduled start: 26.401521661409504	Start: 26.0	Duration: 24.0	Resource: 3 10 
+*** Task 11:	Scheduled start: 32.0	Start: 0.0	Duration: 18.0	Resource: 0 1 3 4 7 8 9 
+*** Task 2:	Scheduled start: 50.0	Start: 0.0	Duration: 20.0	Resource: 3 5 8 
+*** Task 5:	Scheduled start: 52.0	Start: 0.0	Duration: 18.0	Resource: 2 3 6 8 
+*** Task 8:	Scheduled start: 50.524262322828896	Start: 50.0	Duration: 20.0	Resource: 6 
+*** Task 3:	Scheduled start: 70.574207684977	Start: 70.0	Duration: 12.0	Resource: 
+*** Task 4:	Scheduled start: 82.16153794331044	Start: 82.0	Duration: 15.0	Resource: 
+*** Task 7:	Scheduled start: 97.54735365418922	Start: 97.0	Duration: 15.0	Resource: 1 4 10 
+*** Task 6:	Scheduled start: 82.01009691926834	Start: 82.0	Duration: 15.0	Resource: 4 5 6 8 10 
+*** Task 10:	Scheduled start: 112.33538408031573	Start: 112.0	Duration: 10.0	Resource: 1 6 7 9 
+
+
+8. Fitness: 2.0  1.7976931348623157E308  	Objectives: 0.3973369774631885  0.6165  0.63989898989899  
+Variables:
+*** Task 1:	Scheduled start: 0.0	Start: 0.0	Duration: 26.0	Resource: 0 3 5 6 7 8 9 10 
+*** Task 9:	Scheduled start: 23.0	Start: 0.0	Duration: 27.0	Resource: 2 3 6 9 10 
+*** Task 0:	Scheduled start: 26.25799587534336	Start: 26.0	Duration: 24.0	Resource: 5 6 10 
+*** Task 11:	Scheduled start: 32.0	Start: 0.0	Duration: 18.0	Resource: 0 1 2 3 4 6 8 10 
+*** Task 2:	Scheduled start: 50.0	Start: 0.0	Duration: 20.0	Resource: 0 2 5 6 
+*** Task 5:	Scheduled start: 52.0	Start: 0.0	Duration: 18.0	Resource: 0 1 3 6 7 9 10 
+*** Task 8:	Scheduled start: 51.00356204659265	Start: 50.0	Duration: 20.0	Resource: 3 5 10 
+*** Task 3:	Scheduled start: 72.34565300426195	Start: 70.0	Duration: 12.0	Resource: 1 4 7 8 
+*** Task 4:	Scheduled start: 82.44209472640671	Start: 82.0	Duration: 15.0	Resource: 3 5 6 10 
+*** Task 7:	Scheduled start: 99.44597372876028	Start: 97.0	Duration: 15.0	Resource: 3 6 8 9 10 
+*** Task 6:	Scheduled start: 83.38893060293722	Start: 82.0	Duration: 15.0	Resource: 0 5 6 8 10 
+*** Task 10:	Scheduled start: 112.50954809328006	Start: 112.0	Duration: 10.0	Resource: 3 4 10 
+
+
+9. Fitness: 3.0  1.7976931348623157E308  	Objectives: 0.20197341772543953  1.1655  0.3105339105339105  
+Variables:
+*** Task 1:	Scheduled start: 0.0	Start: 0.0	Duration: 26.0	Resource: 0 
+*** Task 9:	Scheduled start: 23.0	Start: 0.0	Duration: 27.0	Resource: 1 2 3 6 7 10 
+*** Task 0:	Scheduled start: 31.313031012181412	Start: 26.0	Duration: 24.0	Resource: 3 6 
+*** Task 11:	Scheduled start: 32.0	Start: 0.0	Duration: 18.0	Resource: 0 1 3 8 
+*** Task 2:	Scheduled start: 50.0	Start: 0.0	Duration: 20.0	Resource: 5 10 
+*** Task 5:	Scheduled start: 52.0	Start: 0.0	Duration: 18.0	Resource: 1 2 3 8 
+*** Task 8:	Scheduled start: 59.01209532200059	Start: 50.0	Duration: 20.0	Resource: 0 2 3 6 
+*** Task 3:	Scheduled start: 79.94543475639843	Start: 70.0	Duration: 12.0	Resource: 0 1 3 8 
+*** Task 4:	Scheduled start: 83.51830957679431	Start: 82.0	Duration: 15.0	Resource: 6 10 
+*** Task 7:	Scheduled start: 106.10509586337679	Start: 97.0	Duration: 15.0	Resource: 0 1 2 3 4 5 6 7 8 
+*** Task 6:	Scheduled start: 84.38522802905247	Start: 82.0	Duration: 15.0	Resource: 2 3 4 5 6 
+*** Task 10:	Scheduled start: 116.80926780658268	Start: 112.0	Duration: 10.0	Resource: 0 3 5 6 8 9 
+
+
+10. Fitness: 3.0  1.7976931348623157E308  	Objectives: 0.17448349163988433  1.1655  0.42669552669552663  
+Variables:
+*** Task 1:	Scheduled start: 0.0	Start: 0.0	Duration: 26.0	Resource: 2 3 5 7 8 9 
+*** Task 9:	Scheduled start: 23.0	Start: 0.0	Duration: 27.0	Resource: 0 5 7 10 
+*** Task 0:	Scheduled start: 37.378988907447344	Start: 26.0	Duration: 24.0	Resource: 3 5 6 10 
+*** Task 11:	Scheduled start: 32.0	Start: 0.0	Duration: 18.0	Resource: 0 1 3 4 7 9 10 
+*** Task 2:	Scheduled start: 50.0	Start: 0.0	Duration: 20.0	Resource: 5 8 10 
+*** Task 5:	Scheduled start: 52.0	Start: 0.0	Duration: 18.0	Resource: 0 1 9 10 
+*** Task 8:	Scheduled start: 54.80012041095927	Start: 50.0	Duration: 20.0	Resource: 2 5 8 
+*** Task 3:	Scheduled start: 78.09628642673323	Start: 70.0	Duration: 12.0	Resource: 4 7 10 
+*** Task 4:	Scheduled start: 89.57307304362948	Start: 82.0	Duration: 15.0	Resource: 3 10 
+*** Task 7:	Scheduled start: 107.11380452082071	Start: 97.0	Duration: 15.0	Resource: 1 2 3 4 6 10 
+*** Task 6:	Scheduled start: 89.76933281395407	Start: 82.0	Duration: 15.0	Resource: 0 1 2 3 4 5 8 
+*** Task 10:	Scheduled start: 114.33808488094321	Start: 112.0	Duration: 10.0	Resource: 0 1 3 8 9 10 
+
+
+11. Fitness: 3.0  1.7976931348623157E308  	Objectives: 0.21268914003944225  0.9824999999999999  0.4292929292929292  
+Variables:
+*** Task 1:	Scheduled start: 0.0	Start: 0.0	Duration: 26.0	Resource: 2 5 6 7 8 
+*** Task 9:	Scheduled start: 23.0	Start: 0.0	Duration: 27.0	Resource: 6 7 9 
+*** Task 0:	Scheduled start: 38.73135060050864	Start: 26.0	Duration: 24.0	Resource: 3 5 6 
+*** Task 11:	Scheduled start: 32.0	Start: 0.0	Duration: 18.0	Resource: 1 3 4 6 8 9 10 
+*** Task 2:	Scheduled start: 50.0	Start: 0.0	Duration: 20.0	Resource: 2 3 5 6 10 
+*** Task 5:	Scheduled start: 52.0	Start: 0.0	Duration: 18.0	Resource: 0 3 7 9 10 
+*** Task 8:	Scheduled start: 56.70858000654692	Start: 50.0	Duration: 20.0	Resource: 2 3 6 8 10 
+*** Task 3:	Scheduled start: 72.14486067802648	Start: 70.0	Duration: 12.0	Resource: 0 1 7 8 
+*** Task 4:	Scheduled start: 83.5384252749513	Start: 82.0	Duration: 15.0	Resource: 5 6 
+*** Task 7:	Scheduled start: 103.05519487955588	Start: 97.0	Duration: 15.0	Resource: 0 1 5 6 10 
+*** Task 6:	Scheduled start: 90.27338144607842	Start: 82.0	Duration: 15.0	Resource: 0 2 3 5 
+*** Task 10:	Scheduled start: 114.6000567542943	Start: 112.0	Duration: 10.0	Resource: 1 2 4 6 9 
+
+
+12. Fitness: 3.0  1.7976931348623157E308  	Objectives: 0.1861520099281083  0.9824999999999999  0.5333333333333333  
+Variables:
+*** Task 1:	Scheduled start: 0.0	Start: 0.0	Duration: 26.0	Resource: 0 2 3 5 7 8 9 10 
+*** Task 9:	Scheduled start: 23.0	Start: 0.0	Duration: 27.0	Resource: 1 3 7 9 10 
+*** Task 0:	Scheduled start: 33.70100764804964	Start: 26.0	Duration: 24.0	Resource: 6 
+*** Task 11:	Scheduled start: 32.0	Start: 0.0	Duration: 18.0	Resource: 0 2 6 8 10 
+*** Task 2:	Scheduled start: 50.0	Start: 0.0	Duration: 20.0	Resource: 2 5 8 
+*** Task 5:	Scheduled start: 52.0	Start: 0.0	Duration: 18.0	Resource: 1 8 10 
+*** Task 8:	Scheduled start: 51.639301831485334	Start: 50.0	Duration: 20.0	Resource: 0 3 5 6 10 
+*** Task 3:	Scheduled start: 82.84746286486406	Start: 70.0	Duration: 12.0	Resource: 3 4 
+*** Task 4:	Scheduled start: 83.53954843517494	Start: 82.0	Duration: 15.0	Resource: 3 
+*** Task 7:	Scheduled start: 117.18513077666958	Start: 97.0	Duration: 15.0	Resource: 1 2 9 
+*** Task 6:	Scheduled start: 99.1332578153964	Start: 82.0	Duration: 15.0	Resource: 0 4 
+*** Task 10:	Scheduled start: 127.33320683986531	Start: 112.0	Duration: 10.0	Resource: 2 3 6 8 9 
+
+
+13. Fitness: 3.0  0.7283408954623191  	Objectives: 0.1852411552559459  1.1655  0.36017316017316015  
+Variables:
+*** Task 1:	Scheduled start: 0.0	Start: 0.0	Duration: 26.0	Resource: 0 8 
+*** Task 9:	Scheduled start: 23.0	Start: 0.0	Duration: 27.0	Resource: 0 3 5 7 9 
+*** Task 0:	Scheduled start: 30.998797949239233	Start: 26.0	Duration: 24.0	Resource: 5 10 
+*** Task 11:	Scheduled start: 32.0	Start: 0.0	Duration: 18.0	Resource: 2 3 4 5 8 9 
+*** Task 2:	Scheduled start: 50.0	Start: 0.0	Duration: 20.0	Resource: 0 2 3 5 6 8 10 
+*** Task 5:	Scheduled start: 52.0	Start: 0.0	Duration: 18.0	Resource: 8 
+*** Task 8:	Scheduled start: 51.33661583721738	Start: 50.0	Duration: 20.0	Resource: 0 3 10 
+*** Task 3:	Scheduled start: 81.1734388284474	Start: 70.0	Duration: 12.0	Resource: 3 4 7 
+*** Task 4:	Scheduled start: 93.99053194052385	Start: 82.0	Duration: 15.0	Resource: 5 6 
+*** Task 7:	Scheduled start: 104.307045304171	Start: 97.0	Duration: 15.0	Resource: 1 6 7 8 9 
+*** Task 6:	Scheduled start: 88.04374990336197	Start: 82.0	Duration: 15.0	Resource: 0 5 8 10 
+*** Task 10:	Scheduled start: 121.38376415063222	Start: 112.0	Duration: 10.0	Resource: 1 2 4 5 7 8 
+
+
+14. Fitness: 3.0  0.6369096742863635  	Objectives: 0.18664660976287542  1.1655  0.3324675324675324  
+Variables:
+*** Task 1:	Scheduled start: 0.0	Start: 0.0	Duration: 26.0	Resource: 2 8 
+*** Task 9:	Scheduled start: 23.0	Start: 0.0	Duration: 27.0	Resource: 0 1 7 9 
+*** Task 0:	Scheduled start: 41.466351118825145	Start: 26.0	Duration: 24.0	Resource: 3 6 10 
+*** Task 11:	Scheduled start: 32.0	Start: 0.0	Duration: 18.0	Resource: 0 1 2 3 8 9 
+*** Task 2:	Scheduled start: 50.0	Start: 0.0	Duration: 20.0	Resource: 2 5 10 
+*** Task 5:	Scheduled start: 52.0	Start: 0.0	Duration: 18.0	Resource: 0 2 3 6 10 
+*** Task 8:	Scheduled start: 62.91590277499213	Start: 50.0	Duration: 20.0	Resource: 2 8 9 10 
+*** Task 3:	Scheduled start: 82.3185635690562	Start: 70.0	Duration: 12.0	Resource: 0 3 4 10 
+*** Task 4:	Scheduled start: 86.98128321298603	Start: 82.0	Duration: 15.0	Resource: 3 6 10 
+*** Task 7:	Scheduled start: 100.50454471510068	Start: 97.0	Duration: 15.0	Resource: 1 2 5 6 7 8 10 
+*** Task 6:	Scheduled start: 85.05750529951185	Start: 82.0	Duration: 1
