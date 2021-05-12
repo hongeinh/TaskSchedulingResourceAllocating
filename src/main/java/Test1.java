@@ -5,6 +5,7 @@ import component.controller.VariableController;
 import component.controller.impl.TaskSchedulingResourceAllocatingVariableController;
 import operator.crossover.impl.SinglePointCrossoverOperator;
 import operator.mutation.MutationOperator;
+import operator.mutation.impl.BitInversionMutationOperator;
 import operator.selection.impl.RouletteWheelSelectionOperator;
 import problem.Problem;
 import problem.impl.TaskSchedulingResourceAllocatingProblem;
@@ -26,7 +27,7 @@ public class Test1 {
 //		algorithm.setSolutionSetSize(20);
 		algorithm.addOperator(new RouletteWheelSelectionOperator());
 		algorithm.addOperator(new SinglePointCrossoverOperator());
-		algorithm.addOperator(new MutationOperator());
+		algorithm.addOperator(new BitInversionMutationOperator());
 		algorithm.setComparator(new RankingAndCrowdingDistanceComparator());
 		algorithm.setMatingPoolSize(10);
 

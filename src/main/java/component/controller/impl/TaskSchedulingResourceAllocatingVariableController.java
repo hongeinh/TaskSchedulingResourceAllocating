@@ -36,9 +36,9 @@ public class TaskSchedulingResourceAllocatingVariableController extends Variable
         skillsInResources = this.isUseful(skillsInResources);
 
         for (SkillsInResource skillsInResource: skillsInResources) {
-            if (skillsInResource.getResource().getStatus() == Resource.STATUS.NOT_USEFUL)
-                skillsInResource.getResource().setStatus(Resource.STATUS.NOT_ASSIGNED);
-            else {
+//            if (skillsInResource.getResource().getStatus() == Resource.STATUS.NOT_USEFUL)
+//                skillsInResource.getResource().setStatus(Resource.STATUS.NOT_ASSIGNED);
+             if (skillsInResource.getResource().getStatus() == Resource.STATUS.USEFUL){
                 double rand = Math.random();
                 if (rand >= 0.5)
                     skillsInResource.getResource().setStatus(Resource.STATUS.ASSIGNED);
@@ -68,7 +68,7 @@ public class TaskSchedulingResourceAllocatingVariableController extends Variable
     @Override
     public List<Variable> createVariables(Map<Object, Object> parameters, double k) {
 
-        Integer numberOfTasks = (Integer) parameters.get("numberOfTasks");
+        int numberOfTasks = (Integer) parameters.get("numberOfTasks");
         List<Variable> variables = new ArrayList<>();
 
         for (int i = 0; i < numberOfTasks; i++) {
@@ -82,7 +82,7 @@ public class TaskSchedulingResourceAllocatingVariableController extends Variable
             params.put("scheduledTime", scheduledTime);
 
             Variable variable = new Task();
-            variable.set(params);
+            variable.setValue(params);
             variables.add(variable);
         }
 
@@ -92,8 +92,9 @@ public class TaskSchedulingResourceAllocatingVariableController extends Variable
         variables = setNeighbours(variables, (int[][]) parameters.get("tasks"));
         variables = setResourcesAndSkills(variables, (int[][]) parameters.get("treq"), (double[][]) parameters.get("lexp"), numberOfSkills, numberOfResources);
 
+        int maxDuration = (int) parameters.get("maxDuration");
         for (Variable variable : variables)
-            this.setVariableParameters(variable, k * (Double) parameters.get("maxDuration"));
+            this.setVariableParameters(variable, k * maxDuration);
         Collections.sort(variables);
         return variables;
     }

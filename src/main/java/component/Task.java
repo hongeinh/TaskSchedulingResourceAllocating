@@ -28,12 +28,12 @@ public class Task extends Variable{
 
 
 	@Override
-	public Object get() {
+	public Object getValue() {
 		return this.getRequiredSkillsInResources();
 	}
 
 	@Override
-	public void set(Object value) {
+	public void setValue(Object value) {
 		if (value instanceof HashMap ) {
 			HashMap<String, Object> parameters = (HashMap <String, Object>) value;
 			this.id = (Integer) parameters.get("id");
@@ -93,4 +93,5 @@ public class Task extends Variable{
 		}
 		return resourceCount;
 	}
+
 }

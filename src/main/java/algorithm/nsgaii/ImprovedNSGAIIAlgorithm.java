@@ -21,7 +21,7 @@ public class ImprovedNSGAIIAlgorithm extends NSGAIIAlgorithm{
 
 		for (int i  = 0; i < this.getSolutionSetSize(); i++) {
 
-			solutions.add(createInitialSolution(problem, i/this.getSolutionSetSize()));
+			solutions.add(createInitialSolution(problem, (double) i/this.getSolutionSetSize()));
 		}
 		return solutions;
 	}

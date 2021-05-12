@@ -9,16 +9,15 @@ import java.util.List;
 
 public class SinglePointCrossoverOperator extends CrossoverOperator {
 
-	// TODO
 	@Override
 	public Object execute(Object objects) throws CloneNotSupportedException {
 		List<Solution> solutions = (List<Solution>) objects;
-		int solutionSize = solutions.size();
+		int solutionSetSize = solutions.size();
 		List<Solution> crossoverSolutions = new ArrayList<>();
 
-		while (crossoverSolutions.size() < solutionSize) {
-			int parentIndex1 = (int) Math.floor(Math.random()*solutionSize);
-			int parentIndex2 = (int) Math.floor(Math.random()*solutionSize);
+		while (crossoverSolutions.size() < solutionSetSize) {
+			int parentIndex1 = (int) Math.floor(Math.random()*solutionSetSize);
+			int parentIndex2 = (int) Math.floor(Math.random()*solutionSetSize);
 
 			if(parentIndex1 == parentIndex2)
 				continue;

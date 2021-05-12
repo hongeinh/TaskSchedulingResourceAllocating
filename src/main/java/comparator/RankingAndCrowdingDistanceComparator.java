@@ -15,7 +15,8 @@ public class RankingAndCrowdingDistanceComparator {
 	 * */
 	public List<Solution> computeRankAndDistance(List<Solution> solutions) {
 		// Step 1: Initialization step
-		int solutionSize = solutions.size();
+		System.out.println("--- Step 1: Initialization step");
+		int solutionSetSize = solutions.size();
 		List<Solution> rankSortedSolutions = new ArrayList<>();
 		List<Solution> currentFront = new ArrayList<>();
 
@@ -23,11 +24,12 @@ public class RankingAndCrowdingDistanceComparator {
 		int frontCounter = 1;
 
 		// Step 2: Calculate the dominated solution list and domination count for each solution
-		for (int i = 0; i < solutionSize; i++) {
+		System.out.println("--- Step 2: Calculate the dominated solution list and domination count for each solution");
+		for (int i = 0; i < solutionSetSize; i++) {
 			// This set contains the solutions that are dominated by the currently considered solution
 			List<Solution> dominatedSolutions = new ArrayList<>();
 			int dominationCount = 0;
-			for (int j = 0; j < solutionSize; j++) {
+			for (int j = 0; j < solutionSetSize; j++) {
 				if (i != j) {
 
 					if(solutions.get(i).compareTo(solutions.get(j)) > 0) {
@@ -45,6 +47,7 @@ public class RankingAndCrowdingDistanceComparator {
 
 			// Step 2b: If the dominationCount of one solution is zero, it is put into the first rank
 			if (dominationCount == 0) {
+				System.out.println("------ Step 2b: If the dominationCount of one solution is zero, it is put into the first rank");
 				double []fitness = solutions.get(i).getFitness();
 				fitness[0] = frontCounter;
 				solutions.get(i).setFitness(fitness);
@@ -53,9 +56,11 @@ public class RankingAndCrowdingDistanceComparator {
 		}
 
 		// Step 3: Compute the crowding distance value for each solution and sort them.
+		System.out.println("--- Step 3: Compute the crowding distance value for each solution and sort them.");
 		rankSortedSolutions.addAll(sortByDistance(computeDistance(currentFront)));
 
 		// Step 4: Find fronts for other solutions
+		System.out.println("--- Step 4: Find fronts for other solutions");
 		while (!currentFront.isEmpty()) {
 			List<Solution> nextFront = new ArrayList<>();
 			for (Solution currentSolution: currentFront) {
@@ -70,7 +75,9 @@ public class RankingAndCrowdingDistanceComparator {
 				}
 			}
 			frontCounter++;
-			rankSortedSolutions.addAll(sortByDistance(computeDistance(currentFront)));
+			System.out.println("--------- Rank " + frontCounter);
+			rankSortedSolutions.addAll(sortByDistance(computeDistance(nextFront)));
+			currentFront = nextFront;
 		}
 		return rankSortedSolutions;
 	}
@@ -80,7 +87,7 @@ public class RankingAndCrowdingDistanceComparator {
 	 *
 	 * */
 	public List<Solution> computeDistance(List<Solution> solutions) {
-		int solutionSize = solutions.size();
+		int solutionSetSize = solutions.size();
 		int objectiveSize = solutions.get(0).getObjectives().length;
 
 		// Initialize distance
@@ -98,14 +105,14 @@ public class RankingAndCrowdingDistanceComparator {
 			solutions.get(0).setFitness(fitness);
 
 			// Set distance for the solution with smallest objective value
-			fitness = solutions.get(solutionSize - 1).getFitness();
+			fitness = solutions.get(solutionSetSize - 1).getFitness();
 			fitness[1] = Double.MAX_VALUE;
-			solutions.get(solutionSize - 1).setFitness(fitness);
+			solutions.get(solutionSetSize - 1).setFitness(fitness);
 
-			for (int j = 1; j < solutionSize - 1; j++) {
+			for (int j = 1; j < solutionSetSize - 1; j++) {
 				fitness = solutions.get(j).getFitness();
 				fitness[1] = fitness[1] + (solutions.get(j+1).getObjectives()[1] - solutions.get(j - 1).getObjectives()[1]) /
-						(solutions.get(solutionSize - 1).getObjectives()[1] - solutions.get(0).getObjectives()[1]);
+						(solutions.get(solutionSetSize - 1).getObjectives()[1] - solutions.get(0).getObjectives()[1]);
 				solutions.get(j).setFitness(fitness);
 			}
 		}
@@ -118,9 +125,9 @@ public class RankingAndCrowdingDistanceComparator {
 	 *
 	 * */
 	public List<Solution> sortByObjectiveValue(List<Solution> solutions, int objectiveValueIndex) {
-		int solutionSize = solutions.size();
-		for (int i = 0; i < solutionSize - 1; i++) {
-			for (int j = 0; j < solutionSize - 1 - i; j++) {
+		int solutionSetSize = solutions.size();
+		for (int i = 0; i < solutionSetSize - 1; i++) {
+			for (int j = 0; j < solutionSetSize - 1 - i; j++) {
 				Solution currentSolution = solutions.get(i);
 				Solution nextSolution = solutions.get(i + 1);
 				if (currentSolution.getObjectives()[objectiveValueIndex] > nextSolution.getObjectives()[objectiveValueIndex]) {
@@ -136,9 +143,9 @@ public class RankingAndCrowdingDistanceComparator {
 	 *
 	 * */
 	public List<Solution> sortByDistance(List<Solution> solutions) {
-		int solutionSize = solutions.size();
-		for (int i = 0; i < solutionSize - 1; i++) {
-			for (int j = 0; j < solutionSize - 1 - i; j++) {
+		int solutionSetSize = solutions.size();
+		for (int i = 0; i < solutionSetSize - 1; i++) {
+			for (int j = 0; j < solutionSetSize - 1 - i; j++) {
 				Solution currentSolution = solutions.get(i);
 				Solution nextSolution = solutions.get(i + 1);
 				if (currentSolution.getFitness()[1] > nextSolution.getFitness()[1] ) {
