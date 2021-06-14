@@ -1,0 +1,1 @@
+Given n orders, design a schedule plan for the tasks in each order and allocate resources adequately to each tasks so that the total time duration, total operational cost and resource conflict are minimized. 
