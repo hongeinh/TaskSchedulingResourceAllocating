@@ -95,7 +95,7 @@ public class TaskSchedulingResourceAllocatingVariableController extends Variable
         int numberOfResources = (Integer) parameters.get("numberOfResources");
 
 
-        variables = setNeighbours(variables, (int[][]) parameters.get("tasks"));
+        variables = setVariableNeighbours(variables, (int[][]) parameters.get("tasks"));
         Collections.sort(variables);
         variables = setResourcesAndSkills(variables, (int[][]) parameters.get("treq"), (double[][]) parameters.get("lexp"), numberOfSkills, numberOfResources);
 
@@ -118,7 +118,7 @@ public class TaskSchedulingResourceAllocatingVariableController extends Variable
      * @return variables	The same variables with set descendants and predecessors for each variable.
      *
      * */
-    public List<Variable> setNeighbours(List<Variable> variables, int[][] tasks) {
+    public List<Variable> setVariableNeighbours(List<Variable> variables, int[][] tasks) {
         int size = variables.size();
 
         for (int i = 0; i < size; i++) {

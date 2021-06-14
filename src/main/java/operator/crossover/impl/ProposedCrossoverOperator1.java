@@ -16,7 +16,7 @@ public class ProposedCrossoverOperator1 extends CrossoverOperator {
         List<Solution> crossoveredSolutions = new ArrayList<>();
 
         int solutionSetSize = (int) this.getParameters().get("solutionSetSize");
-        while (crossoveredSolutions.size() <= solutionSetSize) {
+        while (crossoveredSolutions.size() < solutionSetSize) {
             int parentIndex1 = (int) Math.floor(Math.random() * solutionSetSize);
             int parentIndex2 = (int) Math.floor(Math.random() * solutionSetSize);
 

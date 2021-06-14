@@ -8,8 +8,6 @@ public class TSRAParams {
 
 	public static final int numberOfSkills = 10;
 
-	public static final int populationSize = 20;
-
 	public static final double[] durations = {24, 26, 20, 12, 15, 18, 15, 15, 20, 27, 10, 18};
 
 	public static final double[] scheduledTimes = {26, 0, 50, 70, 82, 52, 107, 97, 60, 23, 112, 32};
@@ -63,4 +61,6 @@ public class TSRAParams {
 			{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
 			{0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0}
 	};
+
+	public static final double[] baseSalary = {20, 25, 20, 25, 25, 25, 35, 20, 20, 20, 25};
 }

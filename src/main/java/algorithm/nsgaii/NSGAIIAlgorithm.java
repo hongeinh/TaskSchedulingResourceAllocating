@@ -35,8 +35,9 @@ public class NSGAIIAlgorithm extends Algorithm {
 
 	public List<Solution> executeAlgorithm(Problem problem) throws CloneNotSupportedException, IOException {
 		/* Step 1: Create initial solution set*/
-		System.out.println("- Create initial solution set");
+		System.out.print("- Create initial solution set -- ");
 		List<Solution> solutions = createInitialSolutionSet(problem);
+		System.out.println("Initial size: " + solutions.size());
 
 		/* Step 2: Evaluate the initial solution set, calculate objectives for each solution */
 		System.out.println("- Evaluate initial solution set");
@@ -49,8 +50,9 @@ public class NSGAIIAlgorithm extends Algorithm {
 		displaySolutions(solutions, "//result/parent.txt");
 
 		/* Step 4: Create offspring solution set*/
-		System.out.println("\n- Create offspring solution set");
+		System.out.print("\n- Create offspring solution set -- ");
 		List<Solution> offspringSolutions = reproduceOffspringSolutionSet(solutions);
+		System.out.println("Offspring size: " + offspringSolutions.size());
 
 		/* Step 4: Evaluate the offspring solution set, calculate objectives for each solution */
 		System.out.println("- Evaluate offspring solution set");
@@ -59,9 +61,10 @@ public class NSGAIIAlgorithm extends Algorithm {
 		displaySolutions(offspringSolutions, "/result/offspring.txt");
 
 		/* Step 5: Join two achieved solution sets into one jointSolution set*/
-		System.out.println("\n- Combine solution sets");
+		System.out.print("\n- Combine solution sets -- ");
 		List<Solution> jointSolutions = Stream.concat(solutions.stream(), offspringSolutions.stream())
 				.collect(Collectors.toList());
+		System.out.println("Joint size: " + jointSolutions.size());
 
 		/* Step 6: Rank and distance sort for solution set to find Pareto solution set*/
 		System.out.println("- Evaluate combined solution set");
