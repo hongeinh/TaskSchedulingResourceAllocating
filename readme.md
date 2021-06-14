@@ -1,0 +1,1 @@
+Given a set of n task, design a schedule for the tasks and allocate adequate resources to each task, knowing that a tasks need some skills from the predefined skill set to operate, and employees can fulfill those skills with different experience level.
