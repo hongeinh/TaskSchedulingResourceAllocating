@@ -7,6 +7,6 @@ import java.util.Map;
 
 public abstract class VariableController {
 
-    public abstract List<Variable> createVariables(Map<Object, Object> parameters, double k);
+    public abstract List<Variable> setVariables(Map<Object, Object> parameters, double k);
 
 }

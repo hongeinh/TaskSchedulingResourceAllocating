@@ -1,6 +1,5 @@
 package algorithm.nsgaii;
 
-import operator.Operator;
 import problem.Problem;
 import solution.Solution;
 
@@ -30,7 +29,7 @@ public class ImprovedNSGAIIAlgorithm extends NSGAIIAlgorithm{
 		Solution solution = new Solution();
 		solution.setObjectives(new double[(Integer) problem.getParameters().get("numberOfObjectives")]);
 		solution.setFitness(new double[(Integer) problem.getParameters().get("numberOfFitness")]);
-		solution.setVariables(problem.getVariableController().createVariables(problem.getParameters(), k));
+		solution.setVariables(problem.getVariableController().setVariables(problem.getParameters(), k));
 		return solution;
 	}
 

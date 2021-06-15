@@ -1,6 +1,6 @@
 package problem.impl;
 
-import component.Resource;
+import component.resource.Resource;
 import component.SkillsInResource;
 import component.Task;
 import component.Variable;
@@ -21,7 +21,7 @@ public class TaskSchedulingResourceAllocatingProblem extends Problem {
 	 *                   lexp: 				double[][]		Resource - Skill matrix
 	 *                   tasks: 			int[][]			Task matrix
 	 *                   numberOfTasks: 	int				number of tasks in this problem
-	 *                   numberOfResources: int				number of resources in this problem
+	 *                   numberOfHumanResources: int				number of resources in this problem
 	 *                   numberOfSkills: 	int				number of skills in this problem
 	 *                   scheduledTimes: 	List<Integer>	list of scheduled time for variables
 	 *                   durations: 		List<Integer>	list of durations for variables

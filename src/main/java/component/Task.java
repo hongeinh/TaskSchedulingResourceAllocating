@@ -1,5 +1,6 @@
 package component;
 
+import component.resource.Resource;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -10,7 +11,7 @@ import java.util.List;
 @Getter
 @Setter
 public class Task extends Variable{
-
+	private int orderId;
 	private int id;
 	private double scheduledTime;
 	private double duration;
@@ -19,11 +20,13 @@ public class Task extends Variable{
 	private List<Variable> predecessors;
 	private List<Variable> descendants;
 	private List<SkillsInResource> requiredSkillsInResources;
+	private List<Resource> requiredMachines;
 
 	public Task() {
 		this.predecessors = new ArrayList<>();
 		this.descendants = new ArrayList<>();
 		this.requiredSkillsInResources = new ArrayList<>();
+		this.requiredMachines = new ArrayList<>();
 	}
 
 
@@ -36,6 +39,7 @@ public class Task extends Variable{
 	public void setValue(Object value) {
 		if (value instanceof HashMap ) {
 			HashMap<String, Object> parameters = (HashMap <String, Object>) value;
+			this.orderId = (Integer) parameters.get("orderId");
 			this.id = (Integer) parameters.get("id");
 			this.duration =  (Double) parameters.get("duration");
 			this.scheduledTime = (Double) parameters.get("scheduledTime");

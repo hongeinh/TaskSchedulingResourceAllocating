@@ -1,14 +1,11 @@
 package operator.mutation.impl;
 
-import component.Resource;
+import component.resource.Resource;
 import component.SkillsInResource;
 import component.Variable;
 import operator.mutation.MutationOperator;
 import solution.Solution;
 
-import java.awt.font.FontRenderContext;
-import java.text.CollationElementIterator;
-import java.util.Collection;
 import java.util.List;
 
 public class BitInversionMutationOperator extends MutationOperator {

@@ -2,9 +2,11 @@ package common;
 
 public class TSRAParams {
 
+	public static final int numberOfOrders = 3;
+
 	public static final int numberOfTasks = 12;
 
-	public static final int numberOfResources = 11;
+	public static final int numberOfHumanResources = 11;
 
 	public static final int numberOfSkills = 10;
 
@@ -19,6 +21,34 @@ public class TSRAParams {
 	public static final int maxDuration = 27;
 
 	public static final int[][] treq = {
+			{ 0,   0,	1,	 0,	  0,	0,	  0,	0,	 0,	  0 },
+			{ 0,   1,	1,	 0,	  0,	1,	  1,	0,	 1,	  0 },
+			{ 0,   0,	1,	 1,	  0,	0,	  0,	0,	 0,	  0 },
+			{ 1,   0,	0,	 0,	  1,	0,	  1,	0,	 0,	  0 },
+			{ 0,   0,	1,	 0,	  0,	0,	  0,	0,	 0,	  0 },
+			{ 0,   1,	0,	 0,	  0,	0,	  0,	0,	 0,	  1 },
+			{ 0,   1,	1,	 1,	  0,	0,	  0,	1,	 0,	  0 },
+			{ 1,   0,	1,	 1,	  0,	1,	  0,	1,	 1,	  0 },
+			{ 0,   1,	1,	 0,	  0,	1,	  0,	0,	 0,	  0 },
+			{ 0,   0,	1,	 0,	  0,	0,	  0,	0,	 0,	  1 },
+			{ 1,   0,	1,	 1,	  0,	0,	  1,	0,	 0,	  1 },
+			{ 0,   0,	1,	 0,	  0,	1,	  0,	1,	 1,	  0 }
+	};
+	public static final int[][] treq2 = {
+			{ 0,   0,	1,	 0,	  0,	0,	  0,	0,	 0,	  0 },
+			{ 0,   1,	1,	 0,	  0,	1,	  1,	0,	 1,	  0 },
+			{ 0,   0,	1,	 1,	  0,	0,	  0,	0,	 0,	  0 },
+			{ 1,   0,	0,	 0,	  1,	0,	  1,	0,	 0,	  0 },
+			{ 0,   0,	1,	 0,	  0,	0,	  0,	0,	 0,	  0 },
+			{ 0,   1,	0,	 0,	  0,	0,	  0,	0,	 0,	  1 },
+			{ 0,   1,	1,	 1,	  0,	0,	  0,	1,	 0,	  0 },
+			{ 1,   0,	1,	 1,	  0,	1,	  0,	1,	 1,	  0 },
+			{ 0,   1,	1,	 0,	  0,	1,	  0,	0,	 0,	  0 },
+			{ 0,   0,	1,	 0,	  0,	0,	  0,	0,	 0,	  1 },
+			{ 1,   0,	1,	 1,	  0,	0,	  1,	0,	 0,	  1 },
+			{ 0,   0,	1,	 0,	  0,	1,	  0,	1,	 1,	  0 }
+	};
+	public static final int[][] treq3 = {
 			{ 0,   0,	1,	 0,	  0,	0,	  0,	0,	 0,	  0 },
 			{ 0,   1,	1,	 0,	  0,	1,	  1,	0,	 1,	  0 },
 			{ 0,   0,	1,	 1,	  0,	0,	  0,	0,	 0,	  0 },
@@ -62,5 +92,4 @@ public class TSRAParams {
 			{0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0}
 	};
 
-	public static final double[] baseSalary = {20, 25, 20, 25, 25, 25, 35, 20, 20, 20, 25};
 }

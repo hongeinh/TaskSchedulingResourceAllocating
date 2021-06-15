@@ -1,5 +1,6 @@
 package component;
 
+import component.resource.Resource;
 import lombok.Getter;
 import lombok.Setter;
 
