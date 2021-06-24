@@ -12,8 +12,8 @@ import java.util.List;
 public class Resource {
 
 	private int id;
-	private String description;
 	private STATUS status;
+	private TYPE type;
 	private double cost;
 
 	public Resource(int id) {
@@ -26,14 +26,15 @@ public class Resource {
 		this.cost = cost;
 	}
 
-	public Resource(int id, String description) {
-		this.id = id;
-		this.description = description;
+	public Resource(int id, TYPE type) {
+		this(id);
+		this.type = type;
 	}
 
-//	public double calculateCost() {
-//		return cost;
-//	}
+	public Resource (int id, TYPE type, double cost) {
+		this(id, type);
+		this.cost = cost;
+	}
 
 	public enum STATUS {
 		ASSIGNED,
@@ -41,4 +42,9 @@ public class Resource {
 		USEFUL,
 		NOT_USEFUL
 	};
+
+	public enum TYPE {
+		MACHINE,
+		HUMAN
+	}
 }

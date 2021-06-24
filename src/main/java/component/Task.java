@@ -17,6 +17,7 @@ public class Task extends Variable{
 	private double duration;
 	private double start;
 	private double idle;
+	private double weight;
 	private List<Variable> predecessors;
 	private List<Variable> descendants;
 	private List<SkillsInResource> requiredSkillsInResources;
@@ -39,10 +40,11 @@ public class Task extends Variable{
 	public void setValue(Object value) {
 		if (value instanceof HashMap ) {
 			HashMap<String, Object> parameters = (HashMap <String, Object>) value;
-			this.orderId = (Integer) parameters.get("orderId");
+//			this.orderId = (Integer) parameters.get("orderId");
 			this.id = (Integer) parameters.get("id");
 			this.duration =  (Double) parameters.get("duration");
 			this.scheduledTime = (Double) parameters.get("scheduledTime");
+			this.weight = (Double) parameters.get("weight");
 		}
 	}
 

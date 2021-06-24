@@ -44,8 +44,6 @@ public class TaskSchedulingResourceAllocatingVariableController extends Variable
         skillsInResources = this.isUseful(skillsInResources);
 
         for (SkillsInResource skillsInResource: skillsInResources) {
-//            if (skillsInResource.getResource().getStatus() == Resource.STATUS.NOT_USEFUL)
-//                skillsInResource.getResource().setStatus(Resource.STATUS.NOT_ASSIGNED);
              if (skillsInResource.getResource().getStatus() == Resource.STATUS.USEFUL){
                 double rand = Math.random();
                 if (rand >= 0.5)
@@ -81,9 +79,6 @@ public class TaskSchedulingResourceAllocatingVariableController extends Variable
         int numberOfSkills = (Integer) parameters.get("numberOfSkills");
         int numberOfHumanResources = (Integer) parameters.get("numberOfHumanResources");
 
-
-        variables = setVariableNeighbours(variables, (int[][]) parameters.get("tasks"));
-        Collections.sort(variables);
         variables = setResourcesAndSkills(variables, (double[][]) parameters.get("treq"), (double[][]) parameters.get("lexp"), numberOfSkills, numberOfHumanResources);
 
         int maxDuration = (int) parameters.get("maxDuration");
@@ -96,6 +91,8 @@ public class TaskSchedulingResourceAllocatingVariableController extends Variable
     public List<Variable> createVariables(Map<Object, Object> parameters) {
         if (this.variables == null) {
             int numberOfTasks = (Integer) parameters.get("numberOfTasks");
+            double[] weights = (double[]) parameters.get("weights");
+
             List<Variable> variables = new ArrayList<>();
 
             for (int i = 0; i < numberOfTasks; i++) {
@@ -106,6 +103,7 @@ public class TaskSchedulingResourceAllocatingVariableController extends Variable
                 params.put("id", i);
                 params.put("duration", duration);
                 params.put("scheduledTime", scheduledTime);
+                params.put("weight", weights[i]);
 
                 Variable variable = new Task();
                 variable.setValue(params);
