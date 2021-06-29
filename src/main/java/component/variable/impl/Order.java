@@ -29,12 +29,12 @@ public class Order implements Comparable<Order> {
 		return this.weight > o.weight ? 1 : (this.weight == o.weight ? 0 : -1);
 	}
 
-	public void setSimilarTasks(List<Variable> tasks) {
-		for (Variable variable: tasks) {
-			Task oldTask = (Task) variable;
-			Task newTask = new Task(oldTask.getId(), oldTask.getScheduledTime(), oldTask.getStart(), oldTask.getIdle());
-			newTask.setSimilarValueTask(oldTask);
-		}
-	}
+//	public void setSimilarTasks(List<Variable> tasks) {
+//		for (Variable variable: tasks) {
+//			Task oldTask = (Task) variable;
+//			Task newTask = new Task(oldTask.getId(), oldTask.getScheduledTime(), oldTask.getStart(), oldTask.getIdle());
+//			newTask.setSimilarValueTask(oldTask);
+//		}
+//	}
 
 }

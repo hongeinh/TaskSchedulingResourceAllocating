@@ -21,11 +21,8 @@ public class SkillsInResource {
 	public SkillsInResource getSimilarSkillInResource() {
     	SkillsInResource newSkillInResource = new SkillsInResource();
     	Resource newResource = new Resource(this.resource.getId(), this.resource.getType(), this.resource.getCost());
-    	List<Skill> newSkills = new ArrayList<>();
-    	for (Skill skill: requiredSkills) {
-    		Skill newSkill = new Skill(skill.getId(), skill.getExperienceLevel());
-    		newSkills.add(newSkill);
-		}
+    	List<Skill> newSkills = new ArrayList<>(this.getRequiredSkills());
+
 
     	newSkillInResource.setRequiredSkills(newSkills);
     	newSkillInResource.setResource(newResource);

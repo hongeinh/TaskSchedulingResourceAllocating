@@ -43,10 +43,11 @@ public class FixedMultiorderTaskSchedulingController extends TaskSchedulingResou
 		for (int i = 0; i < orderWeights.length; i++) {
 			Order order = new Order(i, orderWeights[i]);
 			// sua lai thanh task copy
-			order.setTasks(tasks);
+			order.setTasks(createSimilarVariables(tasks));
 			for (Variable task : order.getTasks()) {
 				// set the duration according to weights
-				((Task) task).setDuration(((Task) task).getDuration() * orderWeights[i]);
+				double duration = ((Task) task).getDuration() * orderWeights[i];
+				((Task) task).setDuration(Math.round(duration) * 100 /100);
 			}
 			orders.add(order);
 		}
@@ -59,6 +60,15 @@ public class FixedMultiorderTaskSchedulingController extends TaskSchedulingResou
 		orders = setVariablesTimes(orders, k);
 
 		return joinOrders(orders);
+	}
+
+	private List<Variable> createSimilarVariables(List<Variable> tasks) {
+		List<Variable> variables = new ArrayList<>();
+		for (Variable var: tasks) {
+			Task task = (Task) var;
+			variables.add(new Task(task));
+		}
+		return variables;
 	}
 
 	private List<Variable> setMachineResources(List<Variable> tasks, Integer numberOfMachineResources, double[] machineCosts, double[][] mreq ) {
@@ -82,7 +92,7 @@ public class FixedMultiorderTaskSchedulingController extends TaskSchedulingResou
 
 		int size = orders.size();
 		for (int i = 1; i < size; i++) {
-			// viet ham tinh tgian dua vao previous order
+			// viet ham tinh tgian dua vao previous order, khong tinh order dau tien
 			orders.get(i).setTasks(setTasksTime(orders.get(i).getTasks(), orders.get(i - 1).getTasks(), k));
 		}
 		return orders;
@@ -91,17 +101,17 @@ public class FixedMultiorderTaskSchedulingController extends TaskSchedulingResou
 	private List<Variable> setTasksTime(List<Variable> currentOrderTasks, List<Variable> previousOrderTasks, double k) {
 		int size = currentOrderTasks.size();
 		double startTime = calculateTaskTime(currentOrderTasks.get(0), previousOrderTasks);
-		((Task) currentOrderTasks.get(0)).setStart(startTime);
+		((Task) currentOrderTasks.get(0)).setStart((Math.round(startTime) * 100) / 100);
 		for (int i = 1; i < size; i++) {
 			double precedentExitTime = ((Task) currentOrderTasks.get(i - 1)).getStart() + ((Task) currentOrderTasks.get(i - 1)).getDuration();
 			((Task) currentOrderTasks.get(i)).setStart(precedentExitTime);
 			List<Variable> competingTaskPreviousOrder = calculateCompetingTasks(precedentExitTime, previousOrderTasks.subList(i, size));
 			startTime = calculateTaskTime(currentOrderTasks.get(i), competingTaskPreviousOrder);
-			((Task) currentOrderTasks.get(i)).setStart(startTime);
+			((Task) currentOrderTasks.get(i)).setStart((Math.round(startTime) * 100) / 100);
 			double randomScheduledStart = Math.random() * k;
 			double sign = Math.random() > 0 ? 1 : -1;
 			double scheduledStart = randomScheduledStart * sign + startTime;
-			((Task) currentOrderTasks.get(i)).setScheduledTime(scheduledStart);
+			((Task) currentOrderTasks.get(i)).setScheduledTime((Math.round(scheduledStart) * 100) / 100);
 		}
 		return currentOrderTasks;
 	}

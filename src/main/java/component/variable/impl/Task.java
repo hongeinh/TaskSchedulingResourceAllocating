@@ -36,7 +36,15 @@ public class Task extends Variable {
 		this.scheduledTime = scheduledTime;
 		this.start = start;
 		this.idle = idle;
+	}
 
+	public Task(Task previousTask) {
+		this();
+		this.id = previousTask.getId();
+		this.duration = previousTask.getDuration();
+		this.scheduledTime = previousTask.getScheduledTime();
+		this.start = previousTask.getStart();
+		setSimilarValueTask(previousTask);
 	}
 
 	@Override
