@@ -168,7 +168,7 @@ public class MultiorderTaskSchedulingController extends TaskSchedulingResourceAl
 			this.variableOrders.add(new ArrayList<>());
 			int size = this.variableOrders.size();
 
-			List<Variable> variables = createVariables(parameters);
+			List<Variable> variables = setVariables(parameters, k);
 			variables = setResourcesAndSkills(variables, treq, lexp, mreq, numberOfSkills, numberOfHumanResources, numberOfMachineResources);
 
 			double maxDuration = maxDurationList[size - 1];

@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
 
+import static utils.PipedDeepCopy.copy;
 import java.util.List;
 
 @Getter
@@ -28,7 +29,12 @@ public class Order implements Comparable<Order> {
 		return this.weight > o.weight ? 1 : (this.weight == o.weight ? 0 : -1);
 	}
 
-	public void setTasks(List<Variable> tasks) {
-		this.tasks = tasks;
+	public void setSimilarTasks(List<Variable> tasks) {
+		for (Variable variable: tasks) {
+			Task oldTask = (Task) variable;
+			Task newTask = new Task(oldTask.getId(), oldTask.getScheduledTime(), oldTask.getStart(), oldTask.getIdle());
+			newTask.setSimilarValueTask(oldTask);
+		}
 	}
+
 }

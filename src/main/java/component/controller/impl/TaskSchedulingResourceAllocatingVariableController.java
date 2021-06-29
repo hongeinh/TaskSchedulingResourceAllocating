@@ -13,13 +13,13 @@ public class TaskSchedulingResourceAllocatingVariableController extends Variable
 
 	protected List<Variable> variables = null;
 
-	public Variable setVariableParameters(Variable variable, double k) {
+	protected Variable setVariableParameters(Variable variable, double k) {
 		variable = setVariableTime(variable, k);
 		variable = setVariableResource(variable);
 		return variable;
 	}
 
-	public Variable setVariableTime(Variable variable, double k) {
+	protected Variable setVariableTime(Variable variable, double k) {
 		List<Variable> predescessors = ((Task) variable).getPredecessors();
 		Task currentVariable = (Task) variable;
 		for (Variable pre : predescessors) {
@@ -41,7 +41,7 @@ public class TaskSchedulingResourceAllocatingVariableController extends Variable
 	}
 
 
-	public Variable setVariableResource(Variable variable) {
+	protected Variable setVariableResource(Variable variable) {
 
 		List<SkillsInResource> skillsInResources = ((Task) variable).getRequiredSkillsInResources();
 		skillsInResources = this.isUseful(skillsInResources);
@@ -60,7 +60,7 @@ public class TaskSchedulingResourceAllocatingVariableController extends Variable
 		return variable;
 	}
 
-	public List<SkillsInResource> isUseful(List<SkillsInResource> skillsInResources) {
+	protected List<SkillsInResource> isUseful(List<SkillsInResource> skillsInResources) {
 		for (SkillsInResource skillsInResource : skillsInResources) {
 			List<Skill> skills = skillsInResource.getRequiredSkills();
 			for (Skill rSkill : skills) {
@@ -81,8 +81,11 @@ public class TaskSchedulingResourceAllocatingVariableController extends Variable
 
 		int numberOfSkills = (Integer) parameters.get("numberOfSkills");
 		int numberOfHumanResources = (Integer) parameters.get("numberOfHumanResources");
+		int[][] treq = (int[][]) parameters.get("treq");
+		double[][] lexp = (double[][]) parameters.get("lexp");
+		double[] humanCosts = (double[]) parameters.get("humanCosts");
 
-		variables = setResourcesAndSkills(variables, (double[][]) parameters.get("treq"), (double[][]) parameters.get("lexp"), numberOfSkills, numberOfHumanResources);
+		variables = setResourcesAndSkills(variables, treq, lexp, humanCosts, numberOfSkills, numberOfHumanResources);
 
 		int maxDuration = (int) parameters.get("maxDuration");
 		for (Variable variable : variables)
@@ -91,12 +94,11 @@ public class TaskSchedulingResourceAllocatingVariableController extends Variable
 		return variables;
 	}
 
-	public List<Variable> createVariables(Map<Object, Object> parameters) {
+	protected List<Variable> createVariables(Map<Object, Object> parameters) {
 		if (this.variables == null) {
 			int numberOfTasks = (Integer) parameters.get("numberOfTasks");
-			double[] weights = (double[]) parameters.get("weights");
 
-			List<Variable> variables = new ArrayList<>();
+			this.variables = new ArrayList<>();
 
 			for (int i = 0; i < numberOfTasks; i++) {
 				Map<String, Object> params = new HashMap<>();
@@ -106,7 +108,6 @@ public class TaskSchedulingResourceAllocatingVariableController extends Variable
 				params.put("id", i);
 				params.put("duration", duration);
 				params.put("scheduledTime", scheduledTime);
-				params.put("weight", weights[i]);
 
 				Variable variable = new Task();
 				variable.setValue(params);
@@ -129,7 +130,7 @@ public class TaskSchedulingResourceAllocatingVariableController extends Variable
 	 * @implNote tasks[i][j] = 1 means Variable i is predecessors of Variable j,
 	 * and Variable j is descendent of Variable i
 	 */
-	public List<Variable> setVariableNeighbours(List<Variable> variables, int[][] tasks) {
+	protected List<Variable> setVariableNeighbours(List<Variable> variables, int[][] tasks) {
 		int size = variables.size();
 
 		for (int i = 0; i < size; i++) {
@@ -161,11 +162,11 @@ public class TaskSchedulingResourceAllocatingVariableController extends Variable
 	 * @return variables        The same variables with set skills for each variable.
 	 * @implNote skills[i][j] = 1 means Variable i needs Skill j
 	 */
-	public List<Variable> setResourcesAndSkills(List<Variable> variables, double[][] treq, double[][] lexp, int numberOfSkills, int numberOfHumanResources) {
+	protected List<Variable> setResourcesAndSkills(List<Variable> variables, int[][] treq, double[][] lexp, double[] humanCosts, int numberOfSkills, int numberOfHumanResources) {
 		for (Variable variable : variables) {
 			for (int i = 0; i < numberOfHumanResources; i++) {
 				SkillsInResource skillsInResource = new SkillsInResource();
-				skillsInResource.setResource(new Resource(i));
+				skillsInResource.setResource(new Resource(i, Resource.TYPE.HUMAN, humanCosts[i]));
 				List<Skill> skills = skillsInResource.getRequiredSkills();
 				for (int j = 0; j < numberOfSkills; j++) {
 					/* Only add skill to resource if the skill is necessary to the task */

@@ -13,13 +13,11 @@ import java.util.List;
 @Getter
 @Setter
 public class Task extends Variable {
-	private int orderId;
 	private int id;
 	private double scheduledTime;
 	private double duration;
 	private double start;
 	private double idle;
-	private double weight;
 	private List<Variable> predecessors;
 	private List<Variable> descendants;
 	private List<SkillsInResource> requiredSkillsInResources;
@@ -32,6 +30,14 @@ public class Task extends Variable {
 		this.requiredMachines = new ArrayList<>();
 	}
 
+	public Task(int id, double scheduledTime, double start, double idle) {
+		this();
+		this.id = id;
+		this.scheduledTime = scheduledTime;
+		this.start = start;
+		this.idle = idle;
+
+	}
 
 	@Override
 	public Object getValue() {
@@ -42,11 +48,9 @@ public class Task extends Variable {
 	public void setValue(Object value) {
 		if (value instanceof HashMap ) {
 			HashMap<String, Object> parameters = (HashMap <String, Object>) value;
-//			this.orderId = (Integer) parameters.get("orderId");
 			this.id = (Integer) parameters.get("id");
 			this.duration =  (Double) parameters.get("duration");
 			this.scheduledTime = (Double) parameters.get("scheduledTime");
-			this.weight = (Double) parameters.get("weight");
 		}
 	}
 
@@ -102,4 +106,32 @@ public class Task extends Variable {
 		return resourceCount;
 	}
 
+	public void setSimilarValueTask(Task oldTask) {
+//		setSimilarDescendants(oldTask.getDescendants());
+//		setSimilarPredecessors(oldTask.getPredecessors());
+		setPredecessors(oldTask.getPredecessors());
+		setDescendants(oldTask.getDescendants());
+		setSimilarRequiredMachines(oldTask.getRequiredMachines());
+		setSimilarRequiredSkillsInResources(oldTask.getRequiredSkillsInResources());
+	}
+
+	private void setSimilarDescendants(List<Variable> oldDescendants) {
+
+	}
+
+	private void setSimilarPredecessors(List<Variable> oldPredecessor) {
+
+	}
+
+	private void setSimilarRequiredMachines(List<Resource> oldMachines) {
+		for (Resource resource: oldMachines) {
+			this.getRequiredMachines().add(new Resource(resource.getId(), resource.getType(), resource.getCost()));
+		}
+	}
+
+	private void setSimilarRequiredSkillsInResources(List<SkillsInResource> oldSkillsInResources) {
+		for (SkillsInResource skillsInResource: oldSkillsInResources) {
+			this.getRequiredSkillsInResources().add(skillsInResource.getSimilarSkillInResource());
+		}
+	}
 }
