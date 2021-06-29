@@ -1,6 +1,6 @@
 package component.controller;
 
-import component.Variable;
+import component.variable.Variable;
 
 import java.util.List;
 import java.util.Map;

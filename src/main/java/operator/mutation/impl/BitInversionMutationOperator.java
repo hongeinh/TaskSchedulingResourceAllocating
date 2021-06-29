@@ -1,8 +1,8 @@
 package operator.mutation.impl;
 
 import component.resource.Resource;
-import component.SkillsInResource;
-import component.Variable;
+import component.resource.SkillsInResource;
+import component.variable.Variable;
 import operator.mutation.MutationOperator;
 import solution.Solution;
 

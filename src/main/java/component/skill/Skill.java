@@ -1,4 +1,4 @@
-package component;
+package component.skill;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

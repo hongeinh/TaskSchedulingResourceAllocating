@@ -1,8 +1,6 @@
 package component.controller.helper;
 
-import component.SkillsInResource;
-import component.Task;
-import component.Variable;
+import component.resource.SkillsInResource;
 import component.resource.Resource;
 
 import java.util.*;

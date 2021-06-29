@@ -1,9 +1,9 @@
 package problem.impl;
 
 import component.resource.Resource;
-import component.SkillsInResource;
-import component.Task;
-import component.Variable;
+import component.resource.SkillsInResource;
+import component.variable.impl.Task;
+import component.variable.Variable;
 import component.controller.VariableController;
 import problem.Problem;
 import solution.Solution;

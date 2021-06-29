@@ -1,6 +1,7 @@
-package component;
+package component.resource;
 
 import component.resource.Resource;
+import component.skill.Skill;
 import lombok.Getter;
 import lombok.Setter;
 

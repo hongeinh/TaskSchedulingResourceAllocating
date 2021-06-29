@@ -1,7 +1,7 @@
 package operator.crossover.impl;
 
 import component.resource.Resource;
-import component.Task;
+import component.variable.impl.Task;
 import operator.crossover.CrossoverOperator;
 import solution.Solution;
 

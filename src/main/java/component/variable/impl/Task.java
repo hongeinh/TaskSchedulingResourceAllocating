@@ -1,6 +1,8 @@
-package component;
+package component.variable.impl;
 
+import component.resource.SkillsInResource;
 import component.resource.Resource;
+import component.variable.Variable;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -10,7 +12,7 @@ import java.util.List;
 
 @Getter
 @Setter
-public class Task extends Variable{
+public class Task extends Variable {
 	private int orderId;
 	private int id;
 	private double scheduledTime;

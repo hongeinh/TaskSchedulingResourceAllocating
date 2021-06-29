@@ -1,14 +1,8 @@
 package problem.impl;
 
-import component.SkillsInResource;
-import component.Task;
-import component.Variable;
 import component.controller.VariableController;
-import component.resource.Resource;
-import problem.Problem;
 import solution.Solution;
 
-import java.util.List;
 import java.util.Map;
 
 public class MultiorderTaskSchedulingProblem extends TaskSchedulingResourceAllocatingProblem {

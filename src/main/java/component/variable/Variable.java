@@ -1,4 +1,4 @@
-package component;
+package component.variable;
 
 public abstract class Variable implements Comparable<Variable>, Cloneable{
 

@@ -1,9 +1,9 @@
 package component.controller.impl;
 
-import component.Skill;
-import component.SkillsInResource;
-import component.Task;
-import component.Variable;
+import component.skill.Skill;
+import component.resource.SkillsInResource;
+import component.variable.impl.Task;
+import component.variable.Variable;
 import component.controller.helper.MultiorderTaskSchedulingControllerHelper;
 import component.resource.Resource;
 
