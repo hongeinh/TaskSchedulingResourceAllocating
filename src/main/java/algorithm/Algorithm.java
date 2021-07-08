@@ -44,15 +44,15 @@ public abstract class Algorithm {
 	}
 
 	public void displaySolutions(List<Solution> solutions, String filename) throws IOException {
-//		String currentPath = System.getProperty("user.dir") +"/src/main/java";
-//		System.out.println(currentPath);
-//		FileWriter fileWriter = new FileWriter(currentPath +  filename);
-//		PrintWriter printWriter = new PrintWriter(fileWriter);
-//		printWriter.println(filename);
+		String currentPath = System.getProperty("user.dir") +"/src/main/java";
+		System.out.println(currentPath);
+		FileWriter fileWriter = new FileWriter(currentPath +  filename);
+		PrintWriter printWriter = new PrintWriter(fileWriter);
+		printWriter.println(filename);
 		int i = 1;
 		for (Solution solution: solutions) {
-//			printWriter.println(i + ". " + solution.toString() +"\n");
-			System.out.println(i + ". " + solution.toString() + "\n");
+			printWriter.println(i + ". " + solution.toString() +"\n");
+//			System.out.println(i + ". " + solution.toString() + "\n");
 			i++;
 		}
 	}

@@ -2,14 +2,12 @@ package component.controller.impl;
 
 import component.resource.Resource;
 import component.resource.SkillsInResource;
+import component.skill.Skill;
 import component.variable.Variable;
 import component.variable.impl.Order;
 import component.variable.impl.Task;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 
 public class FixedMultiorderTaskSchedulingController extends TaskSchedulingResourceAllocatingVariableController {
@@ -24,31 +22,36 @@ public class FixedMultiorderTaskSchedulingController extends TaskSchedulingResou
 	}
 
 	@Override
-	public List<Variable> setVariables(Map<Object, Object> parameters, double k) {
-		List<Variable> tasks = super.setVariables(parameters, k);
-
-		double [] humanCosts = (double []) parameters.get("humanCosts");
-		double [] machineCosts = (double []) parameters.get("machineCosts");
-		double[][] mreq = (double[][]) parameters.get("mreq");
-		tasks = setMachineResources(tasks, (Integer) parameters.get("numberOfMachineResources"), machineCosts, mreq);
+	public List<Variable> setupVariables(Map<Object, Object> parameters, double k) {
 
 
-		for (int i = 0; i < humanCosts.length; i++) {
-
-		}
-		double[] orderWeights = (double[]) parameters.get("weights");
 		List<Order> orders = new ArrayList<>();
+		double[] orderWeights = (double[]) parameters.get("weights");
 
-
+		int[][] tasksRelation = (int[][]) parameters.get("tasks");
 		for (int i = 0; i < orderWeights.length; i++) {
 			Order order = new Order(i, orderWeights[i]);
 			// sua lai thanh task copy
-			order.setTasks(createSimilarVariables(tasks));
-			for (Variable task : order.getTasks()) {
+			List<Variable> newTasks = setupTemplateVariablesForOrders(parameters, k);
+
+			int maxDuration = (int) parameters.get("maxDuration");
+			for (Variable newTask : newTasks) {
 				// set the duration according to weights
-				double duration = ((Task) task).getDuration() * orderWeights[i];
-				((Task) task).setDuration(Math.round(duration) * 100 /100);
+				double duration = ((Task) newTask).getDuration() * orderWeights[i];
+				((Task) newTask).setDuration(Math.round(duration) * 100 / 100);
+				((Task) newTask).getPredecessors().clear();
+				((Task) newTask).getDescendants().clear();
 			}
+
+			// set lai neighbor
+			newTasks = super.setupTemplateVariablesNeighbours(newTasks, tasksRelation);
+
+			// tinh tgian cho task
+			for (Variable newTask : newTasks) {
+				newTask = super.setVariableTime(newTask, k * maxDuration);
+			}
+
+			order.setTasks(newTasks);
 			orders.add(order);
 		}
 
@@ -57,139 +60,164 @@ public class FixedMultiorderTaskSchedulingController extends TaskSchedulingResou
 		Collections.sort(orders);
 
 		// Calculate time for the tasks in orders
-		orders = setVariablesTimes(orders, k);
+		orders = setVariablesTimesAccordingToOtherOrders(orders, k);
 
 		return joinOrders(orders);
 	}
 
-	private List<Variable> createSimilarVariables(List<Variable> tasks) {
-		List<Variable> variables = new ArrayList<>();
-		for (Variable var: tasks) {
-			Task task = (Task) var;
-			variables.add(new Task(task));
+	private List<Variable> setupTemplateVariablesForOrders(Map<Object, Object> parameters, double k) {
+		List<Variable> tasks = super.setupVariables(parameters, k);
+
+		double[] humanCosts = (double[]) parameters.get("humanCosts");
+		double[] machineCosts = (double[]) parameters.get("machineCosts");
+		double[][] mreq = (double[][]) parameters.get("mreq");
+		tasks = setMachineResources(tasks, (Integer) parameters.get("numberOfMachineResources"), machineCosts, mreq);
+
+		for (Variable variable : tasks) {
+			Task task = (Task) variable;
+			for (SkillsInResource skillsInResource : task.getRequiredSkillsInResources()) {
+				skillsInResource.getResource().setCost(humanCosts[skillsInResource.getResource().getId()]);
+			}
 		}
+		return tasks;
+	}
+
+	private List<Variable> createSimilarVariables(Map<Object, Object> parameters, List<Variable> tasks) {
+		List<Variable> variables = super.createTemplateVariables(parameters);
+		// set resource and skills
+		variables = setupSimilarResourceAndSkillsForVariables(variables, tasks);
 		return variables;
 	}
 
-	private List<Variable> setMachineResources(List<Variable> tasks, Integer numberOfMachineResources, double[] machineCosts, double[][] mreq ) {
-		int numberOfTasks = tasks.size();
-		List<Resource> machineResource = new ArrayList<>();
-		for (Variable variable : variables) {
+	private List<Variable> setupSimilarResourceAndSkillsForVariables(List<Variable> currentVariables, List<Variable> copyVariables) {
+		int numberOfTasks = currentVariables.size();
+
+
+		for (int i = 0; i < numberOfTasks; i++) {
+			List<SkillsInResource> copySkillsInResources = ((Task) copyVariables.get(i)).getRequiredSkillsInResources();
+			List<SkillsInResource> newSkillsInResources = new ArrayList<>();
+			for (SkillsInResource skillsInResource : copySkillsInResources) {
+				Resource copyResource = skillsInResource.getResource();
+				Resource newResource = new Resource(copyResource.getId(), copyResource.getType(), copyResource.getCost(), copyResource.getStatus());
+				List<Skill> skills = new ArrayList<>();
+				for (Skill copySkill : skillsInResource.getRequiredSkills()) {
+					Skill newSkill = new Skill(copySkill.getId(), copySkill.getExperienceLevel());
+					skills.add(newSkill);
+				}
+				SkillsInResource newSkillsInResouce = new SkillsInResource(newResource, skills);
+				newSkillsInResources.add(newSkillsInResouce);
+			}
+
+			List<Resource> copyMachineResources = ((Task) copyVariables.get(i)).getRequiredMachines();
+			List<Resource> newMachineResources = new ArrayList<>();
+			for (Resource copyMachineResource : copyMachineResources) {
+				Resource newMachineResource = new Resource(copyMachineResource.getId(), copyMachineResource.getType(), copyMachineResource.getCost(), copyMachineResource.getStatus());
+				newMachineResources.add(newMachineResource);
+			}
+			((Task) currentVariables.get(i)).setRequiredMachines(newMachineResources);
+			((Task) currentVariables.get(i)).setRequiredSkillsInResources(newSkillsInResources);
+		}
+		return currentVariables;
+	}
+
+	private List<Variable> setMachineResources(List<Variable> tasks, Integer numberOfMachineResources, double[] machineCosts, double[][] mreq) {
+		for (Variable variable : tasks) {
+			List<Resource> machineResource = new ArrayList<>();
 			int id = ((Task) variable).getId();
 			for (int i = 0; i < numberOfMachineResources; i++) {
 				if (mreq[id][i] != 0) {
-					Resource resource = new Resource(i, Resource.TYPE.MACHINE, machineCosts[i]);
+					Resource resource = new Resource(i, Resource.TYPE.MACHINE, machineCosts[i], Resource.STATUS.USEFUL);
 					machineResource.add(resource);
 				}
 			}
 			((Task) variable).setRequiredMachines(machineResource);
 		}
 
-		return variables;
+		return tasks;
 	}
 
-	private List<Order> setVariablesTimes(List<Order> orders, double k) {
+	private List<Order> setVariablesTimesAccordingToOtherOrders(List<Order> orders, double k) {
 
 		int size = orders.size();
 		for (int i = 1; i < size; i++) {
 			// viet ham tinh tgian dua vao previous order, khong tinh order dau tien
-			orders.get(i).setTasks(setTasksTime(orders.get(i).getTasks(), orders.get(i - 1).getTasks(), k));
+			List<Variable> currentOrderTasks = orders.get(i).getTasks();
+			List<Variable> previousOrderTasks = orders.get(i - 1).getTasks();
+			currentOrderTasks = setTasksTimesAccordingToPreviousOrder(currentOrderTasks, previousOrderTasks, k);
+			orders.get(i).setTasks(currentOrderTasks);
 		}
 		return orders;
 	}
 
-	private List<Variable> setTasksTime(List<Variable> currentOrderTasks, List<Variable> previousOrderTasks, double k) {
-		int size = currentOrderTasks.size();
-		double startTime = calculateTaskTime(currentOrderTasks.get(0), previousOrderTasks);
-		((Task) currentOrderTasks.get(0)).setStart((Math.round(startTime) * 100) / 100);
-		for (int i = 1; i < size; i++) {
-			double precedentExitTime = ((Task) currentOrderTasks.get(i - 1)).getStart() + ((Task) currentOrderTasks.get(i - 1)).getDuration();
-			((Task) currentOrderTasks.get(i)).setStart(precedentExitTime);
-			List<Variable> competingTaskPreviousOrder = calculateCompetingTasks(precedentExitTime, previousOrderTasks.subList(i, size));
-			startTime = calculateTaskTime(currentOrderTasks.get(i), competingTaskPreviousOrder);
-			((Task) currentOrderTasks.get(i)).setStart((Math.round(startTime) * 100) / 100);
-			double randomScheduledStart = Math.random() * k;
-			double sign = Math.random() > 0 ? 1 : -1;
-			double scheduledStart = randomScheduledStart * sign + startTime;
-			((Task) currentOrderTasks.get(i)).setScheduledTime((Math.round(scheduledStart) * 100) / 100);
+	private List<Variable> setTasksTimesAccordingToPreviousOrder(List<Variable> currentOrderTasks, List<Variable> previousOrderTasks, double k) {
+
+		int numberOfTasks = currentOrderTasks.size();
+
+		for (int i = 0; i < numberOfTasks; i++) {
+			Task currentOrderTask = ((Task) currentOrderTasks.get(i));
+			Task previousOrderTask = ((Task) previousOrderTasks.get(i));
+			Task currentOrderPrecedentTask = (Task) getMaxEndTimePrecedentTask(currentOrderTask, currentOrderTasks.subList(0, i + 1));
+
+			double previousOrderTaskEndTime = previousOrderTask.getStart() + previousOrderTask.getDuration();
+			double currentOrderPrecedentTaskEndTime = 0;
+
+			if (currentOrderPrecedentTask != null) {
+				currentOrderPrecedentTaskEndTime = currentOrderPrecedentTask.getStart() + currentOrderPrecedentTask.getDuration();
+			}
+
+			double currentOrderTaskStartTime = Math.max(previousOrderTaskEndTime, currentOrderPrecedentTaskEndTime);
+			currentOrderTask.setStart(currentOrderTaskStartTime);
+
+			double rand = Math.random() * k;
+			double sign = Math.random() > 0.5 ? 1 : -1;
+			double scheduledStart = currentOrderTaskStartTime + rand * sign;
+			currentOrderTask.setScheduledTime(scheduledStart);
+
 		}
+
 		return currentOrderTasks;
 	}
 
-	private List<Variable> calculateCompetingTasks(double precedentExitTime, List<Variable> tasks) {
-		List<Variable> competingTasks = new ArrayList<>(tasks);
-		for (Variable task : competingTasks) {
-			double endTime = ((Task) task).getStart() + ((Task) task).getDuration();
-			if (endTime <= precedentExitTime) {
-				competingTasks.remove(task);
-			} else if (endTime > precedentExitTime) {
-				break;
+	private Variable getMaxEndTimePrecedentTask(Variable currentTask, List<Variable> subList) {
+		List<Integer> precedentTasksIds = getPrecedentTasksIds((((Task) currentTask).getPredecessors()));
+		List<Variable> precedentTasksObjects = getPrecedentTasksObjects(currentTask, precedentTasksIds);
+
+		double maxEndTime = 0;
+		Task maxEndTimeTask = null;
+
+		for (Variable variable: subList) {
+			Task task = (Task) variable;
+			double endTime = task.getStart() + task.getDuration();
+			if (maxEndTime < endTime) {
+				maxEndTime = endTime;
+				maxEndTimeTask = task;
 			}
 		}
-		return competingTasks;
+
+		return maxEndTimeTask;
 	}
 
-	private double calculateTaskTime(Variable currentTask, List<Variable> previousOrderTasks) {
-
-		double humanResourceStart = 0;
-		double machineResourceStart = 0;
-
-		List<SkillsInResource> skillsInResources = new ArrayList<>(((Task) currentTask).getRequiredSkillsInResources());
-		List<Resource> machineResources = new ArrayList<>(((Task) currentTask).getRequiredMachines());
-
-		for (Variable previousOrderTask : previousOrderTasks) {
-			if (skillsInResources.isEmpty() && machineResources.isEmpty()) {
-				break;
-			}
-			if (!skillsInResources.isEmpty()) {
-				List<SkillsInResource> skillsInResources1 = ((Task) previousOrderTask).getRequiredSkillsInResources();
-				for (SkillsInResource skillsInResource : skillsInResources) {
-
-					if (!isResourceUsed(skillsInResource.getResource().getId(),
-							skillsInResource.getResource().getType(),
-							skillsInResources1)) {
-						skillsInResources.remove(skillsInResource);
-						if (!skillsInResources.isEmpty()) {
-							humanResourceStart = ((Task) previousOrderTask).getStart() + ((Task) previousOrderTask).getDuration();
-						}
-					} else {
-						humanResourceStart = ((Task) previousOrderTask).getStart() + ((Task) previousOrderTask).getDuration();
-					}
-				}
-			}
-
-			if (!machineResources.isEmpty()) {
-				List<Resource> machineResources1 = ((Task) previousOrderTask).getRequiredMachines();
-				for (Resource machineResource : machineResources) {
-					if (!isResourceUsed(machineResource.getId(), machineResource.getType(), machineResources1)) {
-						machineResources.remove(machineResource);
-						if (!machineResources.isEmpty()) {
-							machineResourceStart = ((Task) previousOrderTask).getStart() + ((Task) previousOrderTask).getDuration();
-						}
-					} else {
-						humanResourceStart = ((Task) previousOrderTask).getStart() + ((Task) previousOrderTask).getDuration();
-					}
-				}
+	private List<Variable> getPrecedentTasksObjects(Variable currentTask, List<Integer> precedentTasksIds) {
+		List<Variable> precedentTasksObjects = new ArrayList<>();
+		List<Variable> predecessors = ((Task) currentTask).getPredecessors();
+		for (Variable predecessor : predecessors) {
+			if (precedentTasksIds.contains(((Task) predecessor).getId())) {
+				precedentTasksObjects.add(predecessor);
 			}
 		}
-		return humanResourceStart > machineResourceStart ? humanResourceStart : machineResourceStart;
+
+		return precedentTasksObjects;
 	}
 
-	private boolean isResourceUsed(int resourceId, Resource.TYPE resourceType, List<?> resources) {
-		if (resourceType == Resource.TYPE.HUMAN) {
-			for (SkillsInResource skillsInResource : (List<SkillsInResource>) resources) {
-				if (skillsInResource.getResource().getId() == resourceId) {
-					return true;
-				}
-			}
-		} else if (resourceType == Resource.TYPE.MACHINE) {
-			for (Resource resource : (List<Resource>) resources) {
-				if (resource.getId() == resourceId) {
-					return true;
-				}
-			}
+	private List<Integer> getPrecedentTasksIds(List<Variable> precendentTasks) {
+		List<Integer> precedentTasksIds = new ArrayList<>();
+		for (Variable variable : precendentTasks) {
+			Task precedentTask = (Task) variable;
+			int id = precedentTask.getId();
+			precedentTasksIds.add(id);
 		}
-		return false;
+
+		return precedentTasksIds;
 	}
 
 }

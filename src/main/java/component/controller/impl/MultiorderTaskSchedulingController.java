@@ -19,7 +19,7 @@ public class MultiorderTaskSchedulingController extends TaskSchedulingResourceAl
 
 		if (variableOrders.size() == 1) {
 			variable = setVariableTime(variable, k);
-			variable = setVariableResource(variable);
+			variable = setupResourceForTemplateVariable(variable);
 		} else if (variables.size() > 1) {
 			variable = setVariableTimeAndResouceOtherOrders(variable, k);
 		}
@@ -44,7 +44,7 @@ public class MultiorderTaskSchedulingController extends TaskSchedulingResourceAl
 
 		if (assignedHumanResource.isEmpty() && assignedMachineResource.isEmpty()) {
 			variable = setVariableTime(variable, k);
-			variable = setVariableResource(variable);
+			variable = setupResourceForTemplateVariable(variable);
 		} else {
 			List<Integer> assignedHumanResourceVariable = (List<Integer>) assignedHumanResourceInfo.get("task");
 			List<Integer> assignedHumanResourceOrder = (List<Integer>) assignedHumanResourceInfo.get("order");
@@ -147,7 +147,7 @@ public class MultiorderTaskSchedulingController extends TaskSchedulingResourceAl
 
 
 	@Override
-	public List<Variable> setVariables(Map<Object, Object> parameters, double k) {
+	public List<Variable> setupVariables(Map<Object, Object> parameters, double k) {
 		// Get parameters
 		int numberOfSkills = (Integer) parameters.get("numberOfSkills");
 		int numberOfHumanResources = (Integer) parameters.get("numberOfHumanResources");
@@ -168,7 +168,7 @@ public class MultiorderTaskSchedulingController extends TaskSchedulingResourceAl
 			this.variableOrders.add(new ArrayList<>());
 			int size = this.variableOrders.size();
 
-			List<Variable> variables = setVariables(parameters, k);
+			List<Variable> variables = setupVariables(parameters, k);
 			variables = setResourcesAndSkills(variables, treq, lexp, mreq, numberOfSkills, numberOfHumanResources, numberOfMachineResources);
 
 			double maxDuration = maxDurationList[size - 1];

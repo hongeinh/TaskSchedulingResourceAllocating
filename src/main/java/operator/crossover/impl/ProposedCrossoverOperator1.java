@@ -49,11 +49,12 @@ public class ProposedCrossoverOperator1 extends CrossoverOperator {
                 varB.setScheduledTime(varB.getScheduledTime() + diff * 0.1);
             }
 
-            Resource.STATUS [] aAssignedResouce = new Resource.STATUS[varA.getRequiredSkillsInResources().size()];
-            for (int j = 0; j < varA.getRequiredSkillsInResources().size(); j++) {
-                aAssignedResouce[i] = varA.getRequiredSkillsInResources().get(i).getResource().getStatus();
-                varA.getRequiredSkillsInResources().get(i).getResource().setStatus(varB.getRequiredSkillsInResources().get(i).getResource().getStatus());
-                varB.getRequiredSkillsInResources().get(i).getResource().setStatus(aAssignedResouce[i]);
+            int numberOfResources = varA.getRequiredSkillsInResources().size();
+            Resource.STATUS [] aAssignedResouce = new Resource.STATUS[numberOfResources];
+            for (int j = 0; j < numberOfResources; j++) {
+                aAssignedResouce[j] = varA.getRequiredSkillsInResources().get(j).getResource().getStatus();
+                varA.getRequiredSkillsInResources().get(j).getResource().setStatus(varB.getRequiredSkillsInResources().get(j).getResource().getStatus());
+                varB.getRequiredSkillsInResources().get(j).getResource().setStatus(aAssignedResouce[j]);
             }
 
         }

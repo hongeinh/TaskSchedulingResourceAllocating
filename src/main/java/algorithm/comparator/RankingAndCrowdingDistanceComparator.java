@@ -77,8 +77,11 @@ public class RankingAndCrowdingDistanceComparator {
 				}
 			}
 			frontCounter++;
-			if (!nextFront.isEmpty())
-				rankSortedSolutions.addAll(sortByDistance(computeDistance(nextFront)));
+			if (!nextFront.isEmpty()){
+				List<Solution> nextFrontSolutionWithDistance = computeDistance(nextFront);
+				nextFrontSolutionWithDistance = sortByDistance(nextFrontSolutionWithDistance);
+				rankSortedSolutions.addAll(nextFrontSolutionWithDistance);
+			}
 			currentFront = nextFront;
 		}
 		return rankSortedSolutions;
@@ -94,29 +97,30 @@ public class RankingAndCrowdingDistanceComparator {
 
 		// Initialize distance
 		for (Solution solution: solutions) {
-			double []fitness = solution.getFitness();
-			fitness[1] = 0;
-			solution.setFitness(fitness);
+			solution.getFitness()[1] = 0;
 		}
 
 		for (int i = 0; i < objectiveSize; i++) {
 			solutions = sortByObjectiveValue(solutions, i);
-			// Set distance for the solution with smallest objective value
-			double []fitness = solutions.get(0).getFitness();
-			fitness[1] = Double.MAX_VALUE;
-			solutions.get(0).setFitness(fitness);
 
-			// Set distance for the solution with smallest objective value
-			fitness = solutions.get(solutionSetSize - 1).getFitness();
-			fitness[1] = Double.MAX_VALUE;
-			solutions.get(solutionSetSize - 1).setFitness(fitness);
+			Solution smallestSolution = solutions.get(0);
+			Solution biggestSolution = solutions.get(solutionSetSize - 1);
 
 			for (int j = 1; j < solutionSetSize - 1; j++) {
-				fitness = solutions.get(j).getFitness();
-				fitness[1] = fitness[1] + (solutions.get(j+1).getObjectives()[i] - solutions.get(j - 1).getObjectives()[i]) /
-						(solutions.get(solutionSetSize - 1).getObjectives()[i] - solutions.get(0).getObjectives()[i]);
-				solutions.get(j).setFitness(fitness);
+				double [] fitness1 = solutions.get(j).getFitness();
+				Solution biggerSolution =  solutions.get(j + 1);
+				Solution smallerSolution = solutions.get(j - 1);
+				Solution currentSolution = solutions.get(j);
+
+				if (biggestSolution.getObjectives()[i] != smallestSolution.getObjectives()[i]) {
+					fitness1[1] = fitness1[1] + (biggerSolution.getObjectives()[i] - smallerSolution.getObjectives()[i]) /
+							(biggestSolution.getObjectives()[i] - smallestSolution.getObjectives()[i]);
+					solutions.get(j).setFitness(fitness1);
+				}
 			}
+//
+//			solutions.get(0).getFitness()[1] = initialMax;
+//			solutions.get(solutionSetSize - 1).getFitness()[1] = initialMin;
 		}
 
 		return solutions;

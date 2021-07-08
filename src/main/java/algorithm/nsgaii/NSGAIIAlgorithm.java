@@ -66,14 +66,20 @@ public class NSGAIIAlgorithm extends Algorithm {
 				.collect(Collectors.toList());
 		System.out.println("Joint size: " + jointSolutions.size());
 
+//		List<Solution> jointSolutions = new ArrayList<>();
+//		jointSolutions.addAll(solutions);
+//		jointSolutions.addAll(offspringSolutions);
 		/* Step 6: Rank and distance sort for solution set to find Pareto solution set*/
 		System.out.println("- Evaluate combined solution set");
 		jointSolutions = this.getComparator().computeRankAndDistance(jointSolutions);
 		displaySolutions(jointSolutions, "/result/combine.txt");
 
 		System.out.println("- Computing final results---------------------------------------------------------------------");
-		List<Solution> finalSolutions = jointSolutions.subList(0, solutionSetSize);
+//		List<Solution> finalSolutions = jointSolutions.subList(0, solutionSetSize + 1);
+		List<Solution> finalSolutions = jointSolutions.subList(0, solutionSetSize - 1);
+
 		displaySolutions(finalSolutions, "/result/final.txt");
+		displaySolutions(finalSolutions.subList(0, 1), "/result/best-solution.txt");
 		return finalSolutions;
 	}
 

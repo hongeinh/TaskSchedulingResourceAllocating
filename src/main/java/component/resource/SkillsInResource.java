@@ -2,6 +2,7 @@ package component.resource;
 
 import component.resource.Resource;
 import component.skill.Skill;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -10,6 +11,7 @@ import java.util.List;
 
 @Getter
 @Setter
+@AllArgsConstructor
 public class SkillsInResource {
     private Resource resource;
     private List<Skill> requiredSkills;

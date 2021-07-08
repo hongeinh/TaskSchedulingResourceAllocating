@@ -36,6 +36,11 @@ public class Resource {
 		this.cost = cost;
 	}
 
+	public Resource (int id, TYPE type, double cost, STATUS status) {
+		this(id, type, cost);
+		this.status = status;
+	}
+
 	public enum STATUS {
 		ASSIGNED,
 		NOT_ASSIGNED,

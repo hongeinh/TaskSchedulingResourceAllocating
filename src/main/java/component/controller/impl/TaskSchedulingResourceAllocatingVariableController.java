@@ -15,13 +15,14 @@ public class TaskSchedulingResourceAllocatingVariableController extends Variable
 
 	protected Variable setVariableParameters(Variable variable, double k) {
 		variable = setVariableTime(variable, k);
-		variable = setVariableResource(variable);
+		variable = setupResourceForTemplateVariable(variable);
 		return variable;
 	}
 
 	protected Variable setVariableTime(Variable variable, double k) {
-		List<Variable> predescessors = ((Task) variable).getPredecessors();
 		Task currentVariable = (Task) variable;
+		List<Variable> predescessors = currentVariable.getPredecessors();
+
 		for (Variable pre : predescessors) {
 			Task predecessor = (Task) pre;
 			double start = 0;
@@ -41,7 +42,7 @@ public class TaskSchedulingResourceAllocatingVariableController extends Variable
 	}
 
 
-	protected Variable setVariableResource(Variable variable) {
+	protected Variable setupResourceForTemplateVariable(Variable variable) {
 
 		List<SkillsInResource> skillsInResources = ((Task) variable).getRequiredSkillsInResources();
 		skillsInResources = this.isUseful(skillsInResources);
@@ -75,9 +76,9 @@ public class TaskSchedulingResourceAllocatingVariableController extends Variable
 
 
 	@Override
-	public List<Variable> setVariables(Map<Object, Object> parameters, double k) {
+	public List<Variable> setupVariables(Map<Object, Object> parameters, double k) {
 
-		List<Variable> variables = createVariables(parameters);
+		List<Variable> variables = createTemplateVariables(parameters);
 
 		int numberOfSkills = (Integer) parameters.get("numberOfSkills");
 		int numberOfHumanResources = (Integer) parameters.get("numberOfHumanResources");
@@ -85,7 +86,7 @@ public class TaskSchedulingResourceAllocatingVariableController extends Variable
 		double[][] lexp = (double[][]) parameters.get("lexp");
 		double[] humanCosts = (double[]) parameters.get("humanCosts");
 
-		variables = setResourcesAndSkills(variables, treq, lexp, humanCosts, numberOfSkills, numberOfHumanResources);
+		variables = setupResourcesAndSkillsForTemplateVariables(variables, treq, lexp, humanCosts, numberOfSkills, numberOfHumanResources);
 
 		int maxDuration = (int) parameters.get("maxDuration");
 		for (Variable variable : variables)
@@ -94,31 +95,29 @@ public class TaskSchedulingResourceAllocatingVariableController extends Variable
 		return variables;
 	}
 
-	protected List<Variable> createVariables(Map<Object, Object> parameters) {
-		if (this.variables == null) {
-			int numberOfTasks = (Integer) parameters.get("numberOfTasks");
-
-			this.variables = new ArrayList<>();
-
-			for (int i = 0; i < numberOfTasks; i++) {
-				Map<String, Object> params = new HashMap<>();
-
-				double scheduledTime = ((double[]) parameters.get("scheduledTimes"))[i];
-				double duration = ((double[]) parameters.get("durations"))[i];
-				params.put("id", i);
-				params.put("duration", duration);
-				params.put("scheduledTime", scheduledTime);
-
-				Variable variable = new Task();
-				variable.setValue(params);
-				variables.add(variable);
-			}
+	protected List<Variable> createTemplateVariables(Map<Object, Object> parameters) {
+		List<Variable> variables = new ArrayList<>();
+		int numberOfTasks = (Integer) parameters.get("numberOfTasks");
 
 
-			variables = setVariableNeighbours(variables, (int[][]) parameters.get("tasks"));
-			Collections.sort(variables);
+		for (int i = 0; i < numberOfTasks; i++) {
+			Map<String, Object> params = new HashMap<>();
+
+			double scheduledTime = ((double[]) parameters.get("scheduledTimes"))[i];
+			double duration = ((double[]) parameters.get("durations"))[i];
+			params.put("id", i);
+			params.put("duration", duration);
+			params.put("scheduledTime", scheduledTime);
+
+			Variable variable = new Task();
+			variable.setValue(params);
+			variables.add(variable);
 		}
-		return this.variables;
+
+
+		variables = setupTemplateVariablesNeighbours(variables, (int[][]) parameters.get("tasks"));
+		Collections.sort(variables);
+		return variables;
 	}
 
 	/**
@@ -130,7 +129,7 @@ public class TaskSchedulingResourceAllocatingVariableController extends Variable
 	 * @implNote tasks[i][j] = 1 means Variable i is predecessors of Variable j,
 	 * and Variable j is descendent of Variable i
 	 */
-	protected List<Variable> setVariableNeighbours(List<Variable> variables, int[][] tasks) {
+	protected List<Variable> setupTemplateVariablesNeighbours(List<Variable> variables, int[][] tasks) {
 		int size = variables.size();
 
 		for (int i = 0; i < size; i++) {
@@ -162,15 +161,18 @@ public class TaskSchedulingResourceAllocatingVariableController extends Variable
 	 * @return variables        The same variables with set skills for each variable.
 	 * @implNote skills[i][j] = 1 means Variable i needs Skill j
 	 */
-	protected List<Variable> setResourcesAndSkills(List<Variable> variables, int[][] treq, double[][] lexp, double[] humanCosts, int numberOfSkills, int numberOfHumanResources) {
+	protected List<Variable> setupResourcesAndSkillsForTemplateVariables(List<Variable> variables, int[][] treq, double[][] lexp, double[] humanCosts, int numberOfSkills, int numberOfHumanResources) {
 		for (Variable variable : variables) {
+			Task currentTask = (Task) variable;
+			int currentTaskId = currentTask.getId();
+
 			for (int i = 0; i < numberOfHumanResources; i++) {
 				SkillsInResource skillsInResource = new SkillsInResource();
 				skillsInResource.setResource(new Resource(i, Resource.TYPE.HUMAN, humanCosts[i]));
-				List<Skill> skills = skillsInResource.getRequiredSkills();
+				List<Skill> skills = new ArrayList<>();
 				for (int j = 0; j < numberOfSkills; j++) {
 					/* Only add skill to resource if the skill is necessary to the task */
-					if (treq[((Task) variable).getId()][j] != 0) {
+					if (treq[currentTaskId][j] != 0) {
 						skills.add(new Skill(j, lexp[i][j]));
 					}
 				}
@@ -179,5 +181,22 @@ public class TaskSchedulingResourceAllocatingVariableController extends Variable
 			}
 		}
 		return variables;
+	}
+
+	private boolean isResourceUsed(int resourceId, Resource.TYPE resourceType, List<?> resources) {
+		if (resourceType == Resource.TYPE.HUMAN) {
+			for (SkillsInResource skillsInResource : (List<SkillsInResource>) resources) {
+				if (skillsInResource.getResource().getId() == resourceId) {
+					return true;
+				}
+			}
+		} else if (resourceType == Resource.TYPE.MACHINE) {
+			for (Resource resource : (List<Resource>) resources) {
+				if (resource.getId() == resourceId) {
+					return true;
+				}
+			}
+		}
+		return false;
 	}
 }
