@@ -104,9 +104,9 @@ public class Solution implements Comparable  {
 			return -1;
 		else if (equalCount == objectiveSize)
 			return 0;
-		else if (lesserCount > 0 && equalCount > 0 && greaterCount == 0)
+		else if (lesserCount + equalCount == objectiveSize)
 			return -1;
-		else if (greaterCount > 0 && equalCount > 0 && lesserCount == 0)
+		else if (greaterCount + equalCount == objectiveSize)
 			return 1;
 		else
 			return 0;

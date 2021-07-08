@@ -11,17 +11,18 @@ import java.util.List;
 public class ProposedCrossoverOperator1 extends CrossoverOperator {
     @Override
     public Object execute(Object object) throws CloneNotSupportedException {
-        List<Solution> solutions = (List<Solution>) object;
+        List<Solution> matingSolutions = (List<Solution>) object;
         List<Solution> crossoveredSolutions = new ArrayList<>();
 
         int solutionSetSize = (int) this.getParameters().get("solutionSetSize");
-        while (crossoveredSolutions.size() < solutionSetSize) {
-            int parentIndex1 = (int) Math.floor(Math.random() * solutionSetSize);
-            int parentIndex2 = (int) Math.floor(Math.random() * solutionSetSize);
+        int matingSolutionSize = matingSolutions.size();
+        while (crossoveredSolutions.size() <= solutionSetSize) {
+            int parentIndex1 = (int) Math.floor(Math.random() * matingSolutionSize);
+            int parentIndex2 = (int) Math.floor(Math.random() * matingSolutionSize);
 
             if(parentIndex1 != parentIndex2) {
-                Solution parent1 = solutions.get(parentIndex1);
-                Solution parent2 = solutions.get(parentIndex2);
+                Solution parent1 = matingSolutions.get(parentIndex1);
+                Solution parent2 = matingSolutions.get(parentIndex2);
                 crossoveredSolutions.addAll(crossover(parent1, parent2));
             }
         }

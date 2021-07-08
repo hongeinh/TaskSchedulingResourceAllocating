@@ -33,7 +33,7 @@ public class RouletteWheelSelectionOperator extends SelectionOperator {
 			if (totalProbability >= random)
 				break;
 		}
-		return solutions;
+		return chosenSolutions;
 	}
 
 }

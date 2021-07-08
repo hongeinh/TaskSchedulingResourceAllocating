@@ -64,7 +64,6 @@ public class NSGAIIAlgorithm extends Algorithm {
 		System.out.print("\n- Combine solution sets -- ");
 		List<Solution> jointSolutions = Stream.concat(solutions.stream(), offspringSolutions.stream())
 				.collect(Collectors.toList());
-		System.out.println("Joint size: " + jointSolutions.size());
 
 //		List<Solution> jointSolutions = new ArrayList<>();
 //		jointSolutions.addAll(solutions);
@@ -73,14 +72,14 @@ public class NSGAIIAlgorithm extends Algorithm {
 		System.out.println("- Evaluate combined solution set");
 		jointSolutions = this.getComparator().computeRankAndDistance(jointSolutions);
 		displaySolutions(jointSolutions, "/result/combine.txt");
+		System.out.println("Joint size: " + jointSolutions.size());
 
 		System.out.println("- Computing final results---------------------------------------------------------------------");
-//		List<Solution> finalSolutions = jointSolutions.subList(0, solutionSetSize + 1);
-		List<Solution> finalSolutions = jointSolutions.subList(0, solutionSetSize - 1);
+		List<Solution> finalSolutions = jointSolutions.subList(0, solutionSetSize );
 
 		displaySolutions(finalSolutions, "/result/final.txt");
-		displaySolutions(finalSolutions.subList(0, 1), "/result/best-solution.txt");
-		return finalSolutions;
+		displaySolutions(jointSolutions.subList(0, 1), "/result/best-solution.txt");
+		return jointSolutions.subList(0, 1);
 	}
 
 	public List<Solution> createInitialSolutionSet(Problem problem) {
