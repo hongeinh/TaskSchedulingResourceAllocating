@@ -1,7 +1,7 @@
 package problem.impl;
 
+import common.STATUS;
 import component.resource.Resource;
-import component.resource.SkillsInResource;
 import component.variable.impl.Task;
 import component.variable.Variable;
 import component.controller.VariableController;
@@ -76,10 +76,10 @@ public class TaskSchedulingResourceAllocatingProblem extends Problem {
 			// experience level for each task
 			double treq = 0;
 
-			List<SkillsInResource> skillsInResources = ((Task) variable).getRequiredSkillsInResources();
+			List<Resource> skillsInResources = ((Task) variable).getRequiredHumanResources();
 
 			// Get the number of skills
-			int skillSize = skillsInResources.get(0).getRequiredSkills().size();
+			int skillSize = skillsInResources.get(0).getSkills().size();
 			// Get the number of assigned resources
 			int numberOfAssignedResources = ((Task) variable).getNumberOfAssignedResources();
 			for (int i = 0; i < skillSize; i++) {
@@ -100,7 +100,7 @@ public class TaskSchedulingResourceAllocatingProblem extends Problem {
 	 * */
 	public Solution evaluateAssignment(Solution solution) {
 		double assignment = 0;
-		int resourceSize = ((Task) solution.getVariables().get(0)).getRequiredSkillsInResources().size();
+		int resourceSize = ((Task) solution.getVariables().get(0)).getRequiredHumanResources().size();
 		for (int i = 0; i < resourceSize; i++) {
 			double resourceAssignmentCount = countResourceAssignedTimes(solution.getVariables(), i);
 			double rjAssignment;
@@ -116,7 +116,7 @@ public class TaskSchedulingResourceAllocatingProblem extends Problem {
 	public double countResourceAssignedTimes(List<Variable> variables, int resourceId) {
 		double count = 0;
 		for (Variable variable: variables) {
-			if (((Task) variable).getRequiredSkillsInResources().get(resourceId).getResource().getStatus() == Resource.STATUS.ASSIGNED)
+			if (((Task) variable).getRequiredHumanResources().get(resourceId).getStatus() == STATUS.ASSIGNED)
 				count++;
 		}
 		return count;
@@ -144,9 +144,9 @@ public class TaskSchedulingResourceAllocatingProblem extends Problem {
 	}
 
 	public boolean isResourceConflict(Variable var1, Variable var2, int resourceId) {
-		Resource resource1 = ((Task) var1).getRequiredSkillsInResources().get(resourceId).getResource();
-		Resource resource2 = ((Task) var2).getRequiredSkillsInResources().get(resourceId).getResource();
-		if (resource1.getStatus() == resource2.getStatus() && resource1.getStatus() == Resource.STATUS.ASSIGNED) {
+		Resource resource1 = ((Task) var1).getRequiredHumanResources().get(resourceId);
+		Resource resource2 = ((Task) var2).getRequiredHumanResources().get(resourceId);
+		if (resource1.getStatus() == resource2.getStatus() && resource1.getStatus() == STATUS.ASSIGNED) {
 			double start1 = ((Task) var1).getStart(); double end1 = ((Task) var1).getDuration() + start1;
 			double start2 = ((Task) var2).getStart(); double end2 = ((Task) var2).getDuration() + start2;
 			if(start1 == start2) {

@@ -1,7 +1,8 @@
 package component.controller.impl;
 
+import common.STATUS;
+import common.TYPE;
 import component.resource.Resource;
-import component.resource.SkillsInResource;
 import component.skill.Skill;
 import component.variable.Variable;
 import component.variable.impl.Order;
@@ -75,8 +76,8 @@ public class FixedMultiorderTaskSchedulingController extends TaskSchedulingResou
 
 		for (Variable variable : tasks) {
 			Task task = (Task) variable;
-			for (SkillsInResource skillsInResource : task.getRequiredSkillsInResources()) {
-				skillsInResource.getResource().setCost(humanCosts[skillsInResource.getResource().getId()]);
+			for (Resource resource : task.getRequiredHumanResources()) {
+				resource.setCost(humanCosts[resource.getId()]);
 			}
 		}
 		return tasks;
@@ -94,28 +95,40 @@ public class FixedMultiorderTaskSchedulingController extends TaskSchedulingResou
 
 
 		for (int i = 0; i < numberOfTasks; i++) {
-			List<SkillsInResource> copySkillsInResources = ((Task) copyVariables.get(i)).getRequiredSkillsInResources();
-			List<SkillsInResource> newSkillsInResources = new ArrayList<>();
-			for (SkillsInResource skillsInResource : copySkillsInResources) {
-				Resource copyResource = skillsInResource.getResource();
-				Resource newResource = new Resource(copyResource.getId(), copyResource.getType(), copyResource.getCost(), copyResource.getStatus());
+			List<Resource> copyResources = ((Task) copyVariables.get(i)).getRequiredHumanResources();
+			List<Resource> newResources = new ArrayList<>();
+			for (Resource resource : copyResources) {
+				Resource newResource = Resource.builder()
+						.id(resource.getId())
+						.type(resource.getType())
+						.cost(resource.getCost())
+						.status(resource.getStatus())
+						.build();
 				List<Skill> skills = new ArrayList<>();
-				for (Skill copySkill : skillsInResource.getRequiredSkills()) {
-					Skill newSkill = new Skill(copySkill.getId(), copySkill.getExperienceLevel());
+				for (Skill copySkill : resource.getSkills()) {
+					Skill newSkill = Skill.builder()
+							.id(copySkill.getId())
+							.experienceLevel(copySkill.getExperienceLevel())
+							.build();
 					skills.add(newSkill);
 				}
-				SkillsInResource newSkillsInResouce = new SkillsInResource(newResource, skills);
-				newSkillsInResources.add(newSkillsInResouce);
+				newResources.add(newResource);
 			}
 
-			List<Resource> copyMachineResources = ((Task) copyVariables.get(i)).getRequiredMachines();
+			List<Resource> copyMachineResources = ((Task) copyVariables.get(i)).getRequiredMachinesResources();
 			List<Resource> newMachineResources = new ArrayList<>();
 			for (Resource copyMachineResource : copyMachineResources) {
-				Resource newMachineResource = new Resource(copyMachineResource.getId(), copyMachineResource.getType(), copyMachineResource.getCost(), copyMachineResource.getStatus());
+				Resource newMachineResource = Resource.builder()
+						.id(copyMachineResource.getId())
+						.type(copyMachineResource.getType())
+						.cost(copyMachineResource.getCost())
+						.status(copyMachineResource.getStatus())
+						.build();
+
 				newMachineResources.add(newMachineResource);
 			}
-			((Task) currentVariables.get(i)).setRequiredMachines(newMachineResources);
-			((Task) currentVariables.get(i)).setRequiredSkillsInResources(newSkillsInResources);
+			((Task) currentVariables.get(i)).setRequiredMachinesResources(newMachineResources);
+			((Task) currentVariables.get(i)).setRequiredHumanResources(newResources);
 		}
 		return currentVariables;
 	}
@@ -126,11 +139,16 @@ public class FixedMultiorderTaskSchedulingController extends TaskSchedulingResou
 			int id = ((Task) variable).getId();
 			for (int i = 0; i < numberOfMachineResources; i++) {
 				if (mreq[id][i] != 0) {
-					Resource resource = new Resource(i, Resource.TYPE.MACHINE, machineCosts[i], Resource.STATUS.USEFUL);
+					Resource resource = Resource.builder()
+							.id(i)
+							.type(TYPE.MACHINE)
+							.status(STATUS.USEFUL)
+							.cost(machineCosts[i])
+							.build();
 					machineResource.add(resource);
 				}
 			}
-			((Task) variable).setRequiredMachines(machineResource);
+			((Task) variable).setRequiredMachinesResources(machineResource);
 		}
 
 		return tasks;
@@ -179,7 +197,7 @@ public class FixedMultiorderTaskSchedulingController extends TaskSchedulingResou
 	}
 
 	private Variable getMaxEndTimePrecedentTask(Variable currentTask, List<Variable> subList) {
-		List<Integer> precedentTasksIds = getPrecedentTasksIds((((Task) currentTask).getPredecessors()));
+		List<Integer> precedentTasksIds = ((((Task) currentTask).getPredecessors()));
 		List<Variable> precedentTasksObjects = getPrecedentTasksObjects(currentTask, precedentTasksIds);
 
 		double maxEndTime = 0;

@@ -1,55 +1,30 @@
 package component.resource;
 
+import common.STATUS;
+import common.TYPE;
+import component.skill.Skill;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.security.Signature;
 import java.util.ArrayList;
 import java.util.List;
 
 
 @Getter
 @Setter
+@Builder
 public class Resource {
 
 	private int id;
 	private STATUS status;
 	private TYPE type;
 	private double cost;
+	private List<Skill> skills;
 
-	public Resource(int id) {
-		this.id = id;
-		this.status = STATUS.NOT_USEFUL;
-	}
 
-	public Resource(int id, double cost) {
-		this(id);
-		this.cost = cost;
-	}
 
-	public Resource(int id, TYPE type) {
-		this(id);
-		this.type = type;
-	}
 
-	public Resource (int id, TYPE type, double cost) {
-		this(id, type);
-		this.cost = cost;
-	}
-
-	public Resource (int id, TYPE type, double cost, STATUS status) {
-		this(id, type, cost);
-		this.status = status;
-	}
-
-	public enum STATUS {
-		ASSIGNED,
-		NOT_ASSIGNED,
-		USEFUL,
-		NOT_USEFUL
-	};
-
-	public enum TYPE {
-		MACHINE,
-		HUMAN
-	}
 }

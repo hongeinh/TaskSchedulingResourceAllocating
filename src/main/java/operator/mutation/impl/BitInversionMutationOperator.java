@@ -1,7 +1,8 @@
 package operator.mutation.impl;
 
+import common.STATUS;
+import component.Resource;
 import component.resource.Resource;
-import component.resource.SkillsInResource;
 import component.variable.Variable;
 import operator.mutation.MutationOperator;
 import solution.Solution;
@@ -28,11 +29,11 @@ public class BitInversionMutationOperator extends MutationOperator {
             double probability = Math.random();
             if (probability < geneMutationProbability) {
                 int mutateIndex = (int) Math.floor(Math.random() * (int )this.getParameters().get("chromosomeSize"));
-                SkillsInResource skillsInResource = ((List<SkillsInResource>) variable.getValue()).get(mutateIndex);
-                if (skillsInResource.getResource().getStatus() == Resource.STATUS.NOT_ASSIGNED) {
-                    skillsInResource.getResource().setStatus(Resource.STATUS.ASSIGNED);
-                } else if (skillsInResource.getResource().getStatus() == Resource.STATUS.ASSIGNED) {
-                    skillsInResource.getResource().setStatus(Resource.STATUS.NOT_ASSIGNED);
+                Resource resource = ((List<Resource>) variable.getValue()).get(mutateIndex);
+                if (resource.getStatus() == STATUS.NOT_ASSIGNED) {
+                    resource.setStatus(STATUS.ASSIGNED);
+                } else if (resource.getStatus() == STATUS.ASSIGNED) {
+                    resource.setStatus(STATUS.NOT_ASSIGNED);
                 }
             }
         }

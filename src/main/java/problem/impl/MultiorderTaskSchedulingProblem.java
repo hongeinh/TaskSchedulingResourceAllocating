@@ -2,7 +2,6 @@ package problem.impl;
 
 import component.controller.VariableController;
 import component.resource.Resource;
-import component.resource.SkillsInResource;
 import component.skill.Skill;
 import component.variable.Variable;
 import component.variable.impl.Task;
@@ -68,7 +67,7 @@ public class MultiorderTaskSchedulingProblem extends TaskSchedulingResourceAlloc
 
 		for (Variable variable: variables) {
 			double taskHumanCost = calculateHumanCost(((Task) variable).getRequiredSkillsInResources(), ((Task) variable).getDuration());
-			double taskMachineCost = calculateMachineCost(((Task) variable).getRequiredMachines(), ((Task) variable).getDuration());
+			double taskMachineCost = calculateMachineCost(((Task) variable).getRequiredMachinesResources(), ((Task) variable).getDuration());
 			totalCost += taskHumanCost + taskMachineCost;
 		}
 		solution.getObjectives()[1] = totalCost;

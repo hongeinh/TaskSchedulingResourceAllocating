@@ -1,5 +1,6 @@
 package operator.crossover.impl;
 
+import common.STATUS;
 import component.resource.Resource;
 import component.variable.impl.Task;
 import operator.crossover.CrossoverOperator;
@@ -50,12 +51,12 @@ public class ProposedCrossoverOperator1 extends CrossoverOperator {
                 varB.setScheduledTime(varB.getScheduledTime() + diff * 0.1);
             }
 
-            int numberOfResources = varA.getRequiredSkillsInResources().size();
-            Resource.STATUS [] aAssignedResouce = new Resource.STATUS[numberOfResources];
+            int numberOfResources = varA.getRequiredHumanResources().size();
+            STATUS[] aAssignedResouce = new STATUS[numberOfResources];
             for (int j = 0; j < numberOfResources; j++) {
-                aAssignedResouce[j] = varA.getRequiredSkillsInResources().get(j).getResource().getStatus();
-                varA.getRequiredSkillsInResources().get(j).getResource().setStatus(varB.getRequiredSkillsInResources().get(j).getResource().getStatus());
-                varB.getRequiredSkillsInResources().get(j).getResource().setStatus(aAssignedResouce[j]);
+                aAssignedResouce[j] = varA.getRequiredHumanResources().get(j).getStatus();
+                varA.getRequiredHumanResources().get(j).setStatus(varB.getRequiredHumanResources().get(j).getStatus());
+                varB.getRequiredMachinesResources().get(j).setStatus(aAssignedResouce[j]);
             }
 
         }

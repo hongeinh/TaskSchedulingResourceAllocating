@@ -1,13 +1,15 @@
 package component.controller.impl;
 
+import common.STATUS;
+import common.TYPE;
 import component.controller.VariableController;
 import component.resource.Resource;
-import component.resource.SkillsInResource;
 import component.skill.Skill;
 import component.variable.Variable;
 import component.variable.impl.Task;
 
 import java.util.*;
+
 
 public class TaskSchedulingResourceAllocatingVariableController extends VariableController {
 
@@ -20,53 +22,53 @@ public class TaskSchedulingResourceAllocatingVariableController extends Variable
 	}
 
 	protected Variable setVariableTime(Variable variable, double k) {
-		Task currentVariable = (Task) variable;
-		List<Variable> predescessors = currentVariable.getPredecessors();
-
-		for (Variable pre : predescessors) {
-			Task predecessor = (Task) pre;
-			double start = 0;
-			if (currentVariable.getStart() > predecessor.getStart() + predecessor.getDuration()) {
-				start = currentVariable.getStart();
-			} else {
-				start = (predecessor.getStart() + predecessor.getDuration());
-			}
-
-			double rand = Math.random() * k;
-
-			((Task) variable).setStart(start);
-			start = start + rand;
-			((Task) variable).setScheduledTime(start);
-		}
+//		Task currentVariable = (Task) variable;
+//		List<Integer> predescessors = currentVariable.getPredecessors();
+//
+//		for (Variable pre : predescessors) {
+//			Task predecessor = (Task) pre;
+//			double start = 0;
+//			if (currentVariable.getStart() > predecessor.getStart() + predecessor.getDuration()) {
+//				start = currentVariable.getStart();
+//			} else {
+//				start = (predecessor.getStart() + predecessor.getDuration());
+//			}
+//
+//			double rand = Math.random() * k;
+//
+//			((Task) variable).setStart(start);
+//			start = start + rand;
+//			((Task) variable).setScheduledTime(start);
+//		}
 		return variable;
 	}
 
 
 	protected Variable setupResourceForTemplateVariable(Variable variable) {
 
-		List<SkillsInResource> skillsInResources = ((Task) variable).getRequiredSkillsInResources();
-		skillsInResources = this.isUseful(skillsInResources);
-
-		for (SkillsInResource skillsInResource : skillsInResources) {
-			if (skillsInResource.getResource().getStatus() == Resource.STATUS.USEFUL) {
-				double rand = Math.random();
-				if (rand >= 0.5)
-					skillsInResource.getResource().setStatus(Resource.STATUS.ASSIGNED);
-				else
-					skillsInResource.getResource().setStatus(Resource.STATUS.NOT_ASSIGNED);
-			}
-		}
-
-		((Task) variable).setRequiredSkillsInResources(skillsInResources);
+//		List<SkillsInResource> skillsInResources = ((Task) variable).getRequiredSkillsInResources();
+//		skillsInResources = this.isUseful(skillsInResources);
+//
+//		for (SkillsInResource skillsInResource : skillsInResources) {
+//			if (skillsInResource.getResource().getStatus() == Resource.STATUS.USEFUL) {
+//				double rand = Math.random();
+//				if (rand >= 0.5)
+//					skillsInResource.getResource().setStatus(Resource.STATUS.ASSIGNED);
+//				else
+//					skillsInResource.getResource().setStatus(Resource.STATUS.NOT_ASSIGNED);
+//			}
+//		}
+//
+//		((Task) variable).setRequiredSkillsInResources(skillsInResources);
 		return variable;
 	}
 
-	protected List<SkillsInResource> isUseful(List<SkillsInResource> skillsInResources) {
-		for (SkillsInResource skillsInResource : skillsInResources) {
-			List<Skill> skills = skillsInResource.getRequiredSkills();
+	protected List<Resource> isUseful(List<Resource> skillsInResources) {
+		for (Resource skillsInResource : skillsInResources) {
+			List<Skill> skills = skillsInResource.getSkills();
 			for (Skill rSkill : skills) {
 				if (rSkill.getExperienceLevel() > 0) {
-					skillsInResource.getResource().setStatus(Resource.STATUS.USEFUL);
+					skillsInResource.setStatus(STATUS.USEFUL);
 					break;
 				}
 			}
@@ -138,11 +140,11 @@ public class TaskSchedulingResourceAllocatingVariableController extends Variable
 					Task ti = (Task) variables.get(i);
 					Task tj = (Task) variables.get(j);
 					if (tasks[i][j] == 1) {
-						ti.getDescendants().add(tj);
-						tj.getPredecessors().add(ti);
+						ti.getDescendants().add(tj.getId());
+						tj.getPredecessors().add(ti.getId());
 					} else if (tasks[j][i] == 1) {
-						ti.getPredecessors().add(tj);
-						tj.getDescendants().add(ti);
+						ti.getPredecessors().add(tj.getId());
+						tj.getDescendants().add(ti.getId());
 					}
 				}
 			}
@@ -167,31 +169,38 @@ public class TaskSchedulingResourceAllocatingVariableController extends Variable
 			int currentTaskId = currentTask.getId();
 
 			for (int i = 0; i < numberOfHumanResources; i++) {
-				SkillsInResource skillsInResource = new SkillsInResource();
-				skillsInResource.setResource(new Resource(i, Resource.TYPE.HUMAN, humanCosts[i]));
+				Resource resource = Resource.builder()
+						.id(i)
+						.type(TYPE.HUMAN)
+						.cost(humanCosts[i])
+						.build();
 				List<Skill> skills = new ArrayList<>();
 				for (int j = 0; j < numberOfSkills; j++) {
 					/* Only add skill to resource if the skill is necessary to the task */
 					if (treq[currentTaskId][j] != 0) {
-						skills.add(new Skill(j, lexp[i][j]));
+						Skill skill = Skill.builder()
+								.id(j)
+								.experienceLevel(lexp[i][j])
+								.build();
+						skills.add(skill);
 					}
 				}
-				skillsInResource.setRequiredSkills(skills);
-				((Task) variable).getRequiredSkillsInResources().add(skillsInResource);
+				resource.setSkills(skills);
+				((Task) variable).getRequiredHumanResources().add(resource);
 			}
 		}
 		return variables;
 	}
 
-	private boolean isResourceUsed(int resourceId, Resource.TYPE resourceType, List<?> resources) {
-		if (resourceType == Resource.TYPE.HUMAN) {
-			for (SkillsInResource skillsInResource : (List<SkillsInResource>) resources) {
-				if (skillsInResource.getResource().getId() == resourceId) {
+	private boolean isResourceUsed(int resourceId, TYPE resourceType, List<Resource> resources) {
+		if (resourceType == TYPE.HUMAN) {
+			for (Resource resource : resources) {
+				if (resource.getId() == resourceId) {
 					return true;
 				}
 			}
-		} else if (resourceType == Resource.TYPE.MACHINE) {
-			for (Resource resource : (List<Resource>) resources) {
+		} else if (resourceType == TYPE.MACHINE) {
+			for (Resource resource : resources) {
 				if (resource.getId() == resourceId) {
 					return true;
 				}

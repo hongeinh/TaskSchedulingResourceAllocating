@@ -1,55 +1,45 @@
 package component.variable.impl;
 
-import component.resource.SkillsInResource;
+import common.STATUS;
 import component.resource.Resource;
+import component.skill.Skill;
 import component.variable.Variable;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Getter
 @Setter
+@Builder
 public class Task extends Variable {
 	private int id;
+	private int orderId;
 	private double scheduledTime;
 	private double duration;
 	private double start;
 	private double idle;
-	private List<Variable> predecessors;
-	private List<Variable> descendants;
-	private List<SkillsInResource> requiredSkillsInResources;
-	private List<Resource> requiredMachines;
+	private List<Integer> predecessors;
+	private List<Integer> descendants;
+	private List<Resource> requiredMachinesResources;
+	private List<Resource> requiredHumanResources;
+
 
 	public Task() {
 		this.predecessors = new ArrayList<>();
 		this.descendants = new ArrayList<>();
-		this.requiredSkillsInResources = new ArrayList<>();
-		this.requiredMachines = new ArrayList<>();
-	}
-
-	public Task(int id, double scheduledTime, double start, double idle) {
-		this();
-		this.id = id;
-		this.scheduledTime = scheduledTime;
-		this.start = start;
-		this.idle = idle;
-	}
-
-	public Task(Task previousTask) {
-		this();
-		this.id = previousTask.getId();
-		this.duration = previousTask.getDuration();
-		this.scheduledTime = previousTask.getScheduledTime();
-		this.start = previousTask.getStart();
-		setSimilarValueTask(previousTask);
+		this.requiredMachinesResources = new ArrayList<>();
+		this.requiredHumanResources = new ArrayList<>();
 	}
 
 	@Override
 	public Object getValue() {
-		return this.getRequiredSkillsInResources();
+		return this.getRequiredHumanResources();
 	}
 
 	@Override
@@ -62,17 +52,25 @@ public class Task extends Variable {
 		}
 	}
 
+	private String getResourceIdsString(List<Resource> resources, String delimeter) {
+		List<String> humanResourceIds = resources.stream()
+				.map(resource -> Integer.toString(resource.getId()))
+				.collect(Collectors.toList());
+		return humanResourceIds.stream().map(String::valueOf).collect(Collectors.joining(delimeter));
+	}
 
 	public String toString() {
-		StringBuilder stringBuilder = new StringBuilder("*** Task " + this.id + ":" +
+		StringBuilder stringBuilder = new StringBuilder();
+		if(this.orderId != 0)
+			stringBuilder.append("\nOrder: " + orderId);
+		stringBuilder.append("Task " + this.id + ":" +
 				"\tScheduled start: " + this.scheduledTime +
 				"\tStart: " + this.start +
 				"\tDuration: " + this.duration +
-				"\tResource: ");
-		for (SkillsInResource skillsInResource: requiredSkillsInResources) {
-			if (skillsInResource.getResource().getStatus() == Resource.STATUS.ASSIGNED)
-				stringBuilder.append(skillsInResource.getResource().getId() + " ");
-		}
+				"\tHuman Resource: ");
+		stringBuilder.append(getResourceIdsString(requiredHumanResources, " "));
+		stringBuilder.append("\t---\tMachine Resource: ");
+		stringBuilder.append(getResourceIdsString(requiredMachinesResources, " "));
 		return stringBuilder.toString();
 	}
 
@@ -89,8 +87,8 @@ public class Task extends Variable {
 
 	public double getMaxExperienceForSkill(int i) {
 		double maxExperience = 0.0;
-		for(SkillsInResource skillsInResource: requiredSkillsInResources) {
-			double exp = skillsInResource.getRequiredSkills().get(i).getExperienceLevel();
+		for(Resource resource: requiredHumanResources) {
+			double exp = resource.getSkills().get(i).getExperienceLevel();
 			maxExperience = (maxExperience > exp) ? maxExperience : exp;
 		}
 
@@ -99,16 +97,16 @@ public class Task extends Variable {
 
 	public double getTotalExperienceForSkill(int i) {
 		double totalExperience = 0.0;
-		for(SkillsInResource skillsInResource: requiredSkillsInResources) {
-			totalExperience += skillsInResource.getRequiredSkills().get(i).getExperienceLevel();
+		for(Resource Resource: requiredHumanResources) {
+			totalExperience += Resource.getSkills().get(i).getExperienceLevel();
 		}
 		return totalExperience;
 	}
 
 	public int getNumberOfAssignedResources() {
 		int resourceCount = 0;
-		for (SkillsInResource skillsInResource: requiredSkillsInResources) {
-			if (skillsInResource.getResource().getStatus() == Resource.STATUS.ASSIGNED)
+		for (Resource Resource: requiredHumanResources) {
+			if (Resource.getStatus() == STATUS.ASSIGNED)
 				resourceCount++;
 		}
 		return resourceCount;
@@ -119,8 +117,8 @@ public class Task extends Variable {
 //		setSimilarPredecessors(oldTask.getPredecessors());
 		setPredecessors(oldTask.getPredecessors());
 		setDescendants(oldTask.getDescendants());
-		setSimilarRequiredMachines(oldTask.getRequiredMachines());
-		setSimilarRequiredSkillsInResources(oldTask.getRequiredSkillsInResources());
+		setSimilarRequiredMachines(oldTask.getRequiredMachinesResources());
+		setSimilarrequiredHumanResources(oldTask.getRequiredHumanResources());
 	}
 
 	private void setSimilarDescendants(List<Variable> oldDescendants) {
@@ -133,13 +131,33 @@ public class Task extends Variable {
 
 	private void setSimilarRequiredMachines(List<Resource> oldMachines) {
 		for (Resource resource: oldMachines) {
-			this.getRequiredMachines().add(new Resource(resource.getId(), resource.getType(), resource.getCost()));
+			Resource machineResource = Resource.builder()
+					.id(resource.getId())
+					.type(resource.getType())
+					.cost(resource.getCost())
+					.build();
+			this.getRequiredMachinesResources().add(machineResource);
 		}
 	}
 
-	private void setSimilarRequiredSkillsInResources(List<SkillsInResource> oldSkillsInResources) {
-		for (SkillsInResource skillsInResource: oldSkillsInResources) {
-			this.getRequiredSkillsInResources().add(skillsInResource.getSimilarSkillInResource());
+	private void setSimilarrequiredHumanResources(List<Resource> oldResources) {
+		for (Resource oldResource: oldResources) {
+			List<Skill> oldSkillList = oldResource.getSkills();
+			List<Skill> newSkillList = new ArrayList<>();
+			for (Skill oldSkill: oldSkillList) {
+				Skill newSkill = Skill.builder()
+						.id(oldSkill.getId())
+						.experienceLevel(oldSkill.getExperienceLevel())
+						.build();
+				newSkillList.add(newSkill);
+			}
+			Resource humanResource = Resource.builder()
+					.id(oldResource.getId())
+					.type(oldResource.getType())
+					.cost(oldResource.getCost())
+					.skills(newSkillList)
+					.build();
+			this.requiredHumanResources.addAll((Collection<? extends Resource>) humanResource);
 		}
 	}
 }
