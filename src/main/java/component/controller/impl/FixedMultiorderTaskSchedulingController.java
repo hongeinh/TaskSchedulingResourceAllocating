@@ -49,7 +49,7 @@ public class FixedMultiorderTaskSchedulingController extends TaskSchedulingResou
 
 			// tinh tgian cho task
 			for (Variable newTask : newTasks) {
-				newTask = super.setVariableTime(newTask, k * maxDuration);
+				super.setVariableTime(newTask, newTasks, k * maxDuration);
 			}
 
 			order.setTasks(newTasks);
@@ -72,8 +72,12 @@ public class FixedMultiorderTaskSchedulingController extends TaskSchedulingResou
 		double[] humanCosts = (double[]) parameters.get("humanCosts");
 		double[] machineCosts = (double[]) parameters.get("machineCosts");
 		double[][] mreq = (double[][]) parameters.get("mreq");
-		tasks = setMachineResources(tasks, (Integer) parameters.get("numberOfMachineResources"), machineCosts, mreq);
+		tasks = setupMachineResources(tasks, (Integer) parameters.get("numberOfMachineResources"), machineCosts, mreq);
+		tasks = setupHumanResources(tasks, humanCosts);
+		return tasks;
+	}
 
+	private List<Variable> setupHumanResources(List<Variable> tasks, double [] humanCosts) {
 		for (Variable variable : tasks) {
 			Task task = (Task) variable;
 			for (Resource resource : task.getRequiredHumanResources()) {
@@ -133,7 +137,7 @@ public class FixedMultiorderTaskSchedulingController extends TaskSchedulingResou
 		return currentVariables;
 	}
 
-	private List<Variable> setMachineResources(List<Variable> tasks, Integer numberOfMachineResources, double[] machineCosts, double[][] mreq) {
+	private List<Variable> setupMachineResources(List<Variable> tasks, Integer numberOfMachineResources, double[] machineCosts, double[][] mreq) {
 		for (Variable variable : tasks) {
 			List<Resource> machineResource = new ArrayList<>();
 			int id = ((Task) variable).getId();
@@ -213,29 +217,6 @@ public class FixedMultiorderTaskSchedulingController extends TaskSchedulingResou
 		}
 
 		return maxEndTimeTask;
-	}
-
-	private List<Variable> getPrecedentTasksObjects(Variable currentTask, List<Integer> precedentTasksIds) {
-		List<Variable> precedentTasksObjects = new ArrayList<>();
-		List<Variable> predecessors = ((Task) currentTask).getPredecessors();
-		for (Variable predecessor : predecessors) {
-			if (precedentTasksIds.contains(((Task) predecessor).getId())) {
-				precedentTasksObjects.add(predecessor);
-			}
-		}
-
-		return precedentTasksObjects;
-	}
-
-	private List<Integer> getPrecedentTasksIds(List<Variable> precendentTasks) {
-		List<Integer> precedentTasksIds = new ArrayList<>();
-		for (Variable variable : precendentTasks) {
-			Task precedentTask = (Task) variable;
-			int id = precedentTask.getId();
-			precedentTasksIds.add(id);
-		}
-
-		return precedentTasksIds;
 	}
 
 }

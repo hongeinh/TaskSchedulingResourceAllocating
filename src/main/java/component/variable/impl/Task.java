@@ -113,20 +113,10 @@ public class Task extends Variable {
 	}
 
 	public void setSimilarValueTask(Task oldTask) {
-//		setSimilarDescendants(oldTask.getDescendants());
-//		setSimilarPredecessors(oldTask.getPredecessors());
 		setPredecessors(oldTask.getPredecessors());
 		setDescendants(oldTask.getDescendants());
 		setSimilarRequiredMachines(oldTask.getRequiredMachinesResources());
 		setSimilarrequiredHumanResources(oldTask.getRequiredHumanResources());
-	}
-
-	private void setSimilarDescendants(List<Variable> oldDescendants) {
-
-	}
-
-	private void setSimilarPredecessors(List<Variable> oldPredecessor) {
-
 	}
 
 	private void setSimilarRequiredMachines(List<Resource> oldMachines) {

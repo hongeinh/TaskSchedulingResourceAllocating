@@ -15,31 +15,31 @@ public class TaskSchedulingResourceAllocatingVariableController extends Variable
 
 	protected List<Variable> variables = null;
 
-	protected Variable setVariableParameters(Variable variable, double k) {
-		variable = setVariableTime(variable, k);
+	protected Variable setVariableParameters(Variable variable, List<Variable> variables, double k) {
+		variable = setVariableTime(variable, variables, k);
 		variable = setupResourceForTemplateVariable(variable);
 		return variable;
 	}
 
-	protected Variable setVariableTime(Variable variable, double k) {
-//		Task currentVariable = (Task) variable;
-//		List<Integer> predescessors = currentVariable.getPredecessors();
-//
-//		for (Variable pre : predescessors) {
-//			Task predecessor = (Task) pre;
-//			double start = 0;
-//			if (currentVariable.getStart() > predecessor.getStart() + predecessor.getDuration()) {
-//				start = currentVariable.getStart();
-//			} else {
-//				start = (predecessor.getStart() + predecessor.getDuration());
-//			}
-//
-//			double rand = Math.random() * k;
-//
-//			((Task) variable).setStart(start);
-//			start = start + rand;
-//			((Task) variable).setScheduledTime(start);
-//		}
+	protected Variable setVariableTime(Variable variable, List<Variable> variables, double k) {
+		Task currentVariable = (Task) variable;
+		List<Integer> predescessorIndexes = currentVariable.getPredecessors();
+
+		for (Integer predecessorIndex : predescessorIndexes) {
+			Task predecessor = (Task) variables.get(predecessorIndex);
+			double start = 0;
+			if (currentVariable.getStart() > predecessor.getStart() + predecessor.getDuration()) {
+				start = currentVariable.getStart();
+			} else {
+				start = (predecessor.getStart() + predecessor.getDuration());
+			}
+
+			double rand = Math.random() * k;
+
+			((Task) variable).setStart(start);
+			start = start + rand;
+			((Task) variable).setScheduledTime(start);
+		}
 		return variable;
 	}
 
@@ -92,7 +92,7 @@ public class TaskSchedulingResourceAllocatingVariableController extends Variable
 
 		int maxDuration = (int) parameters.get("maxDuration");
 		for (Variable variable : variables)
-			this.setVariableParameters(variable, k * maxDuration);
+			this.setVariableParameters(variable, variables, k * maxDuration);
 
 		return variables;
 	}
