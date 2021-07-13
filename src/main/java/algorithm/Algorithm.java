@@ -44,17 +44,47 @@ public abstract class Algorithm {
 	}
 
 	public void displaySolutions(List<Solution> solutions, String filename) throws IOException {
-		String currentPath = System.getProperty("user.dir") +"/src/main/java";
-		System.out.println(currentPath);
-		FileWriter fileWriter = new FileWriter(currentPath +  filename);
-		PrintWriter printWriter = new PrintWriter(fileWriter);
-		printWriter.println(filename);
+		PrintWriter printWriter = createPrintWriter("/result/solution/", filename);
 		int i = 1;
 		for (Solution solution: solutions) {
 			printWriter.println(i + ". " + solution.toString() +"\n");
-//			System.out.println(i + ". " + solution.toString() + "\n");
 			i++;
 		}
+	}
+
+	public void displayFitness(List<Solution> solutions, String filename) throws IOException {
+		PrintWriter printWriter = createPrintWriter("/result/fitness/", filename);
+		int i = 1;
+		printWriter.println("SolutionId, Rank, Distance");
+		for (Solution solution: solutions) {
+			printWriter.println(i + ", " + solution.getFitness()[0] + ", " + solution.getFitness()[1] +"\n");
+			i++;
+		}
+	}
+
+	public void displayObjectives(List<Solution> solutions, String filename) throws IOException {
+		PrintWriter printWriter = createPrintWriter("/result/objective/", filename);
+		int i = 1;
+		printWriter.println("SolutionId, Duration, Cost, Conflict");
+		int objectiveSize = solutions.get(0).getObjectives().length;
+
+		for (Solution solution: solutions) {
+			StringBuilder printString = new StringBuilder(i + ", ");
+			for (int j = 0; j < objectiveSize - 1; j++) {
+				printString.append(solution.getObjectives()[j] + ",");
+
+			}
+			printString.append(solution.getObjectives()[objectiveSize - 1] + "\n");
+			printWriter.println(printString);
+			i++;
+		}
+	}
+
+	private PrintWriter createPrintWriter(String dirname, String filename) throws IOException {
+		String currentPath = System.getProperty("user.dir") +"/src/main/java";
+		System.out.println(currentPath);
+		FileWriter fileWriter = new FileWriter(currentPath +  dirname + filename);
+		return new PrintWriter(fileWriter);
 	}
 
 }

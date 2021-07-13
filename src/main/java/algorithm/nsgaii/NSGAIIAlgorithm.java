@@ -47,7 +47,7 @@ public class NSGAIIAlgorithm extends Algorithm {
 		System.out.println("- Rank initial solution set");
 		solutions = this.getComparator().computeRankAndDistance(solutions);
 
-		displaySolutions(solutions, "//result/parent.txt");
+		displaySolutions(solutions, "/parent.txt");
 
 		/* Step 4: Create offspring solution set*/
 		System.out.print("\n- Create offspring solution set -- ");
@@ -58,7 +58,7 @@ public class NSGAIIAlgorithm extends Algorithm {
 		System.out.println("- Evaluate offspring solution set");
 		offspringSolutions = evaluateSolutionSet(problem, offspringSolutions);
 
-		displaySolutions(offspringSolutions, "/result/offspring.txt");
+		displaySolutions(offspringSolutions, "offspring.txt");
 
 		/* Step 5: Join two achieved solution sets into one jointSolution set*/
 		System.out.print("\n- Combine solution sets -- ");
@@ -71,14 +71,14 @@ public class NSGAIIAlgorithm extends Algorithm {
 		/* Step 6: Rank and distance sort for solution set to find Pareto solution set*/
 		System.out.println("- Evaluate combined solution set");
 		jointSolutions = this.getComparator().computeRankAndDistance(jointSolutions);
-		displaySolutions(jointSolutions, "/result/combine.txt");
+		displaySolutions(jointSolutions, "combine.txt");
 		System.out.println("Joint size: " + jointSolutions.size());
 
 		System.out.println("- Computing final results---------------------------------------------------------------------");
 		List<Solution> finalSolutions = jointSolutions.subList(0, solutionSetSize );
 
-		displaySolutions(finalSolutions, "/result/final.txt");
-		displaySolutions(jointSolutions.subList(0, 1), "/result/best-solution.txt");
+		displaySolutions(finalSolutions, "final.txt");
+		displaySolutions(jointSolutions.subList(0, 1), "best-solution.txt");
 		return jointSolutions.subList(0, 1);
 	}
 

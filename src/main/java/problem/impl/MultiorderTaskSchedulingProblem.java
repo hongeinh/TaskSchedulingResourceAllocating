@@ -1,6 +1,8 @@
 package problem.impl;
 
 import component.controller.VariableController;
+import component.resource.HumanResource;
+import component.resource.MachineResource;
 import component.resource.Resource;
 import component.skill.Skill;
 import component.variable.Variable;
@@ -66,7 +68,7 @@ public class MultiorderTaskSchedulingProblem extends TaskSchedulingResourceAlloc
 		double totalCost = 0.0;
 
 		for (Variable variable: variables) {
-			double taskHumanCost = calculateHumanCost(((Task) variable).getRequiredSkillsInResources(), ((Task) variable).getDuration());
+			double taskHumanCost = calculateHumanCost( ((Task) variable).getRequiredHumanResources(), ((Task) variable).getDuration());
 			double taskMachineCost = calculateMachineCost(((Task) variable).getRequiredMachinesResources(), ((Task) variable).getDuration());
 			totalCost += taskHumanCost + taskMachineCost;
 		}
@@ -74,26 +76,26 @@ public class MultiorderTaskSchedulingProblem extends TaskSchedulingResourceAlloc
 		return solution;
 	}
 
-	private double calculateMachineCost(List<Resource> machineResources, double duration) {
+	private double calculateMachineCost(List<MachineResource> machineResources, double duration) {
 		double taskMachineCost = 0;
-		for (Resource machine: machineResources) {
+		for (MachineResource machine: machineResources) {
 			double machineCost = machine.getCost() * duration;
 			taskMachineCost += machineCost;
 		}
 		return taskMachineCost;
 	}
-	private double calculateHumanCost(List<SkillsInResource> skillsInResources, double duration) {
+	private double calculateHumanCost(List<HumanResource> resources, double duration) {
 		double taskHumanCost = 0;
-		for (SkillsInResource skillsInResource: skillsInResources) {
-			double resourceCost = skillsInResource.getResource().getCost();
+		for (HumanResource resource: resources) {
+			double resourceCost = resource.getCost();
 			double totalLexp = 0;
-			List<Skill> skills = skillsInResource.getRequiredSkills();
+			List<Skill> skills = resource.getSkills();
 			for (Skill skill: skills) {
 				totalLexp += skill.getExperienceLevel();
 			}
 			taskHumanCost += resourceCost * totalLexp;
 		}
-		return taskHumanCost;
+		return taskHumanCost * duration;
 	}
 
 	private List<Variable> getTimeEvaluatingVariables(List<Variable> variables, int id) {

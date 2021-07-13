@@ -1,8 +1,9 @@
 package component.controller.impl;
 
 import common.STATUS;
-import common.TYPE;
 import component.controller.VariableController;
+import component.resource.HumanResource;
+import component.resource.MachineResource;
 import component.resource.Resource;
 import component.skill.Skill;
 import component.variable.Variable;
@@ -15,13 +16,13 @@ public class TaskSchedulingResourceAllocatingVariableController extends Variable
 
 	protected List<Variable> variables = null;
 
-	protected Variable setVariableParameters(Variable variable, List<Variable> variables, double k) {
-		variable = setVariableTime(variable, variables, k);
+	protected Variable setupVariableParameters(Variable variable, List<Variable> variables, double k) {
+		variable = calculateVariableTime(variable, variables, k);
 		variable = setupResourceForTemplateVariable(variable);
 		return variable;
 	}
 
-	protected Variable setVariableTime(Variable variable, List<Variable> variables, double k) {
+	protected Variable calculateVariableTime(Variable variable, List<Variable> variables, double k) {
 		Task currentVariable = (Task) variable;
 		List<Integer> predescessorIndexes = currentVariable.getPredecessors();
 
@@ -46,36 +47,43 @@ public class TaskSchedulingResourceAllocatingVariableController extends Variable
 
 	protected Variable setupResourceForTemplateVariable(Variable variable) {
 
-//		List<SkillsInResource> skillsInResources = ((Task) variable).getRequiredSkillsInResources();
-//		skillsInResources = this.isUseful(skillsInResources);
-//
-//		for (SkillsInResource skillsInResource : skillsInResources) {
-//			if (skillsInResource.getResource().getStatus() == Resource.STATUS.USEFUL) {
-//				double rand = Math.random();
-//				if (rand >= 0.5)
-//					skillsInResource.getResource().setStatus(Resource.STATUS.ASSIGNED);
-//				else
-//					skillsInResource.getResource().setStatus(Resource.STATUS.NOT_ASSIGNED);
-//			}
-//		}
-//
-//		((Task) variable).setRequiredSkillsInResources(skillsInResources);
+		List<HumanResource> humanResources = ((Task) variable).getRequiredHumanResources();
+		this.isHumanResourceUseful(humanResources);
+		this.randomizeUseful(humanResources);
+
+		List<MachineResource> machineResources =  ((Task) variable).getRequiredMachinesResources();
+		this.randomizeUseful(machineResources);
+
+		((Task) variable).setRequiredHumanResources(humanResources);
+		((Task) variable).setRequiredMachinesResources(machineResources);
+
 		return variable;
 	}
 
-	protected List<Resource> isUseful(List<Resource> skillsInResources) {
-		for (Resource skillsInResource : skillsInResources) {
-			List<Skill> skills = skillsInResource.getSkills();
+
+	private void randomizeUseful(List<? extends Resource> resources) {
+		for (Resource resource : resources) {
+			if (resource.getStatus() == STATUS.USEFUL) {
+				double rand = Math.random();
+				if (rand >= 0.5)
+					resource.setStatus(STATUS.ASSIGNED);
+				else
+					resource.setStatus(STATUS.NOT_ASSIGNED);
+			}
+		}
+	}
+
+	private void isHumanResourceUseful(List<HumanResource> resources) {
+		for (HumanResource resource : resources) {
+			List<Skill> skills = resource.getSkills();
 			for (Skill rSkill : skills) {
 				if (rSkill.getExperienceLevel() > 0) {
-					skillsInResource.setStatus(STATUS.USEFUL);
+					resource.setStatus(STATUS.USEFUL);
 					break;
 				}
 			}
 		}
-		return skillsInResources;
 	}
-
 
 	@Override
 	public List<Variable> setupVariables(Map<Object, Object> parameters, double k) {
@@ -92,7 +100,7 @@ public class TaskSchedulingResourceAllocatingVariableController extends Variable
 
 		int maxDuration = (int) parameters.get("maxDuration");
 		for (Variable variable : variables)
-			this.setVariableParameters(variable, variables, k * maxDuration);
+			this.setupVariableParameters(variable, variables, k * maxDuration);
 
 		return variables;
 	}
@@ -100,7 +108,6 @@ public class TaskSchedulingResourceAllocatingVariableController extends Variable
 	protected List<Variable> createTemplateVariables(Map<Object, Object> parameters) {
 		List<Variable> variables = new ArrayList<>();
 		int numberOfTasks = (Integer) parameters.get("numberOfTasks");
-
 
 		for (int i = 0; i < numberOfTasks; i++) {
 			Map<String, Object> params = new HashMap<>();
@@ -111,7 +118,7 @@ public class TaskSchedulingResourceAllocatingVariableController extends Variable
 			params.put("duration", duration);
 			params.put("scheduledTime", scheduledTime);
 
-			Variable variable = new Task();
+			Task variable = new Task();
 			variable.setValue(params);
 			variables.add(variable);
 		}
@@ -169,14 +176,13 @@ public class TaskSchedulingResourceAllocatingVariableController extends Variable
 			int currentTaskId = currentTask.getId();
 
 			for (int i = 0; i < numberOfHumanResources; i++) {
-				Resource resource = Resource.builder()
+				HumanResource resource = HumanResource.builder()
 						.id(i)
-						.type(TYPE.HUMAN)
 						.cost(humanCosts[i])
+						.status(STATUS.NOT_USEFUL)
 						.build();
 				List<Skill> skills = new ArrayList<>();
 				for (int j = 0; j < numberOfSkills; j++) {
-					/* Only add skill to resource if the skill is necessary to the task */
 					if (treq[currentTaskId][j] != 0) {
 						Skill skill = Skill.builder()
 								.id(j)
@@ -190,22 +196,5 @@ public class TaskSchedulingResourceAllocatingVariableController extends Variable
 			}
 		}
 		return variables;
-	}
-
-	private boolean isResourceUsed(int resourceId, TYPE resourceType, List<Resource> resources) {
-		if (resourceType == TYPE.HUMAN) {
-			for (Resource resource : resources) {
-				if (resource.getId() == resourceId) {
-					return true;
-				}
-			}
-		} else if (resourceType == TYPE.MACHINE) {
-			for (Resource resource : resources) {
-				if (resource.getId() == resourceId) {
-					return true;
-				}
-			}
-		}
-		return false;
 	}
 }
