@@ -1,15 +1,11 @@
 package utils;
 
-import com.sun.org.slf4j.internal.Logger;
-import com.sun.org.slf4j.internal.LoggerFactory;
-
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
 public class DataUtil {
-	private static final Logger logger = LoggerFactory.getLogger(DataUtil.class);
 
 	public static <T> T cloneBean(T source) {
 		if (source == null) {
@@ -35,14 +31,14 @@ public class DataUtil {
 			deepCopy = (T) ois.readObject();
 
 		} catch (Exception e) {
-			logger.error(e.getMessage(), e);
+			e.printStackTrace();
 			return null;
 		} finally {
 			if (baos != null) {
 				try {
 					baos.close();
 				} catch (Exception ex) {
-					logger.error(ex.getMessage(), ex);
+					ex.printStackTrace();
 				}
 
 			}
@@ -50,21 +46,21 @@ public class DataUtil {
 				try {
 					oos.close();
 				} catch (Exception ex) {
-					logger.error(ex.getMessage(), ex);
+					ex.printStackTrace();
 				}
 			}
 			if (bais != null) {
 				try {
 					bais.close();
 				} catch (Exception ex) {
-					logger.error(ex.getMessage(), ex);
+					ex.printStackTrace();
 				}
 			}
 			if (ois != null) {
 				try {
 					ois.close();
 				} catch (Exception ex) {
-					logger.error(ex.getMessage(), ex);
+					ex.printStackTrace();
 				}
 			}
 		}

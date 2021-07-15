@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -13,6 +14,10 @@ import java.util.List;
 @Setter
 public class HumanResource extends Resource{
 	private List<Skill> skills;
+
+	public HumanResource() {
+		this.skills = new ArrayList<>();
+	}
 
 	@Builder
 	public HumanResource(int id, STATUS status, double cost, List<Skill> skills) {

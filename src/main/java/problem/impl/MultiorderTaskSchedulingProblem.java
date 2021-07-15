@@ -3,7 +3,6 @@ package problem.impl;
 import component.controller.VariableController;
 import component.resource.HumanResource;
 import component.resource.MachineResource;
-import component.resource.Resource;
 import component.skill.Skill;
 import component.variable.Variable;
 import component.variable.impl.Task;
@@ -62,7 +61,6 @@ public class MultiorderTaskSchedulingProblem extends TaskSchedulingResourceAlloc
 		return solution;
 	}
 
-	// TODO
 	public Solution evaluateCost(Solution solution) {
 		List<Variable> variables = solution.getVariables();
 		double totalCost = 0.0;
@@ -76,10 +74,11 @@ public class MultiorderTaskSchedulingProblem extends TaskSchedulingResourceAlloc
 		return solution;
 	}
 
+
 	private double calculateMachineCost(List<MachineResource> machineResources, double duration) {
 		double taskMachineCost = 0;
 		for (MachineResource machine: machineResources) {
-			double machineCost = machine.getCost() * duration;
+			double machineCost = machine.getCost() * duration * machine.getConsumeFactor();
 			taskMachineCost += machineCost;
 		}
 		return taskMachineCost;

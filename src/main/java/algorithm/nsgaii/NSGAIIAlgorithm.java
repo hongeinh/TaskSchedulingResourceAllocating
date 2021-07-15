@@ -10,6 +10,7 @@ import solution.Solution;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -19,18 +20,23 @@ import java.util.stream.Stream;
 public class NSGAIIAlgorithm extends Algorithm {
 
 	protected int matingPoolSize;
+	protected int numberOfGenerations;
+
 	protected RankingAndCrowdingDistanceComparator comparator;
 
 	public NSGAIIAlgorithm() {
 		super();
 		this.comparator = new RankingAndCrowdingDistanceComparator();
 		this.matingPoolSize = 10;
+		this.numberOfGenerations = 10;
 	}
 
 	public NSGAIIAlgorithm(int solutionSetSize) {
 		super(solutionSetSize);
 		this.comparator = new RankingAndCrowdingDistanceComparator();
 		this.matingPoolSize = 10;
+		this.numberOfGenerations = 10;
+
 	}
 
 	public List<Solution> executeAlgorithm(Problem problem) throws CloneNotSupportedException, IOException {
@@ -42,12 +48,11 @@ public class NSGAIIAlgorithm extends Algorithm {
 		/* Step 2: Evaluate the initial solution set, calculate objectives for each solution */
 		System.out.println("- Evaluate initial solution set");
 		solutions = evaluateSolutionSet(problem, solutions);
+		displayObjectives(solutions, "parent/parent.csv", false, -1);
 
 		/* Step 3: Rank the solution set*/
 		System.out.println("- Rank initial solution set");
 		solutions = this.getComparator().computeRankAndDistance(solutions);
-
-		displaySolutions(solutions, "/parent.txt");
 
 		/* Step 4: Create offspring solution set*/
 		System.out.print("\n- Create offspring solution set -- ");
@@ -58,31 +63,28 @@ public class NSGAIIAlgorithm extends Algorithm {
 		System.out.println("- Evaluate offspring solution set");
 		offspringSolutions = evaluateSolutionSet(problem, offspringSolutions);
 
-		displaySolutions(offspringSolutions, "offspring.txt");
 
 		/* Step 5: Join two achieved solution sets into one jointSolution set*/
-		System.out.print("\n- Combine solution sets -- ");
+		System.out.print("- Combine solution sets -- ");
 		List<Solution> jointSolutions = Stream.concat(solutions.stream(), offspringSolutions.stream())
 				.collect(Collectors.toList());
+		System.out.println("Joint size: " + jointSolutions.size());
 
 //		List<Solution> jointSolutions = new ArrayList<>();
 //		jointSolutions.addAll(solutions);
 //		jointSolutions.addAll(offspringSolutions);
 		/* Step 6: Rank and distance sort for solution set to find Pareto solution set*/
-		System.out.println("- Evaluate combined solution set");
+		System.out.println("\n- Evaluate combined solution set");
 		jointSolutions = this.getComparator().computeRankAndDistance(jointSolutions);
-		displaySolutions(jointSolutions, "combine.txt");
 		System.out.println("Joint size: " + jointSolutions.size());
 
 		System.out.println("- Computing final results---------------------------------------------------------------------");
 		List<Solution> finalSolutions = jointSolutions.subList(0, solutionSetSize );
-
-		displaySolutions(finalSolutions, "final.txt");
-		displaySolutions(jointSolutions.subList(0, 1), "best-solution.txt");
+		displayObjectives(finalSolutions, "final/final.csv", false, -1);
 		return jointSolutions.subList(0, 1);
 	}
 
-	public List<Solution> createInitialSolutionSet(Problem problem) {
+	public List<Solution> createInitialSolutionSet(Problem problem) throws IOException {
 		return null;
 	}
 
@@ -93,24 +95,48 @@ public class NSGAIIAlgorithm extends Algorithm {
 		return solutions;
 	}
 
-	public List<Solution> reproduceOffspringSolutionSet(List<Solution> solutions) throws CloneNotSupportedException {
+	public List<Solution> reproduceOffspringSolutionSet(List<Solution> solutions) throws CloneNotSupportedException, IOException {
 
 		List<Operator> operators = this.getOperators();
-
-		/* Selection */
 		operators.get(0).getParameters().put("matingPoolSize", this.getMatingPoolSize());
-		List<Solution> matingParentSolutions = (List<Solution>) operators.get(0).execute(solutions);
-
-		/* Crossover */
 		operators.get(1).getParameters().put("solutionSetSize", this.getSolutionSetSize());
-		List<Solution> offspringSolutions = (List<Solution>) operators.get(1).execute(matingParentSolutions);
-
-		/* Mutation */
 		operators.get(2).getParameters().put("geneMutationProbability", 0.5);
 		operators.get(2).getParameters().put("chromosomeSize", ((List) solutions.get(0).getVariables().get(0).getValue()).size());
-		offspringSolutions = (List<Solution>) operators.get(2).execute(offspringSolutions);
+
+		double randomThreshold = Math.random();
+
+		double minAverageFitness = Double.MAX_VALUE;
+		List<Solution> matingParentSolutions;
+		List<Solution> offspringSolutions = null;
+
+
+		for (int i = 0; i < numberOfGenerations; i++) {
+			matingParentSolutions = (List<Solution>) operators.get(0).execute(solutions);
+			offspringSolutions = (List<Solution>) operators.get(1).execute(matingParentSolutions);
+			offspringSolutions = (List<Solution>) operators.get(2).execute(offspringSolutions);
+
+			displayObjectives(offspringSolutions, "offspring/offspring.csv", true, i);
+			double averageFitness = calculateGenerationAverageObjectives(solutions);
+			if (averageFitness < minAverageFitness + randomThreshold) {
+				minAverageFitness = averageFitness;
+				solutions = offspringSolutions;
+			} else {
+				break;
+			}
+		}
 
 		return offspringSolutions;
+	}
+
+	private double calculateGenerationAverageObjectives(List<Solution> solutions) {
+		double generationAverageObjectives = 0;
+
+		for (Solution solution: solutions) {
+			double [] objectives = solution.getObjectives();
+			generationAverageObjectives += Arrays.stream(objectives).sum();
+		}
+
+		return generationAverageObjectives/solutions.size();
 	}
 
 	@Deprecated
@@ -125,9 +151,8 @@ public class NSGAIIAlgorithm extends Algorithm {
 			int rank = (int) solution.getFitness()[0];
 			if (rankedSolutions.get(rank) == null) {
 				rankedSolutions.add(rank, new ArrayList<Solution>());
-				rankedSolutions.get(rank).add(solution);
-			} else
-				rankedSolutions.get(rank).add(solution);
+			}
+			rankedSolutions.get(rank).add(solution);
 		}
 
 		return rankedSolutions;

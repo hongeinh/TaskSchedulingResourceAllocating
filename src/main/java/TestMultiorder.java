@@ -41,6 +41,7 @@ public class TestMultiorder {
 		algorithm.setComparator(new RankingAndCrowdingDistanceComparator());
 		algorithm.setMatingPoolSize(10);
 
+
 		return algorithm;
 	}
 

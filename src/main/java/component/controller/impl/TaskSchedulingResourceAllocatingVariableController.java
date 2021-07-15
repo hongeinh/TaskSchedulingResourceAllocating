@@ -14,8 +14,6 @@ import java.util.*;
 
 public class TaskSchedulingResourceAllocatingVariableController extends VariableController {
 
-	protected List<Variable> variables = null;
-
 	protected Variable setupVariableParameters(Variable variable, List<Variable> variables, double k) {
 		variable = calculateVariableTime(variable, variables, k);
 		variable = setupResourceForTemplateVariable(variable);
@@ -36,10 +34,11 @@ public class TaskSchedulingResourceAllocatingVariableController extends Variable
 			}
 
 			double rand = Math.random() * k;
+			double sign = Math.random() > 0.5 ? 1 : -1;
 
 			((Task) variable).setStart(start);
-			start = start + rand;
-			((Task) variable).setScheduledTime(start);
+			double scheduledStart = start + rand * sign;
+			((Task) variable).setScheduledTime(scheduledStart);
 		}
 		return variable;
 	}
@@ -62,13 +61,16 @@ public class TaskSchedulingResourceAllocatingVariableController extends Variable
 
 
 	private void randomizeUseful(List<? extends Resource> resources) {
-		for (Resource resource : resources) {
-			if (resource.getStatus() == STATUS.USEFUL) {
-				double rand = Math.random();
-				if (rand >= 0.5)
-					resource.setStatus(STATUS.ASSIGNED);
-				else
-					resource.setStatus(STATUS.NOT_ASSIGNED);
+		int countAssignedResource = 0;
+		while (countAssignedResource == 0) {
+			for (Resource resource : resources) {
+				if (resource.getStatus() == STATUS.USEFUL) {
+					double rand = Math.random();
+					if (rand >= 0.75) {
+						resource.setStatus(STATUS.ASSIGNED);
+						countAssignedResource++;
+					}
+				}
 			}
 		}
 	}
@@ -95,8 +97,11 @@ public class TaskSchedulingResourceAllocatingVariableController extends Variable
 		int[][] treq = (int[][]) parameters.get("treq");
 		double[][] lexp = (double[][]) parameters.get("lexp");
 		double[] humanCosts = (double[]) parameters.get("humanCosts");
+		double[] machineCosts = (double[]) parameters.get("machineCosts");
+		double[][] mreq = (double[][]) parameters.get("mreq");
 
 		variables = setupResourcesAndSkillsForTemplateVariables(variables, treq, lexp, humanCosts, numberOfSkills, numberOfHumanResources);
+		variables = setupMachineResources(variables, (Integer) parameters.get("numberOfMachineResources"), machineCosts, mreq);
 
 		int maxDuration = (int) parameters.get("maxDuration");
 		for (Variable variable : variables)
@@ -118,7 +123,12 @@ public class TaskSchedulingResourceAllocatingVariableController extends Variable
 			params.put("duration", duration);
 			params.put("scheduledTime", scheduledTime);
 
-			Task variable = new Task();
+			Task variable = Task.builder()
+					.descendants(new ArrayList<>())
+					.predecessors(new ArrayList<>())
+					.requiredHumanResources(new ArrayList<>())
+					.requiredMachinesResources(new ArrayList<>())
+					.build();
 			variable.setValue(params);
 			variables.add(variable);
 		}
@@ -142,16 +152,16 @@ public class TaskSchedulingResourceAllocatingVariableController extends Variable
 		int size = variables.size();
 
 		for (int i = 0; i < size; i++) {
+			Task ti = (Task) variables.get(i);
 			for (int j = i + 1; j < size; j++) {
 				if (i != j) {
-					Task ti = (Task) variables.get(i);
 					Task tj = (Task) variables.get(j);
 					if (tasks[i][j] == 1) {
-						ti.getDescendants().add(tj.getId());
-						tj.getPredecessors().add(ti.getId());
+						ti.getDescendants().add(j);
+						tj.getPredecessors().add(i);
 					} else if (tasks[j][i] == 1) {
-						ti.getPredecessors().add(tj.getId());
-						tj.getDescendants().add(ti.getId());
+						ti.getPredecessors().add(j);
+						tj.getDescendants().add(i);
 					}
 				}
 			}
@@ -196,5 +206,25 @@ public class TaskSchedulingResourceAllocatingVariableController extends Variable
 			}
 		}
 		return variables;
+	}
+
+	private List<Variable> setupMachineResources(List<Variable> tasks, Integer numberOfMachineResources, double[] machineCosts, double[][] mreq) {
+		for (Variable variable : tasks) {
+			List<MachineResource> machineResource = new ArrayList<>();
+			int id = ((Task) variable).getId();
+			for (int i = 0; i < numberOfMachineResources; i++) {
+				if (mreq[id][i] != 0) {
+					MachineResource resource = MachineResource.builder()
+							.id(i)
+							.status(STATUS.USEFUL)
+							.cost(machineCosts[i])
+							.build();
+					machineResource.add(resource);
+				}
+			}
+			((Task) variable).setRequiredMachinesResources(machineResource);
+		}
+
+		return tasks;
 	}
 }

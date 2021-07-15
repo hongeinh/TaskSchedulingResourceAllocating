@@ -5,13 +5,15 @@ import component.resource.Resource;
 import component.variable.impl.Task;
 import operator.crossover.CrossoverOperator;
 import solution.Solution;
+import utils.DataUtil;
 
+import javax.xml.crypto.Data;
 import java.util.ArrayList;
 import java.util.List;
 
 public class ProposedCrossoverOperator1 extends CrossoverOperator {
     @Override
-    public Object execute(Object object) throws CloneNotSupportedException {
+    public Object execute(Object object) {
         List<Solution> matingSolutions = (List<Solution>) object;
         List<Solution> crossoveredSolutions = new ArrayList<>();
 
@@ -38,31 +40,36 @@ public class ProposedCrossoverOperator1 extends CrossoverOperator {
             position2 = (int) Math.floor(Math.random() * a.getVariables().size());
         }
 
+        Solution copyA = DataUtil.cloneBean(a);
+        Solution copyB = DataUtil.cloneBean(b);
+
+
         for (int i = position1; i < position2; i++) {
-            Task varA = (Task) a.getVariables().get(i);
-            Task varB = (Task) b.getVariables().get(i);
-            double diff = varA.getScheduledTime() - varB.getScheduledTime();
+            Task copyVarA = (Task) copyA.getVariables().get(i);
+            Task copyVarB = (Task) copyB.getVariables().get(i);
+
+            double diff = copyVarA.getScheduledTime() - copyVarB.getScheduledTime();
 
             if (diff < 0) {
-                varA.setScheduledTime(varA.getScheduledTime() + diff * 0.1);
-                varB.setScheduledTime(varB.getScheduledTime() - diff * 0.1);
+                copyVarA.setScheduledTime(copyVarA.getScheduledTime() + diff * 0.1);
+                copyVarB.setScheduledTime(copyVarB.getScheduledTime() - diff * 0.1);
             } else if (diff > 0) {
-                varA.setScheduledTime(varA.getScheduledTime() - diff * 0.1);
-                varB.setScheduledTime(varB.getScheduledTime() + diff * 0.1);
+                copyVarA.setScheduledTime(copyVarA.getScheduledTime() - diff * 0.1);
+                copyVarB.setScheduledTime(copyVarB.getScheduledTime() + diff * 0.1);
             }
 
-            int numberOfResources = varA.getRequiredHumanResources().size();
-            STATUS[] aAssignedResouce = new STATUS[numberOfResources];
-            for (int j = 0; j < numberOfResources; j++) {
-                aAssignedResouce[j] = varA.getRequiredHumanResources().get(j).getStatus();
-                varA.getRequiredHumanResources().get(j).setStatus(varB.getRequiredHumanResources().get(j).getStatus());
-                varB.getRequiredMachinesResources().get(j).setStatus(aAssignedResouce[j]);
+            int numberOfHumanResources = copyVarA.getRequiredHumanResources().size();
+            STATUS[] aAssignedHumanResouce = new STATUS[numberOfHumanResources];
+            for (int j = 0; j < numberOfHumanResources; j++) {
+                aAssignedHumanResouce[j] = copyVarA.getRequiredHumanResources().get(j).getStatus();
+                copyVarA.getRequiredHumanResources().get(j).setStatus(copyVarB.getRequiredHumanResources().get(j).getStatus());
             }
 
         }
         List<Solution> returnSolutions = new ArrayList<>();
-        returnSolutions.add(a);
-        returnSolutions.add(b);
+
+        returnSolutions.add(copyA);
+        returnSolutions.add(copyB);
         return returnSolutions;
     }
 }

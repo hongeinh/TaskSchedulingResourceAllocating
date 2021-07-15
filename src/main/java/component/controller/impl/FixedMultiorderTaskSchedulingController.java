@@ -1,8 +1,10 @@
 package component.controller.impl;
 
 import common.STATUS;
+import component.resource.HumanResource;
 import component.resource.MachineResource;
 import component.resource.Resource;
+import component.skill.Skill;
 import component.variable.Variable;
 import component.variable.impl.Order;
 import component.variable.impl.Task;
@@ -27,7 +29,6 @@ public class FixedMultiorderTaskSchedulingController extends TaskSchedulingResou
 
 		List<Order> orders = new ArrayList<>();
 		double[] orderWeights = (double[]) parameters.get("weights");
-		int[][] tasksRelation = (int[][]) parameters.get("tasks");
 		List<Variable> templateTasks = setupTemplateVariablesForOrders(parameters, k);
 
 
@@ -39,13 +40,8 @@ public class FixedMultiorderTaskSchedulingController extends TaskSchedulingResou
 			for (Variable newTask : newTasks) {
 				double duration = ((Task) newTask).getDuration() * orderWeights[i];
 				((Task) newTask).setDuration(Math.round(duration) * 100 / 100);
-//				((Task) newTask).getPredecessors().clear();
-//				((Task) newTask).getDescendants().clear();
 				((Task) newTask).setOrderId(i);
 			}
-//
-//			// set lai neighbor
-//			newTasks = super.setupTemplateVariablesNeighbours(newTasks, tasksRelation);
 
 			// tinh tgian cho task
 			for (Variable newTask : newTasks) {
@@ -106,55 +102,56 @@ public class FixedMultiorderTaskSchedulingController extends TaskSchedulingResou
 		return tasks;
 	}
 
+	@Deprecated
+	private List<Variable> createSimilarVariables(Map<Object, Object> parameters, List<Variable> tasks) {
+		List<Variable> variables = super.createTemplateVariables(parameters);
+		// set resource and skills
+		variables = setupSimilarResourceAndSkillsForVariables(variables, tasks);
+		return variables;
+	}
 
-//	private List<Variable> createSimilarVariables(Map<Object, Object> parameters, List<Variable> tasks) {
-//		List<Variable> variables = super.createTemplateVariables(parameters);
-//		// set resource and skills
-//		variables = setupSimilarResourceAndSkillsForVariables(variables, tasks);
-//		return variables;
-//	}
+	@Deprecated
+	private List<Variable> setupSimilarResourceAndSkillsForVariables(List<Variable> currentVariables, List<Variable> copyVariables) {
+		int numberOfTasks = currentVariables.size();
 
-//	private List<Variable> setupSimilarResourceAndSkillsForVariables(List<Variable> currentVariables, List<Variable> copyVariables) {
-//		int numberOfTasks = currentVariables.size();
-//
-//
-//		for (int i = 0; i < numberOfTasks; i++) {
-//			List<HumanResource> copyResources = ((Task) copyVariables.get(i)).getRequiredHumanResources();
-//			List<HumanResource> newResources = new ArrayList<>();
-//			for (HumanResource resource : copyResources) {
-//				HumanResource newResource = HumanResource.builder()
-//						.id(resource.getId())
-//						.cost(resource.getCost())
-//						.status(resource.getStatus())
-//						.build();
-//				List<Skill> skills = new ArrayList<>();
-//				for (Skill copySkill : resource.getSkills()) {
-//					Skill newSkill = Skill.builder()
-//							.id(copySkill.getId())
-//							.experienceLevel(copySkill.getExperienceLevel())
-//							.build();
-//					skills.add(newSkill);
-//				}
-//				newResources.add(newResource);
-//			}
-//
-//			List<MachineResource> copyMachineResources = ((Task) copyVariables.get(i)).getRequiredMachinesResources();
-//			List<MachineResource> newMachineResources = new ArrayList<>();
-//			for (MachineResource copyMachineResource : copyMachineResources) {
-//				MachineResource newMachineResource = MachineResource.builder()
-//						.id(copyMachineResource.getId())
-//						.cost(copyMachineResource.getCost())
-//						.status(copyMachineResource.getStatus())
-//						.build();
-//
-//				newMachineResources.add(newMachineResource);
-//			}
-//			((Task) currentVariables.get(i)).setRequiredMachinesResources(newMachineResources);
-//			((Task) currentVariables.get(i)).setRequiredHumanResources(newResources);
-//		}
-//		return currentVariables;
-//	}
-//
+
+		for (int i = 0; i < numberOfTasks; i++) {
+			List<HumanResource> copyResources = ((Task) copyVariables.get(i)).getRequiredHumanResources();
+			List<HumanResource> newResources = new ArrayList<>();
+			for (HumanResource resource : copyResources) {
+				HumanResource newResource = HumanResource.builder()
+						.id(resource.getId())
+						.cost(resource.getCost())
+						.status(resource.getStatus())
+						.build();
+				List<Skill> skills = new ArrayList<>();
+				for (Skill copySkill : resource.getSkills()) {
+					Skill newSkill = Skill.builder()
+							.id(copySkill.getId())
+							.experienceLevel(copySkill.getExperienceLevel())
+							.build();
+					skills.add(newSkill);
+				}
+				newResources.add(newResource);
+			}
+
+			List<MachineResource> copyMachineResources = ((Task) copyVariables.get(i)).getRequiredMachinesResources();
+			List<MachineResource> newMachineResources = new ArrayList<>();
+			for (MachineResource copyMachineResource : copyMachineResources) {
+				MachineResource newMachineResource = MachineResource.builder()
+						.id(copyMachineResource.getId())
+						.cost(copyMachineResource.getCost())
+						.status(copyMachineResource.getStatus())
+						.build();
+
+				newMachineResources.add(newMachineResource);
+			}
+			((Task) currentVariables.get(i)).setRequiredMachinesResources(newMachineResources);
+			((Task) currentVariables.get(i)).setRequiredHumanResources(newResources);
+		}
+		return currentVariables;
+	}
+
 
 
 	private List<Order> setVariablesTimesAccordingToOtherOrders(List<Order> orders, double k) {
@@ -164,54 +161,48 @@ public class FixedMultiorderTaskSchedulingController extends TaskSchedulingResou
 			// viet ham tinh tgian dua vao previous order, khong tinh order dau tien
 			List<Variable> currentOrderTasks = orders.get(i).getTasks();
 			List<Variable> previousOrderTasks = orders.get(i - 1).getTasks();
-			currentOrderTasks = setTasksTimesAccordingToPreviousOrder(currentOrderTasks, previousOrderTasks, k);
-			orders.get(i).setTasks(currentOrderTasks);
+			setTasksTimesAccordingToPreviousOrder(currentOrderTasks, previousOrderTasks, k);
 		}
 		return orders;
 	}
 
-	private List<Variable> setTasksTimesAccordingToPreviousOrder(List<Variable> currentOrderTasks, List<Variable> previousOrderTasks, double k) {
+	private void setTasksTimesAccordingToPreviousOrder(List<Variable> currentOrderTasks, List<Variable> previousOrderTasks, double k) {
 
 		int numberOfTasks = currentOrderTasks.size();
 
 		for (int i = 0; i < numberOfTasks; i++) {
-			Task currentOrderTask = ((Task) currentOrderTasks.get(i));
-			Task previousOrderTask = ((Task) previousOrderTasks.get(i));
-			Task currentOrderPrecedentTask = (Task) getMaxEndTimePrecedentTask(currentOrderTask, currentOrderTasks.subList(0, i + 1));
+			Task coTask = ((Task) currentOrderTasks.get(i));
+			Task poTask = ((Task) previousOrderTasks.get(i));
 
-			double previousOrderTaskEndTime = previousOrderTask.getStart() + previousOrderTask.getDuration();
-			double currentOrderPrecedentTaskEndTime = 0;
+			double coTaskStartTime = coTask.getStart();
+			double poTaskEndTime = poTask.getStart() + poTask.getDuration();
 
-			if (currentOrderPrecedentTask != null) {
-				currentOrderPrecedentTaskEndTime = currentOrderPrecedentTask.getStart() + currentOrderPrecedentTask.getDuration();
-			}
-
-			double currentOrderTaskStartTime = Math.max(previousOrderTaskEndTime, currentOrderPrecedentTaskEndTime);
-			currentOrderTask.setStart(currentOrderTaskStartTime);
+			double currentOrderTaskStartTime = Math.max(poTaskEndTime, coTaskStartTime);
+			coTask.setStart(currentOrderTaskStartTime);
 
 			double rand = Math.random() * k;
 			double sign = Math.random() > 0.5 ? 1 : -1;
 			double scheduledStart = currentOrderTaskStartTime + rand * sign;
-			currentOrderTask.setScheduledTime(scheduledStart);
+			coTask.setScheduledTime(scheduledStart);
 
 		}
-
-		return currentOrderTasks;
 	}
 
+	@Deprecated
 	private Variable getMaxEndTimePrecedentTask(Variable currentTask, List<Variable> subList) {
 		List<Integer> precedentTasksIds = ((((Task) currentTask).getPredecessors()));
-//		List<Variable> precedentTasksObjects = getPrecedentTasksObjects(currentTask, precedentTasksIds);
 
 		double maxEndTime = 0;
 		Task maxEndTimeTask = null;
 
 		for (Variable variable: subList) {
 			Task task = (Task) variable;
-			double endTime = task.getStart() + task.getDuration();
-			if (maxEndTime < endTime) {
-				maxEndTime = endTime;
-				maxEndTimeTask = task;
+			if (precedentTasksIds.contains(task.getId())) {
+				double endTime = task.getStart() + task.getDuration();
+				if (maxEndTime < endTime) {
+					maxEndTime = endTime;
+					maxEndTimeTask = task;
+				}
 			}
 		}
 

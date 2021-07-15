@@ -4,6 +4,7 @@ import component.variable.Variable;
 import problem.Problem;
 import solution.Solution;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,7 +16,7 @@ public class ImprovedNSGAIIAlgorithm extends NSGAIIAlgorithm{
 	}
 
 	@Override
-	public List<Solution> createInitialSolutionSet(Problem problem) {
+	public List<Solution> createInitialSolutionSet(Problem problem) throws IOException {
 		List<Solution> solutions = new ArrayList<>();
 		int maxDuration = (Integer) problem.getParameters().get("maxDuration");
 

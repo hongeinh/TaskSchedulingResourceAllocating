@@ -30,12 +30,6 @@ public class Task extends Variable {
 	private List<MachineResource> requiredMachinesResources;
 	private List<HumanResource> requiredHumanResources;
 
-	public Task() {
-		this.predecessors = new ArrayList<>();
-		this.descendants = new ArrayList<>();
-		this.requiredMachinesResources = new ArrayList<>();
-		this.requiredHumanResources = new ArrayList<>();
-	}
 	@Override
 	public Object getValue() {
 		return this.getRequiredHumanResources();

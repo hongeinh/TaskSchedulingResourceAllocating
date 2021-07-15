@@ -1,7 +1,6 @@
 package operator.mutation.impl;
 
 import common.STATUS;
-import component.Resource;
 import component.resource.Resource;
 import component.variable.Variable;
 import operator.mutation.MutationOperator;

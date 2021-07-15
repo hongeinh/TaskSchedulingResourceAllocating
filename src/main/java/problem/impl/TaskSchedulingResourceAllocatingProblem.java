@@ -1,11 +1,12 @@
 package problem.impl;
 
-import common.STATUS;
-import component.resource.Resource;
+import component.resource.HumanResource;
 import component.variable.impl.Task;
 import component.variable.Variable;
 import component.controller.VariableController;
 import problem.Problem;
+import problem.helper.HumanResourceConflictHelper;
+import problem.helper.MachineResourceConflictHelper;
 import solution.Solution;
 
 import java.util.List;
@@ -13,6 +14,10 @@ import java.util.Map;
 
 
 public class TaskSchedulingResourceAllocatingProblem extends Problem {
+
+	private HumanResourceConflictHelper humanResourceConflictHelper = new HumanResourceConflictHelper();
+
+	private MachineResourceConflictHelper machineResourceConflictHelper = new MachineResourceConflictHelper();
 
 	/**
 	 * This method will return a list of variables to the algorithm to find its solution
@@ -76,7 +81,7 @@ public class TaskSchedulingResourceAllocatingProblem extends Problem {
 			// experience level for each task
 			double treq = 0;
 
-			List<Resource> skillsInResources = ((Task) variable).getRequiredHumanResources();
+			List<HumanResource> skillsInResources = ((Task) variable).getRequiredHumanResources();
 
 			// Get the number of skills
 			int skillSize = skillsInResources.get(0).getSkills().size();
@@ -99,73 +104,16 @@ public class TaskSchedulingResourceAllocatingProblem extends Problem {
 	 *
 	 * */
 	public Solution evaluateAssignment(Solution solution) {
-		double assignment = 0;
-		int resourceSize = ((Task) solution.getVariables().get(0)).getRequiredHumanResources().size();
-		for (int i = 0; i < resourceSize; i++) {
-			double resourceAssignmentCount = countResourceAssignedTimes(solution.getVariables(), i);
-			double rjAssignment;
-			if (resourceAssignmentCount > 0) {
-				rjAssignment = countResourceConflict(solution.getVariables(), i)/resourceAssignmentCount;
-				assignment += rjAssignment;
-			}
-		}
-		solution.getObjectives()[2] = assignment/resourceSize;
+		int numberOfHumanResource = (int) this.parameters.get("numberOfHumanResources");
+		int numberMachineResource = (int) this.parameters.get("numberOfMachineResources");
+
+		double humanResourceConflict = this.humanResourceConflictHelper.evaluateResource(solution, numberOfHumanResource);
+		double machineResourceConflict = this.machineResourceConflictHelper.evaluateResource(solution, numberMachineResource);
+
+		solution.getObjectives()[2] = (humanResourceConflict + machineResourceConflict) / 2;
+
 		return solution;
 	}
 
-	public double countResourceAssignedTimes(List<Variable> variables, int resourceId) {
-		double count = 0;
-		for (Variable variable: variables) {
-			if (((Task) variable).getRequiredHumanResources().get(resourceId).getStatus() == STATUS.ASSIGNED)
-				count++;
-		}
-		return count;
-	}
-
-	public double countResourceConflict(List<Variable> variables, int resourceId) {
-		double count = 0;
-		int variableSize = variables.size();
-		int[] conflictMap = new int[variableSize];
-		for (int i = 0; i < variableSize; i++) {
-			for (int j = i + 1; j < variableSize; j++) {
-				boolean isConflict = isResourceConflict(variables.get(i), variables.get(j), resourceId);
-				if (isConflict) {
-					conflictMap[i] = 1;
-					conflictMap[j] = 1;
-				}
-			}
-		}
-
-		for (int i = 0; i < variableSize; i++) {
-			if (conflictMap[i] == 1)
-				count++;
-		}
-		return count;
-	}
-
-	public boolean isResourceConflict(Variable var1, Variable var2, int resourceId) {
-		Resource resource1 = ((Task) var1).getRequiredHumanResources().get(resourceId);
-		Resource resource2 = ((Task) var2).getRequiredHumanResources().get(resourceId);
-		if (resource1.getStatus() == resource2.getStatus() && resource1.getStatus() == STATUS.ASSIGNED) {
-			double start1 = ((Task) var1).getStart(); double end1 = ((Task) var1).getDuration() + start1;
-			double start2 = ((Task) var2).getStart(); double end2 = ((Task) var2).getDuration() + start2;
-			if(start1 == start2) {
-				if(end1 <= end2 || end2 <= end1 ) {
-					return true;
-				}
-			} else if (start1 < start2) {
-				if (start2 < end1) {
-					if(end1 <= end2 || end2 <= end1)
-						return true;
-				}
-			} else if (start2 < start1) {
-				if (start1 < end2) {
-					if (end1 <= end2 || end2 <= end1)
-						return true;
-				}
-			}
-		}
-		return false;
-	}
 
 }

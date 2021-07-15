@@ -4,11 +4,13 @@ import component.variable.Variable;
 import lombok.Getter;
 import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
+
+import java.io.Serializable;
 import java.util.List;
 
 @Getter
 @Setter
-public class Order implements Comparable<Order> {
+public class Order implements Comparable<Order>, Serializable {
 	private int id;
 	private double weight;
 	List<Variable> tasks;

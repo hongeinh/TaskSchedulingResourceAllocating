@@ -4,42 +4,19 @@ import component.variable.Variable;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 @Getter
 @Setter
-public class Solution implements Comparable  {
+public class Solution implements Comparable, Serializable {
 	private int id;
 	private List<Variable> variables;
 	private double[] objectives;
 	private double[] fitness;
 	private int dominationCount;
 	private List<Solution> dominatedSolutions;
-
-	public List<Variable> getVariables() {
-		return variables;
-	}
-
-	public void setVariables(List<Variable> variables) {
-		this.variables = variables;
-	}
-
-	public double[] getObjectives() {
-		return objectives;
-	}
-
-	public void setObjectives(double[] objectives) {
-		this.objectives = objectives;
-	}
-
-	public double[] getFitness() {
-		return fitness;
-	}
-
-	public void setFitness(double[] fitness) {
-		this.fitness = fitness;
-	}
 
 	public String toString() {
 		StringBuilder stringBuilder = new StringBuilder();
