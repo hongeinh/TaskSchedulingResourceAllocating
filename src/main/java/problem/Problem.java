@@ -18,6 +18,6 @@ public abstract class Problem {
 
 	public abstract Solution evaluate(Solution solution);
 
-	public abstract double[] evaluateConstraints(Solution solution);
+	public abstract boolean evaluateConstraints(Solution solution);
 
 }

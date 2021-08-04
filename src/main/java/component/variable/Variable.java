@@ -2,11 +2,8 @@ package component.variable;
 
 import java.io.Serializable;
 
-public abstract class Variable implements Comparable<Variable>, Cloneable, Serializable {
+public interface Variable extends Comparable<Variable>, Cloneable, Serializable {
 
-	public abstract Object getValue();
-	public abstract void setValue(Object value);
-	public Object clone() throws CloneNotSupportedException  {
-		return super.clone();
-	}
+	 Object getValue();
+	 void setValue(Object value);
 }

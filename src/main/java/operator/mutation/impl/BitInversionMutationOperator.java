@@ -1,7 +1,7 @@
 package operator.mutation.impl;
 
 import common.STATUS;
-import component.resource.Resource;
+import component.resource.HumanResource;
 import component.variable.Variable;
 import operator.mutation.MutationOperator;
 import solution.Solution;
@@ -11,7 +11,7 @@ import java.util.List;
 public class BitInversionMutationOperator extends MutationOperator {
 
     @Override
-    public Object execute(Object object) throws CloneNotSupportedException {
+    public Object execute(Object object){
         double geneMutationProbability = (double) this.getParameters().get("geneMutationProbability");
         List<Solution> solutions = (List<Solution>) object;
         for (Solution solution: solutions) {
@@ -28,8 +28,8 @@ public class BitInversionMutationOperator extends MutationOperator {
             double probability = Math.random();
             if (probability < geneMutationProbability) {
                 int mutateIndex = (int) Math.floor(Math.random() * (int )this.getParameters().get("chromosomeSize"));
-                Resource resource = ((List<Resource>) variable.getValue()).get(mutateIndex);
-                if (resource.getStatus() == STATUS.NOT_ASSIGNED) {
+                HumanResource resource = ((List<HumanResource>) variable.getValue()).get(mutateIndex);
+                if (resource.getStatus() != STATUS.ASSIGNED) {
                     resource.setStatus(STATUS.ASSIGNED);
                 } else if (resource.getStatus() == STATUS.ASSIGNED) {
                     resource.setStatus(STATUS.NOT_ASSIGNED);

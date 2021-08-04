@@ -8,21 +8,24 @@ import component.variable.Variable;
 import component.variable.impl.Task;
 import solution.Solution;
 
-import javax.crypto.Mac;
+
 import java.util.List;
 import java.util.stream.Collectors;
 
 public class MachineResourceConflictHelper extends ResourceConflictHelper {
 
     @Override
-    public double evaluateResource(Solution solution, int numberOfResource) {
+    public double evaluateResourceConflict(Solution solution, int numberOfResource) {
         double assignment = 0;
+        List<Variable> variables = solution.getVariables();
+        List<Task> tasks = joinOrders(variables);
+
 
         for (int i = 0; i < numberOfResource; i++) {
-            double resourceAssignmentCount = countResourceAssignedTimes(solution.getVariables(), i);
+            double resourceAssignmentCount = countResourceAssignedTimes(tasks, i);
             double rjAssignment;
             if (resourceAssignmentCount > 0) {
-                rjAssignment = countResourceConflict(solution.getVariables(), i)/resourceAssignmentCount;
+                rjAssignment = countResourceConflict(tasks, i)/resourceAssignmentCount;
                 assignment += rjAssignment;
             }
         }
@@ -30,9 +33,9 @@ public class MachineResourceConflictHelper extends ResourceConflictHelper {
     }
 
     @Override
-    public double countResourceAssignedTimes(List<Variable> variables, int resourceId) {
+    public double countResourceAssignedTimes(List<Task> tasks, int resourceId) {
         double count = 0;
-        for (Variable variable: variables) {
+        for (Task variable: tasks) {
             List<MachineResource> machineResources = ((Task) variable).getRequiredMachinesResources()
                     .stream()
                     .filter(resource -> resource.getId() == resourceId)
@@ -45,13 +48,13 @@ public class MachineResourceConflictHelper extends ResourceConflictHelper {
     }
 
     @Override
-    public double countResourceConflict(List<Variable> variables, int resourceId) {
+    public double countResourceConflict(List<Task> tasks, int resourceId) {
         double count = 0;
-        int variableSize = variables.size();
+        int variableSize = tasks.size();
         int[] conflictMap = new int[variableSize];
         for (int i = 0; i < variableSize; i++) {
             for (int j = i + 1; j < variableSize; j++) {
-                boolean isConflict = isResourceConflict(variables.get(i), variables.get(j), resourceId);
+                boolean isConflict = isResourceConflict(tasks.get(i), tasks.get(j), resourceId);
                 if (isConflict) {
                     conflictMap[i] = 1;
                     conflictMap[j] = 1;
@@ -67,7 +70,7 @@ public class MachineResourceConflictHelper extends ResourceConflictHelper {
     }
 
     @Override
-    public boolean isResourceConflict(Variable var1, Variable var2, int resourceId) {
+    public boolean isResourceConflict(Task var1, Task var2, int resourceId) {
         Resource resource1 = ((Task) var1).getRequiredMachinesResources().get(resourceId);
         Resource resource2 = ((Task) var2).getRequiredMachinesResources().get(resourceId);
         if (resource1.getStatus() == resource2.getStatus() && resource1.getStatus() == STATUS.ASSIGNED) {

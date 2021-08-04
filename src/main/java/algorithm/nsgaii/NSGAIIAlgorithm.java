@@ -55,6 +55,13 @@ public class NSGAIIAlgorithm extends Algorithm {
 		solutions = this.getComparator().computeRankAndDistance(solutions);
 
 		/* Step 4: Create offspring solution set*/
+		/* Set up operators */
+		List<Operator> operators = this.getOperators();
+		operators.get(0).getParameters().put("matingPoolSize", this.getMatingPoolSize());
+		operators.get(1).getParameters().put("solutionSetSize", this.getSolutionSetSize());
+		operators.get(2).getParameters().put("geneMutationProbability", 0.5);
+		operators.get(2).getParameters().put("chromosomeSize", ((List) solutions.get(0).getVariables().get(0).getValue()).size());
+		/* Reproduce */
 		System.out.print("\n- Create offspring solution set -- ");
 		List<Solution> offspringSolutions = reproduceOffspringSolutionSet(solutions);
 		System.out.println("Offspring size: " + offspringSolutions.size());
@@ -97,18 +104,11 @@ public class NSGAIIAlgorithm extends Algorithm {
 
 	public List<Solution> reproduceOffspringSolutionSet(List<Solution> solutions) throws CloneNotSupportedException, IOException {
 
-		List<Operator> operators = this.getOperators();
-		operators.get(0).getParameters().put("matingPoolSize", this.getMatingPoolSize());
-		operators.get(1).getParameters().put("solutionSetSize", this.getSolutionSetSize());
-		operators.get(2).getParameters().put("geneMutationProbability", 0.5);
-		operators.get(2).getParameters().put("chromosomeSize", ((List) solutions.get(0).getVariables().get(0).getValue()).size());
-
 		double randomThreshold = Math.random();
 
 		double minAverageFitness = Double.MAX_VALUE;
 		List<Solution> matingParentSolutions;
 		List<Solution> offspringSolutions = null;
-
 
 		for (int i = 0; i < numberOfGenerations; i++) {
 			matingParentSolutions = (List<Solution>) operators.get(0).execute(solutions);

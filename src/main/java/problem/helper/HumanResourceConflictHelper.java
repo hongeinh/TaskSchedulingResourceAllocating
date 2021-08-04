@@ -11,13 +11,16 @@ import java.util.List;
 public class HumanResourceConflictHelper extends ResourceConflictHelper {
 
     @Override
-    public double evaluateResource(Solution solution, int numberOfResource) {
+    public double evaluateResourceConflict(Solution solution, int numberOfResource) {
         double assignment = 0;
+        List<Variable> variables = solution.getVariables();
+        List<Task> tasks = joinOrders(variables);
+
         for (int i = 0; i < numberOfResource; i++) {
-            double resourceAssignmentCount = countResourceAssignedTimes(solution.getVariables(), i);
+            double resourceAssignmentCount = countResourceAssignedTimes(tasks, i);
             double rjAssignment;
             if (resourceAssignmentCount > 0) {
-                rjAssignment = countResourceConflict(solution.getVariables(), i)/resourceAssignmentCount;
+                rjAssignment = countResourceConflict(tasks, i)/resourceAssignmentCount;
                 assignment += rjAssignment;
             }
         }
@@ -25,17 +28,19 @@ public class HumanResourceConflictHelper extends ResourceConflictHelper {
     }
 
     @Override
-    public double countResourceAssignedTimes(List<Variable> variables, int resourceId) {
+    public double countResourceAssignedTimes(List<Task> variables, int resourceId) {
         double count = 0;
-        for (Variable variable: variables) {
-            if (((Task) variable).getRequiredHumanResources().get(resourceId).getStatus() == STATUS.ASSIGNED)
+        for (Task variable: variables) {
+            if (variable.getRequiredHumanResources().get(resourceId).getStatus() == STATUS.ASSIGNED)
                 count++;
         }
         return count;
     }
 
+
+
     @Override
-    public double countResourceConflict(List<Variable> variables, int resourceId) {
+    public double countResourceConflict(List<Task> variables, int resourceId) {
         double count = 0;
         int variableSize = variables.size();
         int[] conflictMap = new int[variableSize];
@@ -57,7 +62,7 @@ public class HumanResourceConflictHelper extends ResourceConflictHelper {
     }
 
     @Override
-    public boolean isResourceConflict(Variable var1, Variable var2, int resourceId) {
+    public boolean isResourceConflict(Task var1, Task var2, int resourceId) {
         Resource resource1 = ((Task) var1).getRequiredHumanResources().get(resourceId);
         Resource resource2 = ((Task) var2).getRequiredHumanResources().get(resourceId);
         if (resource1.getStatus() == resource2.getStatus() && resource1.getStatus() == STATUS.ASSIGNED) {

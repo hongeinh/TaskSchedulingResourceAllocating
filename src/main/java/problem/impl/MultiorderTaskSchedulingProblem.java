@@ -5,6 +5,7 @@ import component.resource.HumanResource;
 import component.resource.MachineResource;
 import component.skill.Skill;
 import component.variable.Variable;
+import component.variable.impl.Order;
 import component.variable.impl.Task;
 import solution.Solution;
 
@@ -20,7 +21,7 @@ public class MultiorderTaskSchedulingProblem extends TaskSchedulingResourceAlloc
 	 * lexp: 				double[][]		Resource - Skill matrix
 	 * tasks: 				int[][]			Task matrix
 	 * numberOfTasks: 		int				number of tasks in this problem
-	 * numberOfHumanResources: 	int				number of resources in this problem
+	 * numberOfHumanResources: 	int			number of resources in this problem
 	 * numberOfSkills: 		int				number of skills in this problem
 	 * scheduledTimes: 		List<Integer>	list of scheduled time for variables
 	 * durations: 			List<Integer>	list of durations for variables
@@ -35,42 +36,84 @@ public class MultiorderTaskSchedulingProblem extends TaskSchedulingResourceAlloc
 		super(params, variableController);
 	}
 
+	/**
+	 * First objective: Time
+	 * Second objective: Quality
+	 * Third objective: Cost (human cost + machine cost + penalty cost)
+	 * */
 	@Override
 	public Solution evaluate(Solution solution) {
-		solution = evaluateDuration(solution);
-		solution = evaluateCost(solution);
-		solution = evaluateAssignment(solution);
+		solution = evaluateIdleDuration(solution);
+		solution = evaluateQuality(solution);
+		solution = evaluateTotalCost(solution);
 		return solution;
 	}
 
-	@Override
-	public Solution evaluateDuration(Solution solution) {
-		List<Variable> variables = solution.getVariables();
-		int id = ((Task) variables.get(variables.size() - 1)).getId();
-		List<Variable> evaluatingVariables = getTimeEvaluatingVariables(variables, id);
-		int numberOfOrders = evaluatingVariables.size();
-		int numberOfTasks = variables.size()/numberOfOrders;
-		double totalDelay = 0;
 
-		for (int i = 0; i < numberOfOrders; i++) {
-			double delay = calculateEachOrderIdleTime(variables.subList(i * numberOfTasks, (i + 1) * numberOfTasks + 1));
-			totalDelay += delay;
+
+	/**
+	 * Counts the total idle time between tasks in one order and between orders
+	 *
+	 * */
+	public Solution evaluateIdleDuration(Solution solution) {
+
+		List<Variable> variables = solution.getVariables();
+
+		double totalDelay = 0;
+		int variableSize = variables.size();
+
+		for (int i = 0; i < variableSize; i++) {
+			List<Task> tasks = (List<Task>) variables.get(i).getValue();
+			totalDelay += calculateEachOrderIdleTime(tasks);
+		}
+		solution.getObjectives()[0] = totalDelay/variableSize;
+		return solution;
+	}
+
+	/**
+	 * Calculate the idle time between the scheduled start and the actual start of each task in the same order
+	 * */
+	private double calculateEachOrderIdleTime(List<Task> tasks) {
+		double delay = 0;
+		for (Task task: tasks) {
+			double idle = task.getScheduledTime() - task.getStart();
+			idle = idle < 0 ? 0 : (1/(1 + idle));
+			delay += idle;
+			task.setIdle(idle);
 		}
 
-		solution.getObjectives()[0] = totalDelay/numberOfOrders;
-		return solution;
+		return delay;
 	}
 
-	public Solution evaluateCost(Solution solution) {
+	/**
+	 * Evaluate the total cost for each order based on its human cost, machine cost and penalty cost when finishing time is after deadline
+	 * */
+	public Solution evaluateTotalCost(Solution solution) {
 		List<Variable> variables = solution.getVariables();
-		double totalCost = 0.0;
+		double totalCostAllOrders = 0.0;
 
 		for (Variable variable: variables) {
-			double taskHumanCost = calculateHumanCost( ((Task) variable).getRequiredHumanResources(), ((Task) variable).getDuration());
-			double taskMachineCost = calculateMachineCost(((Task) variable).getRequiredMachinesResources(), ((Task) variable).getDuration());
-			totalCost += taskHumanCost + taskMachineCost;
+			Order order = (Order) variable;
+			List<Task> tasks = order.getTasks();
+			double totalCost = 0;
+
+			for(Task task: tasks) {
+
+				double taskHumanCost = calculateHumanCost( task.getRequiredHumanResources(), task.getDuration());
+
+				double taskMachineCost = calculateMachineCost(task.getRequiredMachinesResources(), task.getDuration());
+
+				double totalTimeSpent = order.getTotalTimeSpent();
+				double totalTimeAllowed = order.getTotalTimeAllowed();
+				double penaltyCost = totalTimeSpent <= totalTimeAllowed ? 0 : (totalTimeSpent - totalTimeAllowed);
+				penaltyCost *= order.getPenaltyRate();
+
+				totalCost += taskHumanCost + taskMachineCost + penaltyCost;
+			}
+			totalCostAllOrders += totalCost;
+			order.setTotalCost(totalCost);
 		}
-		solution.getObjectives()[1] = totalCost;
+		solution.getObjectives()[1] = totalCostAllOrders;
 		return solution;
 	}
 
@@ -97,29 +140,41 @@ public class MultiorderTaskSchedulingProblem extends TaskSchedulingResourceAlloc
 		return taskHumanCost * duration;
 	}
 
-	private List<Variable> getTimeEvaluatingVariables(List<Variable> variables, int id) {
-		List<Variable> evaluatingVariables = new ArrayList<>();
-		evaluatingVariables.add((variables.get(variables.size() - 1)));
-
+	/**
+	 * This function evaluates the quality of each order in a solution based on the order's complete time against its deadline
+	 * @param solution	The Solution to be evaluated
+	 *
+	 *
+	 * */
+	private Solution evaluateQuality(Solution solution) {
+		List<Variable> variables = solution.getVariables();
+		double timeQuality = 0;
 		for (Variable variable: variables) {
-			if (((Task) variable).getId() == id) {
-				evaluatingVariables.add(variable);
-			}
+			Order order = (Order) variable;
+			double totalTimeSpent = order.getTotalTimeSpent();
+			double totalTimeAllowed = order.getTotalTimeAllowed();
+			if (totalTimeAllowed == 0 || totalTimeSpent == 0)
+				continue;
+			timeQuality += totalTimeSpent <= totalTimeAllowed ? 1 : (totalTimeAllowed/totalTimeSpent);
 		}
-
-		return evaluatingVariables;
+		solution.getObjectives()[1] = timeQuality/variables.size();
+		return solution;
 	}
 
-	private double calculateEachOrderIdleTime(List<Variable> variables) {
-		double delay = 0;
-		for (Variable var: variables) {
-			double idle = ((Task) var).getScheduledTime() - ((Task) var).getStart();
-			idle = idle < 0 ? 0 : (1/(1 + idle));
-			delay += idle;
-			((Task) var).setIdle(idle);
-		}
 
-		return delay;
+	@Override
+	public boolean evaluateConstraints(Solution solution) {
+		return evaluateResourceContraints(solution);
+	}
+
+	private boolean evaluateResourceContraints(Solution solution) {
+		int numberOfHumanResource = (int) this.parameters.get("numberOfHumanResources");
+		int numberMachineResource = (int) this.parameters.get("numberOfMachineResources");
+
+		double humanResourceConflict = this.humanResourceConflictHelper.evaluateResourceConflict(solution, numberOfHumanResource);
+		double machineResourceConflict = this.machineResourceConflictHelper.evaluateResourceConflict(solution, numberMachineResource);
+
+		return humanResourceConflict + machineResourceConflict == 0;
 	}
 
 }

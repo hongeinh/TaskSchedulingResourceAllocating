@@ -25,8 +25,8 @@ public class SinglePointCrossoverOperator extends CrossoverOperator {
 			Solution parent1 = solutions.get(parentIndex1);
 			Solution parent2 = solutions.get(parentIndex2);
 
-			Solution child1 = Solution.copy(parent1);
-			Solution child2 = Solution.copy(parent2);
+//			Solution child1 = Solution.copy(parent1);
+//			Solution child2 = Solution.copy(parent2);
 
 
 		}

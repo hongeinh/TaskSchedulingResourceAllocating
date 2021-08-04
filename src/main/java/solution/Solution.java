@@ -39,15 +39,6 @@ public class Solution implements Comparable, Serializable {
 		return stringBuilder.toString();
 	}
 
-	public static Solution copy(Solution anotherSolution) throws CloneNotSupportedException {
-		Solution solution = new Solution();
-		solution.setVariables(new ArrayList<>() );
-		for (Variable variable: anotherSolution.getVariables()) {
-			solution.getVariables().add((Variable) variable.clone());
-		}
-		return solution;
-	}
-
 	/**
 	 * Compares two solution
 	 * @param o     The solution to be compared to the current one

@@ -4,7 +4,6 @@ import algorithm.comparator.RankingAndCrowdingDistanceComparator;
 import component.controller.VariableController;
 import component.controller.impl.TaskSchedulingResourceAllocatingVariableController;
 import operator.crossover.impl.ProposedCrossoverOperator1;
-import operator.crossover.impl.SinglePointCrossoverOperator;
 import operator.mutation.impl.BitInversionMutationOperator;
 import operator.selection.impl.RouletteWheelSelectionOperator;
 import problem.Problem;

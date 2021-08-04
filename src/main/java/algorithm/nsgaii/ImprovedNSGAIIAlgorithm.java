@@ -1,6 +1,8 @@
 package algorithm.nsgaii;
 
 import component.variable.Variable;
+import component.variable.impl.Order;
+import component.variable.impl.Task;
 import problem.Problem;
 import solution.Solution;
 
@@ -19,10 +21,13 @@ public class ImprovedNSGAIIAlgorithm extends NSGAIIAlgorithm{
 	public List<Solution> createInitialSolutionSet(Problem problem) throws IOException {
 		List<Solution> solutions = new ArrayList<>();
 		int maxDuration = (Integer) problem.getParameters().get("maxDuration");
-
-		for (int i  = 1; i <= this.getSolutionSetSize(); i++) {
+		int i = 0;
+		while(i < this.solutionSetSize) {
 			Solution initialSolution = createInitialSolution(problem, (double) i * maxDuration/this.getSolutionSetSize());
-			solutions.add(initialSolution);
+			if (problem.evaluateConstraints(initialSolution)) {
+				solutions.add(initialSolution);
+				i++;
+			}
 		}
 		return solutions;
 	}

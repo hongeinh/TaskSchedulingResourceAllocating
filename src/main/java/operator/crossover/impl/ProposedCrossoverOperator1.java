@@ -1,13 +1,11 @@
 package operator.crossover.impl;
 
 import common.STATUS;
-import component.resource.Resource;
 import component.variable.impl.Task;
 import operator.crossover.CrossoverOperator;
 import solution.Solution;
 import utils.DataUtil;
 
-import javax.xml.crypto.Data;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,20 +31,25 @@ public class ProposedCrossoverOperator1 extends CrossoverOperator {
     }
 
     public List<Solution> crossover(Solution a, Solution b) {
+
+        int size = a.getVariables().size();
+        int chromosomeSize = ((ArrayList) a.getVariables().get(0).getValue()).size();
+
         int position1 = 0;
         int position2 = 0;
-        while (position1 == position2) {
-            position1 = (int) Math.floor(Math.random() * a.getVariables().size());
-            position2 = (int) Math.floor(Math.random() * a.getVariables().size());
+        while (position1 >= position2) {
+            position1 = getRandomNumber(0, chromosomeSize);
+            position2 = getRandomNumber(0, chromosomeSize);
         }
 
+        int variablePosition = getRandomNumber(0, size);
         Solution copyA = DataUtil.cloneBean(a);
         Solution copyB = DataUtil.cloneBean(b);
 
 
         for (int i = position1; i < position2; i++) {
-            Task copyVarA = (Task) copyA.getVariables().get(i);
-            Task copyVarB = (Task) copyB.getVariables().get(i);
+            Task copyVarA =  ((List<Task>) copyA.getVariables().get(variablePosition).getValue()).get(i);
+            Task copyVarB = ((List<Task>) copyB.getVariables().get(variablePosition).getValue()).get(i);
 
             double diff = copyVarA.getScheduledTime() - copyVarB.getScheduledTime();
 
@@ -72,4 +75,9 @@ public class ProposedCrossoverOperator1 extends CrossoverOperator {
         returnSolutions.add(copyB);
         return returnSolutions;
     }
+
+    private int getRandomNumber(int min, int max) {
+        return (int) ((Math.random() * (max - min)) + min);
+    }
+
 }

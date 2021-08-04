@@ -177,17 +177,17 @@ public class RankingAndCrowdingDistanceComparator {
 		return solutions;
 	}
 
-	public void displayDominance(List<Solution> solutions) throws IOException {
-		String currentPath = System.getProperty("user.dir") + "/src/main/java";
-		FileWriter fileWriter = new FileWriter(currentPath + "/dominacnce.csv");
-
-		StringBuilder printString = new StringBuilder();
-		for (Solution solution : solutions) {
-			printString.append(solution.getId() + ", " + solution.getDominatedSolutions().size() + ", " + solution.getDominationCount() + "\n");
-
-		}
-		fileWriter.write(printString.toString());
-		fileWriter.close();
-	}
+//	public void displayDominance(List<Solution> solutions) throws IOException {
+//		String currentPath = System.getProperty("user.dir") + "/src/main/java";
+//		FileWriter fileWriter = new FileWriter(currentPath + "/dominacnce.csv");
+//
+//		StringBuilder printString = new StringBuilder();
+//		for (Solution solution : solutions) {
+//			printString.append(solution.getId() + ", " + solution.getDominatedSolutions().size() + ", " + solution.getDominationCount() + "\n");
+//
+//		}
+//		fileWriter.write(printString.toString());
+//		fileWriter.close();
+//	}
 
 }
