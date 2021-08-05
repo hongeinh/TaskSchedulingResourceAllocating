@@ -10,7 +10,7 @@ import java.util.List;
 
 @Getter
 @Setter
-//@Builder
+@Builder
 public class Order implements Variable{
 
 	private int id;
@@ -21,13 +21,6 @@ public class Order implements Variable{
 	private double totalTimeSpent;
 	private double totalCost;
 	List<Task> tasks;
-
-	public Order(int id, double weight, double totalTimeAllowed) {
-		this.id = id;
-		this.weight = weight;
-		this.totalTimeAllowed = totalTimeAllowed;
-	}
-
 
 	@Override
 	public Object getValue() {

@@ -13,7 +13,6 @@ public class MultiorderTaskSchedulingController extends FixedMultiorderTaskSched
 	public List<Variable> setupVariables(Map<Object, Object> parameters, double k) {
 		// Get the orders
 		List<Variable> orders = (List<Variable>) parameters.get("orders");
-		int orderSize = orders.size();
 
 		// Create tasks and with precedence constraints
 		List<Task> templateTasks = createTasks(parameters);

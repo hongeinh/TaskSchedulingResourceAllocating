@@ -5,6 +5,7 @@ import component.variable.impl.Task;
 import operator.crossover.CrossoverOperator;
 import solution.Solution;
 import utils.DataUtil;
+import utils.NumberUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,11 +39,11 @@ public class ProposedCrossoverOperator1 extends CrossoverOperator {
         int position1 = 0;
         int position2 = 0;
         while (position1 >= position2) {
-            position1 = getRandomNumber(0, chromosomeSize);
-            position2 = getRandomNumber(0, chromosomeSize);
+            position1 = NumberUtil.getRandomNumber(0, chromosomeSize);
+            position2 = NumberUtil.getRandomNumber(0, chromosomeSize);
         }
 
-        int variablePosition = getRandomNumber(0, size);
+        int variablePosition = NumberUtil.getRandomNumber(0, size);
         Solution copyA = DataUtil.cloneBean(a);
         Solution copyB = DataUtil.cloneBean(b);
 
@@ -76,8 +77,5 @@ public class ProposedCrossoverOperator1 extends CrossoverOperator {
         return returnSolutions;
     }
 
-    private int getRandomNumber(int min, int max) {
-        return (int) ((Math.random() * (max - min)) + min);
-    }
 
 }

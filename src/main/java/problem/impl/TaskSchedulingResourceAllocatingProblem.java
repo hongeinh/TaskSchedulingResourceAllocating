@@ -54,8 +54,8 @@ public class TaskSchedulingResourceAllocatingProblem extends Problem {
 	}
 
 	@Override
-	public boolean evaluateConstraints(Solution solution) {
-		return false;
+	public double evaluateConstraints(Solution solution) {
+		return 0;
 	}
 
 	public Solution evaluateDuration(Solution solution) {

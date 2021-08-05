@@ -8,6 +8,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -15,7 +16,7 @@ import java.util.stream.Collectors;
 @Getter
 @Setter
 @Builder
-public class Task implements Comparable<Task> {
+public class Task implements Comparable<Task>, Serializable {
 
 	private int orderId;
 	private int id;
@@ -29,8 +30,9 @@ public class Task implements Comparable<Task> {
 	private List<HumanResource> requiredHumanResources;
 
 
-	private String getResourceIdsString(List<? extends Resource> resources, String delimeter) {
+	private String getUsefulResourceIdsString(List<? extends Resource> resources, String delimeter) {
 		List<String> humanResourceIds = resources.stream()
+				.filter(resource -> resource.getStatus() == STATUS.ASSIGNED)
 				.map(resource -> Integer.toString(resource.getId()))
 				.collect(Collectors.toList());
 		return humanResourceIds.stream().map(String::valueOf).collect(Collectors.joining(delimeter));
@@ -45,9 +47,9 @@ public class Task implements Comparable<Task> {
 				"\tStart: " + this.start +
 				"\tDuration: " + this.duration +
 				"\tHuman Resource: ");
-		stringBuilder.append(getResourceIdsString(requiredHumanResources, " "));
+		stringBuilder.append(getUsefulResourceIdsString(requiredHumanResources, " "));
 		stringBuilder.append("\t---\tMachine Resource: ");
-		stringBuilder.append(getResourceIdsString(requiredMachinesResources, " "));
+		stringBuilder.append(getUsefulResourceIdsString(requiredMachinesResources, " "));
 		return stringBuilder.toString();
 	}
 

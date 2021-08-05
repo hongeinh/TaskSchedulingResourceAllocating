@@ -113,7 +113,7 @@ public class MultiorderTaskSchedulingProblem extends TaskSchedulingResourceAlloc
 			totalCostAllOrders += totalCost;
 			order.setTotalCost(totalCost);
 		}
-		solution.getObjectives()[1] = totalCostAllOrders;
+		solution.getObjectives()[2] = totalCostAllOrders;
 		return solution;
 	}
 
@@ -163,18 +163,18 @@ public class MultiorderTaskSchedulingProblem extends TaskSchedulingResourceAlloc
 
 
 	@Override
-	public boolean evaluateConstraints(Solution solution) {
+	public double evaluateConstraints(Solution solution) {
 		return evaluateResourceContraints(solution);
 	}
 
-	private boolean evaluateResourceContraints(Solution solution) {
+	private double evaluateResourceContraints(Solution solution) {
 		int numberOfHumanResource = (int) this.parameters.get("numberOfHumanResources");
 		int numberMachineResource = (int) this.parameters.get("numberOfMachineResources");
 
 		double humanResourceConflict = this.humanResourceConflictHelper.evaluateResourceConflict(solution, numberOfHumanResource);
 		double machineResourceConflict = this.machineResourceConflictHelper.evaluateResourceConflict(solution, numberMachineResource);
 
-		return humanResourceConflict + machineResourceConflict == 0;
+		return humanResourceConflict + machineResourceConflict;
 	}
 
 }

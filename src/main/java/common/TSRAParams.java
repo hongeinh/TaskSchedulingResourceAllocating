@@ -14,6 +14,8 @@ public class TSRAParams {
 
 	public static final double[] orderDeadlines = {200, 180, 300};
 
+	public static final double[] orderPenaltyRate = {3, 6, 5};
+
 	public static final double[] durations = {24, 26, 20, 12, 15, 18, 15, 15, 20, 27, 10, 18};
 
 	public static final double[] scheduledTimes = {26, 0, 50, 70, 82, 52, 107, 97, 60, 23, 112, 32};

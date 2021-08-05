@@ -9,8 +9,10 @@ import component.skill.Skill;
 import component.variable.Variable;
 import component.variable.impl.Order;
 import component.variable.impl.Task;
+import utils.NumberUtil;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 
 public class TaskSchedulingResourceAllocatingVariableController extends VariableController {
@@ -18,7 +20,13 @@ public class TaskSchedulingResourceAllocatingVariableController extends Variable
 	@Override
 	public List<Variable> setupVariables(Map<Object, Object> parameters, double k) {
 
-		Order order = new Order(0, 0, Double.MAX_VALUE);
+//		Order order = new Order(0, 0, Double.MAX_VALUE);
+		Order order = Order.builder()
+				.id(0)
+				.weight(0)
+				.totalTimeAllowed(Double.MAX_VALUE)
+				.penaltyRate(0)
+				.build();
 		List<Task> tasks = createTasks(parameters);
 		setupAllTasksResources(tasks, parameters, k);
 
@@ -186,18 +194,27 @@ public class TaskSchedulingResourceAllocatingVariableController extends Variable
 
 
 	private void randomAssignResource(List<? extends Resource> resources) {
-		int countAssignedResource = 0;
-		while (countAssignedResource == 0) {
-			for (Resource resource : resources) {
-				if (resource.getStatus() == STATUS.USEFUL) {
-					double rand = Math.random();
-					if (rand >= 0.75) {
-						resource.setStatus(STATUS.ASSIGNED);
-						countAssignedResource++;
-					}
-				}
-			}
+
+		List<? extends Resource> usefulResources = resources.stream()
+				.filter(resource -> resource.getStatus() == STATUS.USEFUL)
+				.collect(Collectors.toList());
+
+		int random = NumberUtil.getRandomNumber(0, usefulResources.size());
+		int randomResourceId = usefulResources.get(random).getId();
+		for (Resource resource: resources) {
+			if (resource.getId() == randomResourceId)
+				resource.setStatus(STATUS.ASSIGNED);
 		}
+//			for (Resource resource : resources) {
+//				if (resource.getStatus() == STATUS.USEFUL) {
+//					double rand = Math.random();
+//					if (rand >= 0.75) {
+//						resource.setStatus(STATUS.ASSIGNED);
+//						countAssignedResource++;
+//					}
+//				}
+//			}
+
 	}
 
 	/**

@@ -16,7 +16,6 @@ import solution.Solution;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class TestMultiorder {
@@ -81,7 +80,13 @@ public class TestMultiorder {
 		ArrayList<Order> orders = new ArrayList<>();
 
 		for (int i = 0; i < TSRAParams.numberOfOrders; i++) {
-			Order order = new Order(i, TSRAParams.weights[i], TSRAParams.orderDeadlines[i]);
+//			Order order = new Order(i, TSRAParams.weights[i], TSRAParams.orderDeadlines[i]);
+			Order order = Order.builder()
+					.id(i)
+					.weight(TSRAParams.weights[i])
+					.penaltyRate(TSRAParams.orderPenaltyRate[i])
+					.totalTimeAllowed(TSRAParams.orderDeadlines[i])
+					.build();
 			orders.add(order);
 		}
 		params.put("orders", orders);
