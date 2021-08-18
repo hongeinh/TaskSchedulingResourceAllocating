@@ -1,9 +1,8 @@
 import algorithm.Algorithm;
 import algorithm.comparator.RankingAndCrowdingDistanceComparator;
 import algorithm.nsgaii.ImprovedNSGAIIAlgorithm;
-import common.TSRAParams;
+import scenario.TSRAScenario;
 import component.controller.VariableController;
-import component.controller.impl.FixedMultiorderTaskSchedulingController;
 import component.controller.impl.MultiorderTaskSchedulingController;
 import component.variable.impl.Order;
 import operator.crossover.impl.ProposedCrossoverOperator1;
@@ -11,7 +10,6 @@ import operator.mutation.impl.BitInversionMutationOperator;
 import operator.selection.impl.RouletteWheelSelectionOperator;
 import problem.Problem;
 import problem.impl.MultiorderTaskSchedulingProblem;
-import solution.Solution;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -51,26 +49,27 @@ public class TestMultiorder {
 		Map<Object, Object> params = createOrders();
 
 
-		params.put("treq", TSRAParams.treq);
-		params.put("lexp", TSRAParams.lexp);
-		params.put("mreq", TSRAParams.mreq);
-		params.put("tasks", TSRAParams.tasks);
+		params.put("treq", TSRAScenario.treq);
+		params.put("lexp", TSRAScenario.lexp);
+		params.put("mreq", TSRAScenario.mreq);
+		params.put("tasks", TSRAScenario.tasks);
 
 
-		params.put("numberOfTasks", TSRAParams.numberOfTasks);
-		params.put("numberOfHumanResources", TSRAParams.numberOfHumanResources);
-		params.put("numberOfMachineResources", TSRAParams.numberOfMachineResources);
-		params.put("numberOfSkills", TSRAParams.numberOfSkills);
+		params.put("numberOfTasks", TSRAScenario.numberOfTasks);
+		params.put("numberOfHumanResources", TSRAScenario.numberOfHumanResources);
+		params.put("numberOfMachineResources", TSRAScenario.numberOfMachineResources);
+		params.put("numberOfSkills", TSRAScenario.numberOfSkills);
 
-		params.put("humanCosts", TSRAParams.humanCosts);
-		params.put("machineCosts", TSRAParams.machineCosts);
+		params.put("humanCosts", TSRAScenario.humanCosts);
+		params.put("machineCosts", TSRAScenario.machineCosts);
 
-		params.put("scheduledTimes", TSRAParams.scheduledTimes);
-		params.put("durations", TSRAParams.durations);
-		params.put("maxDuration", TSRAParams.maxDuration);
+		params.put("scheduledTimes", TSRAScenario.scheduledTimes);
+		params.put("durations", TSRAScenario.durations);
+		params.put("maxDuration", TSRAScenario.maxDuration);
+		params.put("maxWeight", TSRAScenario.maxWeight);
 
-		params.put("numberOfObjectives", TSRAParams.numberOfObjectives);
-		params.put("numberOfFitness", TSRAParams.numberOfFitness);
+		params.put("numberOfObjectives", TSRAScenario.numberOfObjectives);
+		params.put("numberOfFitness", TSRAScenario.numberOfFitness);
 
 		return params;
 	}
@@ -79,13 +78,13 @@ public class TestMultiorder {
 		HashMap<Object, Object> params = new HashMap<>();
 		ArrayList<Order> orders = new ArrayList<>();
 
-		for (int i = 0; i < TSRAParams.numberOfOrders; i++) {
-//			Order order = new Order(i, TSRAParams.weights[i], TSRAParams.orderDeadlines[i]);
+		for (int i = 0; i < TSRAScenario.numberOfOrders; i++) {
+//			Order order = new Order(i, TSRAScenario.weights[i], TSRAScenario.orderDeadlines[i]);
 			Order order = Order.builder()
 					.id(i)
-					.weight(TSRAParams.weights[i])
-					.penaltyRate(TSRAParams.orderPenaltyRate[i])
-					.totalTimeAllowed(TSRAParams.orderDeadlines[i])
+					.weight(TSRAScenario.weights[i])
+					.penaltyRate(TSRAScenario.orderPenaltyRate[i])
+					.totalTimeAllowed(TSRAScenario.orderDeadlines[i])
 					.build();
 			orders.add(order);
 		}

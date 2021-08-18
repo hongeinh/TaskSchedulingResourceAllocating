@@ -4,7 +4,7 @@ import common.STATUS;
 import component.resource.Resource;
 import component.variable.Variable;
 import component.variable.impl.Task;
-import solution.Solution;
+import representation.Solution;
 
 import java.util.List;
 

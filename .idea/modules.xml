@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/TaskSchedulingResourceAllocating.iml" filepath="$PROJECT_DIR$/.idea/TaskSchedulingResourceAllocating.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/TSRA-core.iml" filepath="$PROJECT_DIR$/.idea/TSRA-core.iml" />
     </modules>
   </component>
 </project>

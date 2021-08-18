@@ -1,5 +1,5 @@
 import algorithm.nsgaii.ImprovedNSGAIIAlgorithm;
-import common.TSRAParams;
+import scenario.TSRAScenario;
 import algorithm.comparator.RankingAndCrowdingDistanceComparator;
 import component.controller.VariableController;
 import component.controller.impl.TaskSchedulingResourceAllocatingVariableController;
@@ -8,7 +8,7 @@ import operator.mutation.impl.BitInversionMutationOperator;
 import operator.selection.impl.RouletteWheelSelectionOperator;
 import problem.Problem;
 import problem.impl.TaskSchedulingResourceAllocatingProblem;
-import solution.Solution;
+import representation.Solution;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -41,17 +41,17 @@ public class Test1 {
 	public static Map<Object, Object> createParams() {
 		Map<Object, Object> params = new HashMap<>();
 
-		params.put("treq", TSRAParams.treq);
-		params.put("lexp", TSRAParams.lexp);
-		params.put("tasks", TSRAParams.tasks);
-		params.put("numberOfTasks", TSRAParams.numberOfTasks);
-		params.put("numberOfHumanResources", TSRAParams.numberOfHumanResources);
-		params.put("numberOfSkills", TSRAParams.numberOfSkills);
-		params.put("scheduledTimes", TSRAParams.scheduledTimes);
-		params.put("durations", TSRAParams.durations);
-		params.put("numberOfObjectives", TSRAParams.numberOfObjectives);
-		params.put("numberOfFitness", TSRAParams.numberOfFitness);
-		params.put("maxDuration", TSRAParams.maxDuration);
+		params.put("treq", TSRAScenario.treq);
+		params.put("lexp", TSRAScenario.lexp);
+		params.put("tasks", TSRAScenario.tasks);
+		params.put("numberOfTasks", TSRAScenario.numberOfTasks);
+		params.put("numberOfHumanResources", TSRAScenario.numberOfHumanResources);
+		params.put("numberOfSkills", TSRAScenario.numberOfSkills);
+		params.put("scheduledTimes", TSRAScenario.scheduledTimes);
+		params.put("durations", TSRAScenario.durations);
+		params.put("numberOfObjectives", TSRAScenario.numberOfObjectives);
+		params.put("numberOfFitness", TSRAScenario.numberOfFitness);
+		params.put("maxDuration", TSRAScenario.maxDuration);
 
 		return params;
 	}

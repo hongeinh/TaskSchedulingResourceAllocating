@@ -1,8 +1,7 @@
 package algorithm.comparator;
 
-import solution.Solution;
+import representation.Solution;
 
-import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -108,7 +107,7 @@ public class RankingAndCrowdingDistanceComparator {
 	/**
 	 * Computes the density around each solution in the list (assume that they are in the same front)
 	 */
-	public List<Solution> computeDistance(@org.jetbrains.annotations.NotNull List<Solution> solutions) {
+	public List<Solution> computeDistance( List<Solution> solutions) {
 		int solutionSetSize = solutions.size();
 		int objectiveSize = solutions.get(0).getObjectives().length;
 

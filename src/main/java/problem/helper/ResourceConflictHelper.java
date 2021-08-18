@@ -2,7 +2,7 @@ package problem.helper;
 
 import component.variable.Variable;
 import component.variable.impl.Task;
-import solution.Solution;
+import representation.Solution;
 
 import java.util.ArrayList;
 import java.util.List;

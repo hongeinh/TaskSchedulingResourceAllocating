@@ -9,6 +9,7 @@ import component.skill.Skill;
 import component.variable.Variable;
 import component.variable.impl.Order;
 import component.variable.impl.Task;
+import representation.Solution;
 import utils.NumberUtil;
 
 import java.util.*;
@@ -30,7 +31,7 @@ public class TaskSchedulingResourceAllocatingVariableController extends Variable
 		List<Task> tasks = createTasks(parameters);
 		setupAllTasksResources(tasks, parameters, k);
 
-		int maxDuration = (int) parameters.get("maxDuration");
+		double maxDuration = (double) parameters.get("maxDuration");
 		assignResourcesToAllTask(tasks, k * maxDuration);
 
 		calculateAllTasksTimes(tasks, k);
@@ -38,6 +39,11 @@ public class TaskSchedulingResourceAllocatingVariableController extends Variable
 		List<Variable> orders = new ArrayList<>();
 		orders.add(order);
 		return orders;
+	}
+
+	@Override
+	public void recalculateSolutionDetails(List<Solution> offspringSolutions) {
+
 	}
 
 	/**
@@ -152,7 +158,7 @@ public class TaskSchedulingResourceAllocatingVariableController extends Variable
 				start = (predecessor.getStart() + predecessor.getDuration());
 			}
 
-			double rand = Math.random() * k;
+			double rand = NumberUtil.getRandomNumber(0, (int) Math.ceil(k));
 			double sign = Math.random() > 0.5 ? 1 : -1;
 
 			task.setStart(start);
@@ -194,7 +200,9 @@ public class TaskSchedulingResourceAllocatingVariableController extends Variable
 
 
 	private void randomAssignResource(List<? extends Resource> resources) {
-
+		if (resources.isEmpty()) {
+			return ;
+		}
 		List<? extends Resource> usefulResources = resources.stream()
 				.filter(resource -> resource.getStatus() == STATUS.USEFUL)
 				.collect(Collectors.toList());
@@ -205,15 +213,6 @@ public class TaskSchedulingResourceAllocatingVariableController extends Variable
 			if (resource.getId() == randomResourceId)
 				resource.setStatus(STATUS.ASSIGNED);
 		}
-//			for (Resource resource : resources) {
-//				if (resource.getStatus() == STATUS.USEFUL) {
-//					double rand = Math.random();
-//					if (rand >= 0.75) {
-//						resource.setStatus(STATUS.ASSIGNED);
-//						countAssignedResource++;
-//					}
-//				}
-//			}
 
 	}
 

@@ -4,6 +4,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.util.Collection;
 
 public class DataUtil {
 
@@ -67,4 +68,14 @@ public class DataUtil {
 
 		return deepCopy;
 	}
+
+	public static boolean nullOrEmpty(Collection objects) {
+		return objects == null || objects.isEmpty();
+	}
+
+	public static boolean nonNullOrEmpty(Collection objects) {
+		return !nullOrEmpty(objects);
+	}
+
+
 }

@@ -1,7 +1,7 @@
 package operator.selection.impl;
 
 import operator.selection.SelectionOperator;
-import solution.Solution;
+import representation.Solution;
 
 import java.util.ArrayList;
 import java.util.List;

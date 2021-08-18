@@ -1,11 +1,10 @@
-package solution;
+package representation;
 
 import component.variable.Variable;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -23,18 +22,14 @@ public class Solution implements Comparable, Serializable {
 
 		int sz = this.getFitness().length;
 
-		stringBuilder.append("Fitness: ");
+		stringBuilder.append(",");
 		for (int i = 0; i < sz; i++)
 			stringBuilder.append(fitness[i] + "  ");
 
-		stringBuilder.append("\tObjectives: ");
+		stringBuilder.append(",");
 		sz = this.getObjectives().length;
 		for (int i = 0; i < sz; i++)
 			stringBuilder.append(objectives[i] + "  ");
-
-		stringBuilder.append("\nVariables:\n");
-		for (Variable variable: this.variables)
-			stringBuilder.append(variable.toString() + "\n");
 
 		return stringBuilder.toString();
 	}

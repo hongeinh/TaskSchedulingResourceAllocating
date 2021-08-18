@@ -40,15 +40,15 @@ public class Task implements Comparable<Task>, Serializable {
 
 	public String toString() {
 		StringBuilder stringBuilder = new StringBuilder();
-		if(this.orderId != 0)
-			stringBuilder.append("\nOrder: " + orderId + "\t");
-		stringBuilder.append("Task " + this.id + ":" +
-				"\tScheduled start: " + this.scheduledTime +
-				"\tStart: " + this.start +
-				"\tDuration: " + this.duration +
-				"\tHuman Resource: ");
+		String DELIMETER = ",";
+
+		stringBuilder.append(this.orderId + DELIMETER +
+								this.id + DELIMETER +
+								this.start + DELIMETER +
+								this.duration + DELIMETER);
+
 		stringBuilder.append(getUsefulResourceIdsString(requiredHumanResources, " "));
-		stringBuilder.append("\t---\tMachine Resource: ");
+		stringBuilder.append(DELIMETER);
 		stringBuilder.append(getUsefulResourceIdsString(requiredMachinesResources, " "));
 		return stringBuilder.toString();
 	}
@@ -104,4 +104,44 @@ public class Task implements Comparable<Task>, Serializable {
 		return resourceCount;
 	}
 
+	public double getTaskCost() {
+		return getHumanResourceCost() + getMachineResourceCost();
+	}
+
+	private double getMachineResourceCost() {
+		List<MachineResource> assignedResources = this.getRequiredMachinesResources().stream()
+				.filter(machineResource -> machineResource.getStatus() == STATUS.ASSIGNED)
+				.collect(Collectors.toList());
+		double totalCost = 0;
+		for (MachineResource resource: assignedResources) {
+			totalCost += resource.getCost() * this.getDuration();
+		}
+
+		return totalCost;
+	}
+
+	private double getHumanResourceCost() {
+		List<HumanResource> assignedResources = this.getRequiredHumanResources().stream()
+				.filter(humanResource -> humanResource.getStatus() == STATUS.ASSIGNED)
+				.collect(Collectors.toList());
+
+		double totalCost = 0;
+
+		for (HumanResource assignedResource: assignedResources) {
+			totalCost += assignedResource.getCost() * this.getDuration();
+		}
+		return totalCost;
+	}
+
+	public double getAverageExperience() {
+		double totalExperience = 0;
+		double assignedResource = 0;
+		for (HumanResource humanResource: this.getRequiredHumanResources()) {
+			if (humanResource.getStatus() == STATUS.ASSIGNED) {
+				totalExperience += humanResource.getAverageExp();
+				assignedResource++;
+			}
+		}
+		return  totalExperience/assignedResource;
+	}
 }

@@ -3,7 +3,7 @@ package operator.crossover.impl;
 import common.STATUS;
 import component.variable.impl.Task;
 import operator.crossover.CrossoverOperator;
-import solution.Solution;
+import representation.Solution;
 import utils.DataUtil;
 import utils.NumberUtil;
 
@@ -55,11 +55,11 @@ public class ProposedCrossoverOperator1 extends CrossoverOperator {
             double diff = copyVarA.getScheduledTime() - copyVarB.getScheduledTime();
 
             if (diff < 0) {
-                copyVarA.setScheduledTime(copyVarA.getScheduledTime() + diff * 0.1);
-                copyVarB.setScheduledTime(copyVarB.getScheduledTime() - diff * 0.1);
+                copyVarA.setStart(copyVarA.getScheduledTime() + diff * 0.2);
+                copyVarB.setStart(copyVarB.getScheduledTime() - diff * 0.2);
             } else if (diff > 0) {
-                copyVarA.setScheduledTime(copyVarA.getScheduledTime() - diff * 0.1);
-                copyVarB.setScheduledTime(copyVarB.getScheduledTime() + diff * 0.1);
+                copyVarA.setStart(copyVarA.getScheduledTime() - diff * 0.2);
+                copyVarB.setStart(copyVarB.getScheduledTime() + diff * 0.2);
             }
 
             int numberOfHumanResources = copyVarA.getRequiredHumanResources().size();

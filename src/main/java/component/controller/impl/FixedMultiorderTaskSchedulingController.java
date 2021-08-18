@@ -22,7 +22,7 @@ public class FixedMultiorderTaskSchedulingController extends TaskSchedulingResou
 		cloneTemplateTasksForAllOrders(orders, templateTasks);
 
 		// set up all orders' tasks' time
-		int maxDuration = (int) parameters.get("maxDuration");
+		double maxDuration = (double) parameters.get("maxDuration");
 		setupVariablesDefaultTimes(orders, maxDuration, k);
 
 		// Sort according to task
@@ -48,13 +48,13 @@ public class FixedMultiorderTaskSchedulingController extends TaskSchedulingResou
 		}
 	}
 
-	protected void setupVariablesDefaultTimes(List<Variable> orders, int maxDuration, double k) {
+	protected void setupVariablesDefaultTimes(List<Variable> orders, double maxDuration, double k) {
 		for (int i = 0; i < orders.size(); i++) {
 			Order order = (Order) orders.get(i);
 			List<Task> newTasks = (List<Task>) order.getValue();
 
 			for (Task newTask : newTasks) {
-				double duration = newTask.getDuration() * order.getWeight();
+				double duration = newTask.getDuration() * order.getWeight() / newTask.getAverageExperience();
 				newTask.setDuration(Math.round(duration) * 100 / 100);
 			}
 

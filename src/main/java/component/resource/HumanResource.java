@@ -24,4 +24,12 @@ public class HumanResource extends Resource{
 		super(id, status, cost);
 		this.skills = skills;
 	}
+
+	public double getAverageExp() {
+		double avgExp = 0;
+		for (Skill skill: skills) {
+			avgExp += skill.getExperienceLevel();
+		}
+		return avgExp/skills.size();
+	}
 }

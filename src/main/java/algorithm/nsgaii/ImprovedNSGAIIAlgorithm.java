@@ -2,7 +2,7 @@ package algorithm.nsgaii;
 
 import component.variable.Variable;
 import problem.Problem;
-import solution.Solution;
+import representation.Solution;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -18,11 +18,16 @@ public class ImprovedNSGAIIAlgorithm extends NSGAIIAlgorithm{
 	@Override
 	public List<Solution> createInitialSolutionSet(Problem problem) throws IOException {
 		List<Solution> solutions = new ArrayList<>();
-		int maxDuration = (Integer) problem.getParameters().get("maxDuration");
+		double maxDuration = (Double) problem.getParameters().get("maxDuration");
+		double maxWeight = (Double) problem.getParameters().get("maxWeight");
+		maxDuration *= maxWeight;
+
 		int i = 0;
 		while(solutions.size() < this.solutionSetSize) {
-			Solution initialSolution = createInitialSolution(problem, (double) i * maxDuration/this.getSolutionSetSize());
-			if (problem.evaluateConstraints(initialSolution) < 1) {
+//			System.out.println("-- Solution #" + i);
+			Solution initialSolution = createInitialSolution(problem, i * maxDuration/this.getSolutionSetSize());
+			double[] constraints = problem.evaluateConstraints(initialSolution);
+			if (constraints[0] < 0.6 && constraints[1] == 0) {
 				solutions.add(initialSolution);
 				i++;
 			}
@@ -37,6 +42,10 @@ public class ImprovedNSGAIIAlgorithm extends NSGAIIAlgorithm{
 		List<Variable> variables = problem.getVariableController().setupVariables(problem.getParameters(), k);
 		solution.setVariables(variables);
 		return solution;
+	}
+
+	public void recalculateSolutionDetails(List<Solution> offspringSolutions, Problem problem) {
+		problem.getVariableController().recalculateSolutionDetails(offspringSolutions);
 	}
 
 }

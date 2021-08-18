@@ -1,10 +1,19 @@
 package algorithm;
 
+import component.variable.Variable;
+import component.variable.impl.Task;
 import lombok.Getter;
 import lombok.Setter;
 import operator.Operator;
+import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.usermodel.WorkbookFactory;
+import org.apache.poi.xssf.usermodel.XSSFCell;
+import org.apache.poi.xssf.usermodel.XSSFRow;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
 import problem.Problem;
-import solution.Solution;
+import representation.Solution;
+import utils.CSVHeaders;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -16,6 +25,11 @@ public abstract class Algorithm {
 
 	protected List<Operator> operators;
 	protected int solutionSetSize;
+	protected int eliteSetSize;
+	protected int eliteRate;
+
+	protected double geneMutationProbability;
+	protected int maxGeneration;
 
 
 	public Algorithm() {
@@ -36,15 +50,30 @@ public abstract class Algorithm {
 	}
 
 
-	public void displaySolutions(List<Solution> solutions, String filename, boolean isAppend, int offspringGeneration) throws IOException {
-		PrintWriter printWriter = createPrintWriter("/result/solution/", filename, isAppend);
-		int i = 1;
+	public void displaySolutions(List<Solution> solutions, String dir, String filename, boolean isAppend) throws IOException {
+		String dirname = "/result/solution/";
+		PrintWriter printWriter = createPrintWriter(dirname + dir, filename, isAppend);
 		for (Solution solution : solutions) {
-			printWriter.println(i + ". " + solution.toString() + "\n");
-			i++;
+			printWriter.println(solution.toString() + "\n");
+			displaySolutionVariables(solution.getVariables(), dirname + dir + "variables/", filename);
 		}
 		printWriter.close();
 
+	}
+
+	protected void displaySolutionVariables(List<Variable> variables, String dirname, String filename) throws IOException {
+		PrintWriter printWriter = createPrintWriter(dirname, filename, false);
+		for (Variable variable: variables) {
+			printWriter.println(variable.toString() + "\n");
+//			displayVariableChromosome((List<Task>)variable.getValue(), dirname + "chromosomes/", filename);
+		}
+	}
+
+	protected void displayVariableChromosome(List<Task> value, String dirname, String filename) throws IOException {
+//		PrintWriter printWriter = createPrintWriter(dirname, filename, false);
+//			for (Task obj: (List) value) {
+//				printWriter.println(obj.toString() + "\n");
+//			}
 	}
 
 	public void displayFitness(List<Solution> solutions, String filename, boolean isAppend) throws IOException {
@@ -102,5 +131,6 @@ public abstract class Algorithm {
 		BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
 		return new PrintWriter(bufferedWriter);
 	}
+
 
 }

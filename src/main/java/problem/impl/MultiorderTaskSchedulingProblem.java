@@ -7,9 +7,8 @@ import component.skill.Skill;
 import component.variable.Variable;
 import component.variable.impl.Order;
 import component.variable.impl.Task;
-import solution.Solution;
+import representation.Solution;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -163,8 +162,34 @@ public class MultiorderTaskSchedulingProblem extends TaskSchedulingResourceAlloc
 
 
 	@Override
-	public double evaluateConstraints(Solution solution) {
-		return evaluateResourceContraints(solution);
+	public double[] evaluateConstraints(Solution solution) {
+		double[] constraints = new double[2];
+		constraints[0] = evaluateResourceContraints(solution);
+		constraints[1] = evaluateTimeConstraints(solution);
+		return constraints;
+	}
+
+	private double evaluateTimeConstraints(Solution solution) {
+		boolean isValidTime = true;
+		List<Variable> variables = solution.getVariables();
+		for (Variable variable: variables) {
+			List<Task> tasks = (List<Task>) variable.getValue();
+			if (!isValidTaskTimeContraints(tasks)) {
+				isValidTime = false;
+				break;
+			}
+		}
+		return isValidTime == true ? 1 : 0;
+		
+	}
+
+	private boolean isValidTaskTimeContraints(List<Task> tasks) {
+		for (Task task: tasks) {
+			if (task.getDuration() >= 8) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 	private double evaluateResourceContraints(Solution solution) {

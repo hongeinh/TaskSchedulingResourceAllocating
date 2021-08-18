@@ -1,7 +1,7 @@
 package operator.crossover.impl;
 
 import operator.crossover.CrossoverOperator;
-import solution.Solution;
+import representation.Solution;
 
 import java.util.ArrayList;
 import java.util.List;

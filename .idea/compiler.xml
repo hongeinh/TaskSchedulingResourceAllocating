@@ -7,11 +7,11 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <module name="TaskSchedulingResourceAllocating" />
+        <module name="TSRA-core" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
-      <module name="TaskSchedulingResourceAllocating" target="8" />
+      <module name="TSRA-core" target="8" />
     </bytecodeTargetLevel>
   </component>
 </project>

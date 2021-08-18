@@ -4,7 +4,6 @@ import component.variable.Variable;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
@@ -34,13 +33,40 @@ public class Order implements Variable{
 		}
 	}
 
+	public double getTotalTimeSpent() {
+		double totalTime = 0;
+		for (Task task: tasks) {
+			totalTime += task.getDuration();
+		}
+		return totalTime;
+	}
+
+	public double getTotalCost() {
+		double totalCost = 0;
+		for (Task task: tasks) {
+			totalCost += task.getTaskCost();
+		}
+		return totalCost;
+	}
 	@Override
-	public int compareTo(@NotNull Variable o) {
+	public int compareTo(Variable o) {
 		if (o instanceof Order) {
 			Order otherOrder = (Order) o;
 			return this.totalTimeAllowed > otherOrder.getTotalTimeAllowed()? 1 :
 						(this.totalTimeAllowed ==otherOrder.getTotalTimeAllowed()? 0 : -1);
 		}
 		return 0;
+	}
+
+	@Override
+	public String toString() {
+		StringBuilder stringBuilder = new StringBuilder();
+		String DELIMETER = ",";
+		stringBuilder.append(this.id + DELIMETER +
+						this.getTotalTimeAllowed() + DELIMETER +
+						this.getTotalTimeSpent() + DELIMETER +
+						this.getTotalCost() + DELIMETER);
+
+		return stringBuilder.toString();
 	}
 }

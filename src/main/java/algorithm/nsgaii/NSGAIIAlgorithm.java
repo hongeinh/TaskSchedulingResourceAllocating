@@ -6,7 +6,7 @@ import lombok.Getter;
 import lombok.Setter;
 import operator.Operator;
 import problem.Problem;
-import solution.Solution;
+import representation.Solution;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -40,6 +40,9 @@ public class NSGAIIAlgorithm extends Algorithm {
 	}
 
 	public List<Solution> executeAlgorithm(Problem problem) throws CloneNotSupportedException, IOException {
+		long startTime = System.currentTimeMillis();
+		long executionTime = 0;
+
 		/* Step 1: Create initial solution set*/
 		System.out.print("- Create initial solution set -- ");
 		List<Solution> solutions = createInitialSolutionSet(problem);
@@ -49,6 +52,7 @@ public class NSGAIIAlgorithm extends Algorithm {
 		System.out.println("- Evaluate initial solution set");
 		solutions = evaluateSolutionSet(problem, solutions);
 		displayObjectives(solutions, "parent/parent.csv", false, -1);
+//		displaySolutions(solutions, "parent/", "parent.csv", false);
 
 		/* Step 3: Rank the solution set*/
 		System.out.println("- Rank initial solution set");
@@ -64,6 +68,7 @@ public class NSGAIIAlgorithm extends Algorithm {
 		/* Reproduce */
 		System.out.print("\n- Create offspring solution set -- ");
 		List<Solution> offspringSolutions = reproduceOffspringSolutionSet(solutions);
+		recalculateSolutionDetails(offspringSolutions, problem);
 		System.out.println("Offspring size: " + offspringSolutions.size());
 
 		/* Step 4: Evaluate the offspring solution set, calculate objectives for each solution */
@@ -87,8 +92,11 @@ public class NSGAIIAlgorithm extends Algorithm {
 
 		System.out.println("- Computing final results---------------------------------------------------------------------");
 		List<Solution> finalSolutions = jointSolutions.subList(0, solutionSetSize );
-		displayObjectives(finalSolutions, "final/final.csv", false, -1);
+		displayObjectives(finalSolutions, "/final/final.csv", false, -1);
 		return jointSolutions.subList(0, 1);
+	}
+
+	public void recalculateSolutionDetails(List<Solution> offspringSolutions, Problem problem) {
 	}
 
 	public List<Solution> createInitialSolutionSet(Problem problem) throws IOException {
@@ -97,7 +105,7 @@ public class NSGAIIAlgorithm extends Algorithm {
 
 	public List<Solution> evaluateSolutionSet(Problem problem, List<Solution> solutions) {
 		for (Solution solution: solutions) {
-			solution = problem.evaluate(solution);
+			problem.evaluate(solution);
 		}
 		return solutions;
 	}
@@ -109,13 +117,17 @@ public class NSGAIIAlgorithm extends Algorithm {
 		double minAverageFitness = Double.MAX_VALUE;
 		List<Solution> matingParentSolutions;
 		List<Solution> offspringSolutions = null;
-
 		for (int i = 0; i < numberOfGenerations; i++) {
+			System.out.println("-- Gen " + i);
+			System.out.println("--- Choosing");
 			matingParentSolutions = (List<Solution>) operators.get(0).execute(solutions);
+			System.out.println("--- Mating");
 			offspringSolutions = (List<Solution>) operators.get(1).execute(matingParentSolutions);
+			System.out.println("--- Mutating");
 			offspringSolutions = (List<Solution>) operators.get(2).execute(offspringSolutions);
 
 			displayObjectives(offspringSolutions, "offspring/offspring.csv", true, i);
+//			displaySolutions(solutions, "offspring/", "offspring" + i + ".csv", false);
 			double averageFitness = calculateGenerationAverageObjectives(solutions);
 			if (averageFitness < minAverageFitness + randomThreshold) {
 				minAverageFitness = averageFitness;

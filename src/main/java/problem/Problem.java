@@ -4,7 +4,7 @@ import component.controller.VariableController;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
-import solution.Solution;
+import representation.Solution;
 
 import java.util.Map;
 
@@ -18,6 +18,6 @@ public abstract class Problem {
 
 	public abstract Solution evaluate(Solution solution);
 
-	public abstract double evaluateConstraints(Solution solution);
+	public abstract double[] evaluateConstraints(Solution solution);
 
 }

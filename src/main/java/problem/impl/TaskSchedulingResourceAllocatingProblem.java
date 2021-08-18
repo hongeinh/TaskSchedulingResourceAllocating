@@ -6,7 +6,7 @@ import component.controller.VariableController;
 import problem.Problem;
 import problem.helper.HumanResourceConflictHelper;
 import problem.helper.MachineResourceConflictHelper;
-import solution.Solution;
+import representation.Solution;
 
 import java.util.List;
 import java.util.Map;
@@ -31,7 +31,7 @@ public class TaskSchedulingResourceAllocatingProblem extends Problem {
 	 *                   durations: 		List<Integer>	list of durations for variables
 	 *                   numberOfObjectives:int				the number of objectives needed to calculate for solutions.
 	 *                   numberOfFitness:	int				the number of fitness for this solution
-	 *                   maxDuration		int				maximum duration for all tasks
+	 *                   maxDuration		double				maximum duration for all tasks
 	 *
 	 * */
 	public TaskSchedulingResourceAllocatingProblem(Map<Object, Object> params, VariableController variableController) {
@@ -54,8 +54,8 @@ public class TaskSchedulingResourceAllocatingProblem extends Problem {
 	}
 
 	@Override
-	public double evaluateConstraints(Solution solution) {
-		return 0;
+	public double[] evaluateConstraints(Solution solution) {
+		return new double[2];
 	}
 
 	public Solution evaluateDuration(Solution solution) {
