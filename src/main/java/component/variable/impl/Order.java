@@ -13,6 +13,7 @@ import java.util.List;
 public class Order implements Variable{
 
 	private int id;
+	private double priority;
 	private double weight;
 	private double volume;
 	private double penaltyRate;

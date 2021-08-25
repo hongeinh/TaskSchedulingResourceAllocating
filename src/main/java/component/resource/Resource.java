@@ -1,12 +1,11 @@
 package component.resource;
 
 import common.STATUS;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import component.timeframe.TimeFrame;
+import lombok.*;
 
 import java.io.Serializable;
+import java.util.List;
 
 
 @Getter
@@ -15,7 +14,10 @@ import java.io.Serializable;
 @NoArgsConstructor
 public class Resource implements Serializable {
 
-	private int id;
-	private STATUS status;
-	private double cost;
+	protected int id;
+	protected STATUS status;
+	protected double cost;
+	protected List<TimeFrame> usedTimeFrames;
+
+
 }

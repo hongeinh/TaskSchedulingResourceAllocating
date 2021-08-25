@@ -9,6 +9,8 @@ import component.skill.Skill;
 import component.variable.Variable;
 import component.variable.impl.Order;
 import component.variable.impl.Task;
+import lombok.Getter;
+import lombok.Setter;
 import representation.Solution;
 import utils.NumberUtil;
 
@@ -16,7 +18,34 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 
+@Getter
+@Setter
 public class TaskSchedulingResourceAllocatingVariableController extends VariableController {
+
+	protected List<HumanResource> allHumanResources;
+	protected List<MachineResource> allMachineResources;
+	protected List<Task> allTasks;
+
+	public void setAllHumanResources(int numberOfHumanResource) {
+		this.allHumanResources = new ArrayList<>();
+		for (int i = 0; i < numberOfHumanResource; i++) {
+			HumanResource humanResource = HumanResource.builder()
+					.id(i)
+					.usedTimeFrames(new ArrayList<>())
+					.build();
+		}
+	}
+
+	public void setAllMachineResources(int numberOfMachineResource) {
+		this.allMachineResources = new ArrayList<>();
+		for (int i = 0; i < numberOfMachineResource; i++) {
+			MachineResource machineResource = MachineResource.builder()
+					.id(i)
+					.usedTimeFrames(new ArrayList<>())
+					.build();
+		}
+	}
+
 
 	@Override
 	public List<Variable> setupVariables(Map<Object, Object> parameters, double k) {
@@ -28,7 +57,7 @@ public class TaskSchedulingResourceAllocatingVariableController extends Variable
 				.penaltyRate(0)
 				.build();
 		List<Task> tasks = createTasks(parameters);
-		setupAllTasksUsefulResources(tasks, parameters);
+		setupAllTasksResources(tasks, parameters);
 
 		assignResourcesToAllTask(tasks, k);
 
@@ -39,6 +68,7 @@ public class TaskSchedulingResourceAllocatingVariableController extends Variable
 		return orders;
 	}
 
+	// Khong lam gi o day ca
 	@Override
 	public void recalculateSolutionDetails(List<Solution> offspringSolutions) {
 
@@ -47,9 +77,10 @@ public class TaskSchedulingResourceAllocatingVariableController extends Variable
 	/**
 	 * Create a list of tasks with secured precedence constraints among task.
 	 * No resource allocation.
-	 * */
+	 */
 	protected List<Task> createTasks(Map<Object, Object> parameters) {
 		List<Task> tasks = new ArrayList<>();
+
 		int numberOfTasks = (Integer) parameters.get("numberOfTasks");
 
 		for (int i = 0; i < numberOfTasks; i++) {
@@ -106,7 +137,7 @@ public class TaskSchedulingResourceAllocatingVariableController extends Variable
 		return variables;
 	}
 
-	protected List<Task> setupAllTasksUsefulResources(List<Task> tasks, Map<Object, Object> parameters) {
+	protected List<Task> setupAllTasksResources(List<Task> tasks, Map<Object, Object> parameters) {
 
 		int numberOfSkills = (Integer) parameters.get("numberOfSkills");
 		int numberOfHumanResources = (Integer) parameters.get("numberOfHumanResources");
@@ -116,21 +147,21 @@ public class TaskSchedulingResourceAllocatingVariableController extends Variable
 		double[] machineCosts = (double[]) parameters.get("machineCosts");
 		double[][] mreq = (double[][]) parameters.get("mreq");
 
-		tasks = setupHumanResourcesAndSkillsForTasks(tasks, treq, lexp, humanCosts, numberOfSkills, numberOfHumanResources);
+		tasks = setupHumanResourcesAndSkills(tasks, treq, lexp, humanCosts, numberOfSkills, numberOfHumanResources);
 		tasks = setupMachineResources(tasks, (Integer) parameters.get("numberOfMachineResources"), machineCosts, mreq);
 
 		return tasks;
 	}
 
 	protected void assignResourcesToAllTask(List<Task> tasks, double k) {
-		for (Task task: tasks) {
+		for (Task task : tasks) {
 			assignResourceToEachTask(task);
 		}
 	}
 
 	protected void calculateAllTasksTimes(List<Task> tasks, double k) {
 
-		for (Task task: tasks) {
+		for (Task task : tasks) {
 			List<Integer> predecessorIndexes = task.getPredecessors();
 			List<Task> predecessorTasks = getPredecessorTasks(predecessorIndexes, tasks);
 			calculateEachTaskTime(task, predecessorTasks, k);
@@ -140,7 +171,7 @@ public class TaskSchedulingResourceAllocatingVariableController extends Variable
 
 	private List<Task> getPredecessorTasks(List<Integer> predecessorIndexes, List<Task> tasks) {
 		List<Task> predecessorsTasks = new ArrayList<>();
-		for (Integer index: predecessorIndexes) {
+		for (Integer index : predecessorIndexes) {
 			predecessorsTasks.add(tasks.get(index));
 		}
 		return predecessorsTasks;
@@ -167,16 +198,17 @@ public class TaskSchedulingResourceAllocatingVariableController extends Variable
 
 	/**
 	 * Allocate resource for tasks
-	 *
-	 * */
+	 */
 	protected Task assignResourceToEachTask(Task task) {
 
 		List<HumanResource> humanResources = task.getRequiredHumanResources();
 		this.checkHumanResourcesUseful(humanResources);
 		this.randomAssignResource(humanResources);
+//		this.bestFitAssignHumanResource(humanResources, task.getSkills());
 
-		List<MachineResource> machineResources =  task.getRequiredMachinesResources();
+		List<MachineResource> machineResources = task.getRequiredMachinesResources();
 		this.randomAssignResource(machineResources);
+//		this.bestFitAssignMachineResource(machineResources);
 
 		task.setRequiredHumanResources(humanResources);
 		task.setRequiredMachinesResources(machineResources);
@@ -199,7 +231,7 @@ public class TaskSchedulingResourceAllocatingVariableController extends Variable
 
 	private void randomAssignResource(List<? extends Resource> resources) {
 		if (resources.isEmpty()) {
-			return ;
+			return;
 		}
 		List<? extends Resource> usefulResources = resources.stream()
 				.filter(resource -> resource.getStatus() == STATUS.USEFUL)
@@ -208,21 +240,38 @@ public class TaskSchedulingResourceAllocatingVariableController extends Variable
 		while (numOfAssignedResource == 0) {
 			int random = NumberUtil.getRandomNumber(0, usefulResources.size());
 			int randomResourceId = usefulResources.get(random).getId();
-			for (Resource resource: resources) {
+			for (Resource resource : resources) {
 				if (resource.getId() == randomResourceId) {
 					resource.setStatus(STATUS.ASSIGNED);
 					numOfAssignedResource++;
 				}
 			}
 		}
+	}
 
+	private void bestFitAssignHumanResource(List<HumanResource> resources, List<Integer> skills) {
+		// TODO
+		if (resources.isEmpty())
+			return;
+		Comparator<HumanResource> humanResourceComparator = Comparator.comparing(HumanResource::getAverageExp, Comparator.reverseOrder());
+		List<HumanResource> usefulResources = resources.stream()
+				.filter(resource -> resource.getStatus() == STATUS.USEFUL)
+				.sorted(humanResourceComparator)
+				.collect(Collectors.toList());
+
+	}
+
+	private void bestFitAssignMachineResource(List<? extends Resource> resources) {
+		if (resources.isEmpty())
+			return;
+		// TODO: assign best fit dua tren available
 
 	}
 
 	/**
 	 * This method sets the resources and skills for each variable. Only adds the required skills
 	 *
-	 * @param tasks              	List		Set of tasks
+	 * @param tasks                  List		Set of tasks
 	 * @param treq                   int[][]     Task-Skill matrix
 	 * @param lexp                   double[][]	Resource-Skill matrix
 	 * @param numberOfSkills         int			The maximum number of skills a variable may have
@@ -230,11 +279,17 @@ public class TaskSchedulingResourceAllocatingVariableController extends Variable
 	 * @return variables        The same variables with set skills for each variable.
 	 * @implNote skills[i][j] = 1 means Variable i needs Skill j
 	 */
-	private List<Task> setupHumanResourcesAndSkillsForTasks(List<Task> tasks, int[][] treq, double[][] lexp, double[] humanCosts, int numberOfSkills, int numberOfHumanResources) {
+	private List<Task> setupHumanResourcesAndSkills(List<Task> tasks, int[][] treq, double[][] lexp, double[] humanCosts, int numberOfSkills, int numberOfHumanResources) {
 		for (Task currentTask : tasks) {
 			int currentTaskId = currentTask.getId();
-
+			currentTask.setSkills(new ArrayList<>());
 			List<HumanResource> humanResources = currentTask.getRequiredHumanResources();
+
+			for (int i = 0; i < numberOfSkills; i++) {
+				if (treq[currentTaskId][i] != 0) {
+					currentTask.getSkills().add(i);
+				}
+			}
 
 			// Add all human resources to task and assign status with skills
 			for (int i = 0; i < numberOfHumanResources; i++) {
@@ -246,14 +301,12 @@ public class TaskSchedulingResourceAllocatingVariableController extends Variable
 
 				// Add skills to the resource based on task's need
 				List<Skill> skills = new ArrayList<>();
-				for (int j = 0; j < numberOfSkills; j++) {
-					if (treq[currentTaskId][j] != 0) {
-						Skill skill = Skill.builder()
-								.id(j)
-								.experienceLevel(lexp[i][j])
-								.build();
-						skills.add(skill);
-					}
+				for (Integer skillId : currentTask.getSkills()) {
+					Skill skill = Skill.builder()
+							.id(skillId)
+							.experienceLevel(lexp[i][skillId])
+							.build();
+					skills.add(skill);
 				}
 				resource.setSkills(skills);
 				humanResources.add(resource);

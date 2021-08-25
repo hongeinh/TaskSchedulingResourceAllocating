@@ -4,6 +4,7 @@ import common.STATUS;
 import component.resource.HumanResource;
 import component.resource.MachineResource;
 import component.resource.Resource;
+import component.timeframe.TimeFrame;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -24,8 +25,10 @@ public class Task implements Comparable<Task>, Serializable {
 	private double duration;
 	private double start;
 	private double idle;
+	private double priority;
 	private List<Integer> predecessors;
 	private List<Integer> descendants;
+	private List<Integer> skills;
 	private List<MachineResource> requiredMachinesResources;
 	private List<HumanResource> requiredHumanResources;
 

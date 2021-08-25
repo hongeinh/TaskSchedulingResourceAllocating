@@ -21,7 +21,7 @@ public class FixedMultiorderTaskSchedulingController extends TaskSchedulingResou
 
 		// create template tasks for all orders with resources
 		List<Task> templateTasks = createTasks(parameters);
-		setupAllTasksUsefulResources(templateTasks, parameters);
+		setupAllTasksResources(templateTasks, parameters);
 		assignResourcesToAllTask(templateTasks, k);
 		cloneTemplateTasksForAllOrders(orders, templateTasks);
 

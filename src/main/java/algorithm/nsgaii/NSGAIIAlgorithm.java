@@ -73,7 +73,7 @@ public class NSGAIIAlgorithm extends Algorithm {
 		operators.get(2).getParameters().put("chromosomeSize", ((List) solutions.get(0).getVariables().get(0).getValue()).size());
 		/* Reproduce */
 		System.out.print("\n- Create offspring solution set -- ");
-		List<Solution> offspringSolutions = reproduceOffspringSolutionSet(solutions);
+		List<Solution> offspringSolutions = reproduceOffspringSolutionSet(solutions, 1);
 		recalculateSolutionDetails(offspringSolutions, problem);
 		System.out.println("Offspring size: " + offspringSolutions.size());
 
@@ -104,6 +104,9 @@ public class NSGAIIAlgorithm extends Algorithm {
 	}
 
 	public void recalculateSolutionDetails(List<Solution> offspringSolutions, Problem problem) {
+//		for (Solution solution : offspringSolutions) {
+//			problem.getVariableController().recalculateSolutionDetails(offspringSolutions);
+//		}
 	}
 
 	public List<Solution> createInitialSolutionSet(Problem problem) throws IOException {
@@ -111,89 +114,92 @@ public class NSGAIIAlgorithm extends Algorithm {
 	}
 
 	public List<Solution> evaluateSolutionSet(Problem problem, List<Solution> solutions) {
-		for (Solution solution: solutions) {
+		for (Solution solution : solutions) {
 			problem.evaluate(solution);
 		}
 		return solutions;
 	}
 
-	public List<Solution> reproduceOffspringSolutionSet(List<Solution> solutions) throws CloneNotSupportedException, IOException {
+	public List<Solution> reproduceOffspringSolutionSet(List<Solution> solutions, int numberOfGenerations) {
 
-		int finalOffspringSize = 0;
-		double randomThreshold = Math.random();
-
-		double minAverageFitness = Double.MAX_VALUE;
-		List<Solution> matingParentSolutions;
-		List<Solution> offspringSolutions = new ArrayList<>();
-		List<Solution> finalOffpringSolutions = new ArrayList<>();
-
-		for (int i = 0; i < numberOfGenerations; i++) {
-			System.out.print("GEN " + i);
-			matingParentSolutions = (List<Solution>) operators.get(0).execute(solutions);
-			System.out.print(" crossover ");
-			List<Solution> tempOffspringSolutions = (List<Solution>) operators.get(1).execute(matingParentSolutions);
-			System.out.print(" mutate ");
-			tempOffspringSolutions = (List<Solution>) operators.get(2).execute(tempOffspringSolutions);
-
-			double averageFitness = calculateGenerationAverageObjectives(tempOffspringSolutions);
-			if (averageFitness < minAverageFitness + randomThreshold) {
-				minAverageFitness = averageFitness;
-				offspringSolutions.addAll(tempOffspringSolutions);
-				finalOffspringSize = tempOffspringSolutions.size();
-			} else {
-				break;
-			}
-			System.out.println();
-		}
-
+		List<Solution> offspringSolutions = reproduceOffspringGenerations(solutions, numberOfGenerations);
 		this.getComparator().computeRankAndDistance(offspringSolutions);
+		int size = offspringSolutions.size();
+
+
+		List<Solution> finalOffpringSolutions = new ArrayList<>();
 		List<Double> eliteProbability = new ArrayList<>();
 		List<Double> chosenProbability = new ArrayList<>();
 
-		System.out.print("Get final ");
-		int numOfFinalOffspring = 0;
-		while (numOfFinalOffspring < finalOffspringSize) {
-			System.out.print (finalOffpringSolutions.size() + " ");
-			int size = offspringSolutions.size();
-			double currentRank = 1;
-			double currentEliteProbability = 0.75;
-			for (int j = 0; j < size; j++) {
-				if (currentEliteProbability >= 0.1) {
-					if (currentRank == offspringSolutions.get(j).getFitness()[0]) {
-						eliteProbability.add(j, currentEliteProbability);
-						chosenProbability.add(j, Math.random());
-					} else if (currentRank < offspringSolutions.get(j).getFitness()[0]) {
-						currentRank = offspringSolutions.get(j).getFitness()[0];
-						currentEliteProbability -= 0.15;
-						eliteProbability.add(j, currentEliteProbability);
-						chosenProbability.add(j, Math.random());
-					}
-				} else {
-					eliteProbability.add(j, 0.1);
-					chosenProbability.add(j, Math.random());
+		int i = 0;
+		double currentRank = 1;
+		double currentEliteProbability = 0.75;
+		// Give each solution an elite probability and chosen probability
+		while (i <= size) {
+			// assign probability
+			if (currentEliteProbability >= 0.1) {
+				if (currentRank == offspringSolutions.get(i).getFitness()[0]) {
+					eliteProbability.add(i, currentEliteProbability);
+				} else if (currentRank < offspringSolutions.get(i).getFitness()[0]) {
+					currentRank = offspringSolutions.get(i).getFitness()[0];
+					currentEliteProbability -= 0.15;
+					eliteProbability.add(i, currentEliteProbability);
 				}
-			}
 
-			for (int j = 0; j < size; j++) {
-				if (eliteProbability.get(j) * chosenProbability.get(j) >= 0.6) {
-					offspringSolutions.get(j).setId(numOfFinalOffspring);
+			} else {
+				eliteProbability.add(i, 0.1);
+			}
+			chosenProbability.add(i, Math.random());
+			i++;
+		}
+
+		// reset
+		i = 0;
+		for (int j = 0; j < size; j++) {
+			if (finalOffpringSolutions.size() < this.solutionSetSize) {
+				if (eliteProbability.get(j) * chosenProbability.get(j) >= 0.65) {
+					offspringSolutions.get(j).setId(i);
 					finalOffpringSolutions.add(offspringSolutions.get(j));
-					numOfFinalOffspring++;
+					i++;
 				}
+			} else {
+				break;
 			}
 		}
+
 		return finalOffpringSolutions;
 	}
 
+	public List<Solution> reproduceOffspringGenerations(List<Solution> solutions, int numberOfGenerations) {
+		if (this.numberOfGenerations < numberOfGenerations)
+			return solutions;
+
+		List<Solution> matingParentSolutions;
+		List<Solution> offspringSolutions = new ArrayList<>();
+
+		while (offspringSolutions.size() < this.solutionSetSize) {
+			matingParentSolutions = (List<Solution>) operators.get(0).execute(solutions);
+			List<Solution> tempOffspringSolutions = (List<Solution>) operators.get(1).execute(matingParentSolutions);
+			tempOffspringSolutions = (List<Solution>) operators.get(2).execute(tempOffspringSolutions);
+			offspringSolutions.addAll(tempOffspringSolutions);
+			offspringSolutions = removeIdenticalSolutions(offspringSolutions);
+		}
+		solutions.addAll(offspringSolutions);
+		solutions = removeIdenticalSolutions(solutions);
+		return reproduceOffspringGenerations(solutions, numberOfGenerations + 1);
+	}
+
+
+	@Deprecated
 	private double calculateGenerationAverageObjectives(List<Solution> solutions) {
 		double generationAverageObjectives = 0;
 
-		for (Solution solution: solutions) {
-			double [] objectives = solution.getObjectives();
+		for (Solution solution : solutions) {
+			double[] objectives = solution.getObjectives();
 			generationAverageObjectives += Arrays.stream(objectives).sum();
 		}
 
-		return generationAverageObjectives/solutions.size();
+		return generationAverageObjectives / solutions.size();
 	}
 
 	@Deprecated
@@ -204,7 +210,7 @@ public class NSGAIIAlgorithm extends Algorithm {
 		rankedSolutions.add(new ArrayList<>());
 		rankedSolutions.add(new ArrayList<>());
 
-		for (Solution solution: solutions) {
+		for (Solution solution : solutions) {
 			int rank = (int) solution.getFitness()[0];
 			if (rankedSolutions.get(rank) == null) {
 				rankedSolutions.add(rank, new ArrayList<Solution>());
@@ -215,4 +221,15 @@ public class NSGAIIAlgorithm extends Algorithm {
 		return rankedSolutions;
 	}
 
+	public List<Solution> removeIdenticalSolutions(List<Solution> solutions) {
+		List<Solution> removedIdenticalSolutions = new ArrayList<>();
+		removedIdenticalSolutions.add(solutions.get(0));
+
+		for (Solution solution : solutions) {
+			if (solution.notExistIn(removedIdenticalSolutions)) {
+				removedIdenticalSolutions.add(solution);
+			}
+		}
+		return removedIdenticalSolutions;
+	}
 }

@@ -13,7 +13,7 @@ public class RankingAndCrowdingDistanceComparator {
 	/**
 	 * Computes the rank for each solution in the list based on the objectives
 	 */
-	public List<Solution> computeRankAndDistance(List<Solution> solutions) throws IOException {
+	public List<Solution> computeRankAndDistance(List<Solution> solutions) {
 		// Step 1: Initialization step
 		System.out.println("--- Step 1: Initialization step");
 		solutions = clearRankOfSolutions(solutions);
@@ -21,7 +21,7 @@ public class RankingAndCrowdingDistanceComparator {
 		List<Solution> rankSortedSolutions = new ArrayList<>();
 		List<Solution> currentFront = new ArrayList<>();
 
-		int frontCounter = 1;
+		int rank = 1;
 
 		// Step 2: Calculate the dominated solution list and domination count for each solution
 		System.out.println("--- Step 2: Calculate the dominated solution list and domination count for each solution");
@@ -51,7 +51,7 @@ public class RankingAndCrowdingDistanceComparator {
 
 			// Step 2b: If the dominationCount of one solution is zero, it is put into the first rank
 			if (dominationCount == 0) {
-				soli.getFitness()[0] = frontCounter;
+				soli.getFitness()[0] = rank;
 				currentFront.add(soli);
 			}
 		}
@@ -67,7 +67,7 @@ public class RankingAndCrowdingDistanceComparator {
 		// Step 4: Find fronts for other solutions
 		System.out.println("--- Step 4: Find fronts for other solutions");
 		while (!currentFront.isEmpty()) {
-			System.out.println("--------- Rank " + frontCounter + " Solutions: " + currentFront.size());
+			System.out.println("--------- Rank " + rank + " Solutions: " + currentFront.size());
 			List<Solution> nextFront = new ArrayList<>();
 			int currentSolutionIndex = 0;
 			for (Solution currentSolution : currentFront) {
@@ -76,7 +76,7 @@ public class RankingAndCrowdingDistanceComparator {
 				for (Solution solution1 : dominatedSolutions) {
 					solution1.setDominationCount(solution1.getDominationCount() - 1);
 					if (solution1.getDominationCount() == 0) {
-						solution1.getFitness()[0] = frontCounter + 1;
+						solution1.getFitness()[0] = rank + 1;
 						nextFront.add(solution1);
 					}
 					dominatedSolutionIndex++;
@@ -84,7 +84,7 @@ public class RankingAndCrowdingDistanceComparator {
 				currentSolutionIndex++;
 
 			}
-			frontCounter++;
+			rank++;
 			if (!nextFront.isEmpty()) {
 				List<Solution> nextFrontSolutionWithDistance = computeDistance(nextFront);
 				nextFrontSolutionWithDistance = sortByDistance(nextFrontSolutionWithDistance);

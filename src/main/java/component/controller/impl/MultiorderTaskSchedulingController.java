@@ -10,14 +10,23 @@ import java.util.Map;
 
 public class MultiorderTaskSchedulingController extends FixedMultiorderTaskSchedulingController {
 
+
+
 	@Override
 	public List<Variable> setupVariables(Map<Object, Object> parameters, double k) {
+
+		int numberOfHumanResource = (int) parameters.get("numberOfHumanResources");
+		int numberOfMachineResource = (int) parameters.get("numberOfMachineResources");
+
+		setAllHumanResources(numberOfHumanResource);
+		setAllMachineResources(numberOfMachineResource);
+
 		// Get the orders
 		List<Variable> orders = (List<Variable>) parameters.get("orders");
 
 		// Create tasks and with precedence constraints
 		List<Task> templateTasks = createTasks(parameters);
-		setupAllTasksUsefulResources(templateTasks, parameters);
+		setupAllTasksResources(templateTasks, parameters);
 		cloneTemplateTasksForAllOrders(orders, templateTasks);
 
 		// Assign resources differently to each task of each order
