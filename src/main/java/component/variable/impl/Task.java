@@ -139,9 +139,17 @@ public class Task implements Comparable<Task>, Serializable {
 		for (HumanResource humanResource: this.getRequiredHumanResources()) {
 			if (humanResource.getStatus() == STATUS.ASSIGNED) {
 				totalExperience += humanResource.getAverageExp();
-				assignedResource++;
 			}
+			assignedResource++;
 		}
 		return  totalExperience/assignedResource;
+	}
+
+	public String getHumanResourceString() {
+		return getUsefulResourceIdsString(requiredHumanResources, " ");
+	}
+
+	public String getMachineResourceString() {
+		return getUsefulResourceIdsString(requiredMachinesResources, " ");
 	}
 }

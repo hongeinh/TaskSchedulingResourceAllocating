@@ -4,7 +4,11 @@ import component.variable.Variable;
 import component.variable.impl.Order;
 import component.variable.impl.Task;
 import utils.DataUtil;
-import java.util.*;
+import utils.NumberUtil;
+
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 
@@ -17,7 +21,7 @@ public class FixedMultiorderTaskSchedulingController extends TaskSchedulingResou
 
 		// create template tasks for all orders with resources
 		List<Task> templateTasks = createTasks(parameters);
-		setupAllTasksResources(templateTasks, parameters, k);
+		setupAllTasksUsefulResources(templateTasks, parameters);
 		assignResourcesToAllTask(templateTasks, k);
 		cloneTemplateTasksForAllOrders(orders, templateTasks);
 
@@ -44,6 +48,9 @@ public class FixedMultiorderTaskSchedulingController extends TaskSchedulingResou
 		for (int i = 0; i < orders.size(); i++) {
 			Order order = (Order) orders.get(i);
 			List<Task> newTasks = templateTasks.stream().map(templateTask -> DataUtil.cloneBean(templateTask)).collect(Collectors.toList());
+			for (Task task: newTasks) {
+				task.setOrderId(i);
+			}
 			order.setValue(newTasks);
 		}
 	}
@@ -55,7 +62,7 @@ public class FixedMultiorderTaskSchedulingController extends TaskSchedulingResou
 
 			for (Task newTask : newTasks) {
 				double duration = newTask.getDuration() * order.getWeight() / newTask.getAverageExperience();
-				newTask.setDuration(Math.round(duration) * 100 / 100);
+				newTask.setDuration(NumberUtil.floor2DecimalPoints(duration));
 			}
 
 			// tinh tgian cho task

@@ -1,7 +1,6 @@
 import algorithm.Algorithm;
 import algorithm.comparator.RankingAndCrowdingDistanceComparator;
 import algorithm.nsgaii.ImprovedNSGAIIAlgorithm;
-import scenario.TSRAScenario;
 import component.controller.VariableController;
 import component.controller.impl.MultiorderTaskSchedulingController;
 import component.variable.impl.Order;
@@ -10,6 +9,7 @@ import operator.mutation.impl.BitInversionMutationOperator;
 import operator.selection.impl.RouletteWheelSelectionOperator;
 import problem.Problem;
 import problem.impl.MultiorderTaskSchedulingProblem;
+import scenario.TSRAScenario;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -34,7 +34,7 @@ public class TestMultiorder {
 
 
 	public static Algorithm setAlgorithm() {
-		ImprovedNSGAIIAlgorithm algorithm = new ImprovedNSGAIIAlgorithm(25);
+		ImprovedNSGAIIAlgorithm algorithm = new ImprovedNSGAIIAlgorithm();
 		algorithm.addOperator(new RouletteWheelSelectionOperator());
 		algorithm.addOperator(new ProposedCrossoverOperator1());
 		algorithm.addOperator(new BitInversionMutationOperator());
@@ -47,7 +47,6 @@ public class TestMultiorder {
 
 	public static Map<Object, Object> createParams() {
 		Map<Object, Object> params = createOrders();
-
 
 		params.put("treq", TSRAScenario.treq);
 		params.put("lexp", TSRAScenario.lexp);

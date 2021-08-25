@@ -1,6 +1,5 @@
-import algorithm.nsgaii.ImprovedNSGAIIAlgorithm;
-import scenario.TSRAScenario;
 import algorithm.comparator.RankingAndCrowdingDistanceComparator;
+import algorithm.nsgaii.ImprovedNSGAIIAlgorithm;
 import component.controller.VariableController;
 import component.controller.impl.TaskSchedulingResourceAllocatingVariableController;
 import operator.crossover.impl.ProposedCrossoverOperator1;
@@ -9,6 +8,7 @@ import operator.selection.impl.RouletteWheelSelectionOperator;
 import problem.Problem;
 import problem.impl.TaskSchedulingResourceAllocatingProblem;
 import representation.Solution;
+import scenario.TSRAScenario;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -23,7 +23,7 @@ public class Test1 {
 		VariableController variableController = new TaskSchedulingResourceAllocatingVariableController();
 		Problem problem = new TaskSchedulingResourceAllocatingProblem(params, variableController);
 
-		ImprovedNSGAIIAlgorithm algorithm = new ImprovedNSGAIIAlgorithm(20);
+		ImprovedNSGAIIAlgorithm algorithm = new ImprovedNSGAIIAlgorithm();
 		algorithm.addOperator(new RouletteWheelSelectionOperator());
 		algorithm.addOperator(new ProposedCrossoverOperator1());
 		algorithm.addOperator(new BitInversionMutationOperator());

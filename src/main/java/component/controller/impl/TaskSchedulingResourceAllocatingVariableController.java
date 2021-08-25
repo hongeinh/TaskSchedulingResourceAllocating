@@ -21,7 +21,6 @@ public class TaskSchedulingResourceAllocatingVariableController extends Variable
 	@Override
 	public List<Variable> setupVariables(Map<Object, Object> parameters, double k) {
 
-//		Order order = new Order(0, 0, Double.MAX_VALUE);
 		Order order = Order.builder()
 				.id(0)
 				.weight(0)
@@ -29,10 +28,9 @@ public class TaskSchedulingResourceAllocatingVariableController extends Variable
 				.penaltyRate(0)
 				.build();
 		List<Task> tasks = createTasks(parameters);
-		setupAllTasksResources(tasks, parameters, k);
+		setupAllTasksUsefulResources(tasks, parameters);
 
-		double maxDuration = (double) parameters.get("maxDuration");
-		assignResourcesToAllTask(tasks, k * maxDuration);
+		assignResourcesToAllTask(tasks, k);
 
 		calculateAllTasksTimes(tasks, k);
 		order.setValue(tasks);
@@ -108,7 +106,7 @@ public class TaskSchedulingResourceAllocatingVariableController extends Variable
 		return variables;
 	}
 
-	protected List<Task> setupAllTasksResources(List<Task> tasks, Map<Object, Object> parameters, double k) {
+	protected List<Task> setupAllTasksUsefulResources(List<Task> tasks, Map<Object, Object> parameters) {
 
 		int numberOfSkills = (Integer) parameters.get("numberOfSkills");
 		int numberOfHumanResources = (Integer) parameters.get("numberOfHumanResources");
@@ -161,9 +159,9 @@ public class TaskSchedulingResourceAllocatingVariableController extends Variable
 			double rand = NumberUtil.getRandomNumber(0, (int) Math.ceil(k));
 			double sign = Math.random() > 0.5 ? 1 : -1;
 
-			task.setStart(start);
+			task.setStart(NumberUtil.floor2DecimalPoints(start));
 			double scheduledStart = start + rand * sign;
-			task.setScheduledTime(scheduledStart);
+			task.setScheduledTime(NumberUtil.floor2DecimalPoints(scheduledStart));
 		}
 	}
 
@@ -206,13 +204,18 @@ public class TaskSchedulingResourceAllocatingVariableController extends Variable
 		List<? extends Resource> usefulResources = resources.stream()
 				.filter(resource -> resource.getStatus() == STATUS.USEFUL)
 				.collect(Collectors.toList());
-
-		int random = NumberUtil.getRandomNumber(0, usefulResources.size());
-		int randomResourceId = usefulResources.get(random).getId();
-		for (Resource resource: resources) {
-			if (resource.getId() == randomResourceId)
-				resource.setStatus(STATUS.ASSIGNED);
+		int numOfAssignedResource = 0;
+		while (numOfAssignedResource == 0) {
+			int random = NumberUtil.getRandomNumber(0, usefulResources.size());
+			int randomResourceId = usefulResources.get(random).getId();
+			for (Resource resource: resources) {
+				if (resource.getId() == randomResourceId) {
+					resource.setStatus(STATUS.ASSIGNED);
+					numOfAssignedResource++;
+				}
+			}
 		}
+
 
 	}
 

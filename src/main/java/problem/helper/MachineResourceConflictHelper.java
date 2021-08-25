@@ -8,7 +8,6 @@ import component.variable.Variable;
 import component.variable.impl.Task;
 import representation.Solution;
 
-
 import java.util.List;
 import java.util.stream.Collectors;
 

@@ -11,7 +11,14 @@ public class CSVHeaders {
 			"Objective #3"
 	};
 
-	public static String TASK_DEFAULT_HEADER = "Order Id,Task Id,Start,Duration,Human Resource, Machine Resource";
+	public static String[] VARIABLE_HEADERS = {
+			"Order Id",
+			"Task Id",
+			"Start",
+			"Duration",
+			"Human Resource",
+			"Machine Resource"
+	};
 
 	public static String ORDER_DEFAULT_HEADER = "Order ID,Deadline,Time spent,Total cost";
 

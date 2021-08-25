@@ -1,5 +1,6 @@
 package problem.impl;
 
+import common.STATUS;
 import component.controller.VariableController;
 import component.resource.HumanResource;
 import component.resource.MachineResource;
@@ -64,9 +65,24 @@ public class MultiorderTaskSchedulingProblem extends TaskSchedulingResourceAlloc
 		for (int i = 0; i < variableSize; i++) {
 			List<Task> tasks = (List<Task>) variables.get(i).getValue();
 			totalDelay += calculateEachOrderIdleTime(tasks);
+			if (i != 0) {
+				totalDelay += calculateElapsedTimeUntilNextOrder(variables.get(i - 1), variables.get(i));
+			}
 		}
-		solution.getObjectives()[0] = totalDelay/variableSize;
+//		solution.getObjectives()[0] = totalDelay/variableSize;
+		solution.getObjectives()[0] = totalDelay;
+
 		return solution;
+	}
+
+	private double calculateElapsedTimeUntilNextOrder(Variable variable, Variable variable1) {
+		Task firstTask1 = ((List<Task>) variable.getValue()).get(0);
+		Task firstTask2 = ((List<Task>) variable1.getValue()).get(0);
+
+		double start1 = firstTask1.getStart();
+		double start2 = firstTask2.getStart();
+		double delay = start1 - start2;
+		return delay > 0 ? delay : 0;
 	}
 
 	/**
@@ -76,7 +92,7 @@ public class MultiorderTaskSchedulingProblem extends TaskSchedulingResourceAlloc
 		double delay = 0;
 		for (Task task: tasks) {
 			double idle = task.getScheduledTime() - task.getStart();
-			idle = idle < 0 ? 0 : (1/(1 + idle));
+			idle = idle <= 0 ? 0 : (1/(1 + idle));
 			delay += idle;
 			task.setIdle(idle);
 		}
@@ -105,6 +121,7 @@ public class MultiorderTaskSchedulingProblem extends TaskSchedulingResourceAlloc
 				double totalTimeSpent = order.getTotalTimeSpent();
 				double totalTimeAllowed = order.getTotalTimeAllowed();
 				double penaltyCost = totalTimeSpent <= totalTimeAllowed ? 0 : (totalTimeSpent - totalTimeAllowed);
+
 				penaltyCost *= order.getPenaltyRate();
 
 				totalCost += taskHumanCost + taskMachineCost + penaltyCost;
@@ -120,21 +137,25 @@ public class MultiorderTaskSchedulingProblem extends TaskSchedulingResourceAlloc
 	private double calculateMachineCost(List<MachineResource> machineResources, double duration) {
 		double taskMachineCost = 0;
 		for (MachineResource machine: machineResources) {
-			double machineCost = machine.getCost() * duration * machine.getConsumeFactor();
-			taskMachineCost += machineCost;
+			if (machine.getStatus() == STATUS.ASSIGNED) {
+				double machineCost = machine.getCost() * duration * machine.getConsumeFactor();
+				taskMachineCost += machineCost;
+			}
 		}
 		return taskMachineCost;
 	}
 	private double calculateHumanCost(List<HumanResource> resources, double duration) {
 		double taskHumanCost = 0;
 		for (HumanResource resource: resources) {
-			double resourceCost = resource.getCost();
-			double totalLexp = 0;
-			List<Skill> skills = resource.getSkills();
-			for (Skill skill: skills) {
-				totalLexp += skill.getExperienceLevel();
+			if (resource.getStatus() == STATUS.ASSIGNED) {
+				double resourceCost = resource.getCost();
+				double totalLexp = 0;
+				List<Skill> skills = resource.getSkills();
+				for (Skill skill: skills) {
+					totalLexp += skill.getExperienceLevel();
+				}
+				taskHumanCost += resourceCost * totalLexp;
 			}
-			taskHumanCost += resourceCost * totalLexp;
 		}
 		return taskHumanCost * duration;
 	}

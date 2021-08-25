@@ -75,4 +75,15 @@ public class Solution implements Comparable, Serializable {
 			return 0;
 	}
 
+	public boolean notExistIn(List<Solution> solutions) {
+		for (Solution solution: solutions) {
+			double [] otherObjectives = solution.getObjectives();
+			if (this.objectives[0] == otherObjectives[0] &&
+			this.objectives[1] == otherObjectives[1] &&
+			this.objectives[2] == otherObjectives[2]) {
+				return false;
+			}
+		}
+		return true;
+	}
 }

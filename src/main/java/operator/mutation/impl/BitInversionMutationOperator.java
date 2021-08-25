@@ -18,9 +18,7 @@ public class BitInversionMutationOperator extends MutationOperator {
         double geneMutationProbability = (double) this.getParameters().get("geneMutationProbability");
         List<Solution> solutions = (List<Solution>) object;
         for (Solution solution: solutions) {
-            int index = solutions.indexOf(solution);
-            solution = mutate(solution, geneMutationProbability);
-            solutions.set(index, solution);
+            mutate(solution, geneMutationProbability);
         }
         return solutions;
     }

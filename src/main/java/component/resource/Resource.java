@@ -1,14 +1,12 @@
 package component.resource;
 
 import common.STATUS;
-import common.TYPE;
-import component.skill.Skill;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.io.Serializable;
-import java.security.Signature;
-import java.util.ArrayList;
-import java.util.List;
 
 
 @Getter
