@@ -24,25 +24,28 @@ public class ImprovedNSGAIIAlgorithm extends NSGAIIAlgorithm{
 		List<Solution> solutions = new ArrayList<>();
 		double maxDuration = (Double) problem.getParameters().get("maxDuration");
 		double maxWeight = (Double) problem.getParameters().get("maxWeight");
-		maxDuration *= maxWeight;
+//		maxDuration *= maxWeight;
 
 		int i = 0;
-		while(solutions.size() < this.solutionSetSize) {
-			double upperBound = (i >= maxDuration * maxWeight) ? i : (maxDuration * maxWeight);
-			upperBound = Math.floor(upperBound);
+		int seed = 1;
+		while(i < this.solutionSetSize) {
 
-			double lowerBound =  (i <= maxDuration * maxWeight) ? i : (maxDuration * maxWeight);
-			lowerBound = Math.ceil(lowerBound);
-			double rand = NumberUtil.getRandomNumber((int) lowerBound, (int) upperBound);
-			Solution initialSolution = createInitialSolution(problem, rand/this.getSolutionSetSize());
+			double upperBound = (seed >= maxDuration * maxWeight) ? seed : (maxDuration * maxWeight);
+			double lowerBound =  (seed <= maxDuration * maxWeight) ? seed : (maxDuration * maxWeight);
+			double rand = NumberUtil.getRandomDoubleNumber(lowerBound, upperBound);
+			double delim = NumberUtil.getRandomDoubleNumber(rand, rand * maxDuration);
+			rand = delim / rand;
+			Solution initialSolution = createInitialSolution(problem, rand);
 			double[] constraints = problem.evaluateConstraints(initialSolution);
 			if (constraints[0] < 0.6 && constraints[1] == 0) {
-				if (initialSolution.notExistIn(solutions)) {
+//				if (initialSolution.notExistIn(solutions)) {
+//					System.out.println("+ Solution " + i);
 					initialSolution.setId(i);
 					solutions.add(initialSolution);
 					i++;
-				}
+//				}
 			}
+			seed++;
 		}
 		return solutions;
 	}

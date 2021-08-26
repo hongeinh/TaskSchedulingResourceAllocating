@@ -9,7 +9,7 @@ import java.util.List;
 public class SinglePointCrossoverOperator extends CrossoverOperator {
 
 	@Override
-	public Object execute(Object objects) throws CloneNotSupportedException {
+	public Object execute(Object objects) {
 		List<Solution> solutions = (List<Solution>) objects;
 		int solutionSetSize = solutions.size();
 		List<Solution> crossoverSolutions = new ArrayList<>();

@@ -51,7 +51,9 @@ public class RankingAndCrowdingDistanceComparator {
 
 			// Step 2b: If the dominationCount of one solution is zero, it is put into the first rank
 			if (dominationCount == 0) {
-				soli.getFitness()[0] = rank;
+				double[] fitness = soli.getFitness();
+				fitness[0] = rank;
+				soli.setFitness(fitness);
 				currentFront.add(soli);
 			}
 		}
@@ -76,7 +78,9 @@ public class RankingAndCrowdingDistanceComparator {
 				for (Solution solution1 : dominatedSolutions) {
 					solution1.setDominationCount(solution1.getDominationCount() - 1);
 					if (solution1.getDominationCount() == 0) {
-						solution1.getFitness()[0] = rank + 1;
+						double[] fitness = solution1.getFitness();
+						fitness[0] = rank + 1;
+						solution1.setFitness(fitness);
 						nextFront.add(solution1);
 					}
 					dominatedSolutionIndex++;
@@ -98,8 +102,10 @@ public class RankingAndCrowdingDistanceComparator {
 	private List<Solution> clearRankOfSolutions(List<Solution> solutions) {
 		int size = solutions.size();
 		for (Solution solution : solutions) {
-			solution.getFitness()[0] = 0;
-			solution.getFitness()[1] = 0;
+			double[] fitness = solution.getFitness();
+			fitness[0] = 0;
+			fitness[1] = 0;
+			solution.setFitness(fitness);
 		}
 		return solutions;
 	}
@@ -113,7 +119,9 @@ public class RankingAndCrowdingDistanceComparator {
 
 		// Initialize distance
 		for (Solution solution : solutions) {
-			solution.getFitness()[1] = 0;
+			double[] fitness = solution.getFitness();
+			fitness[1] = 0;
+			solution.setFitness(fitness);
 		}
 
 		for (int i = 0; i < objectiveSize; i++) {
@@ -131,7 +139,7 @@ public class RankingAndCrowdingDistanceComparator {
 				if (biggestSolution.getObjectives()[i] != smallestSolution.getObjectives()[i]) {
 					fitness1[1] = fitness1[1] + (biggerSolution.getObjectives()[i] - smallerSolution.getObjectives()[i]) /
 							(biggestSolution.getObjectives()[i] - smallestSolution.getObjectives()[i]);
-					solutions.get(j).setFitness(fitness1);
+					currentSolution.setFitness(fitness1);
 				}
 			}
 //
@@ -175,18 +183,5 @@ public class RankingAndCrowdingDistanceComparator {
 		}
 		return solutions;
 	}
-
-//	public void displayDominance(List<Solution> solutions) throws IOException {
-//		String currentPath = System.getProperty("user.dir") + "/src/main/java";
-//		FileWriter fileWriter = new FileWriter(currentPath + "/dominacnce.csv");
-//
-//		StringBuilder printString = new StringBuilder();
-//		for (Solution solution : solutions) {
-//			printString.append(solution.getId() + ", " + solution.getDominatedSolutions().size() + ", " + solution.getDominationCount() + "\n");
-//
-//		}
-//		fileWriter.write(printString.toString());
-//		fileWriter.close();
-//	}
 
 }

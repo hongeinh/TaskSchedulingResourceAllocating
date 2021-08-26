@@ -4,7 +4,6 @@ import common.STATUS;
 import component.resource.HumanResource;
 import component.resource.MachineResource;
 import component.resource.Resource;
-import component.timeframe.TimeFrame;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -33,7 +32,7 @@ public class Task implements Comparable<Task>, Serializable {
 	private List<HumanResource> requiredHumanResources;
 
 
-	private String getUsefulResourceIdsString(List<? extends Resource> resources, String delimeter) {
+	private String getAssignedResourceIdsString(List<? extends Resource> resources, String delimeter) {
 		List<String> humanResourceIds = resources.stream()
 				.filter(resource -> resource.getStatus() == STATUS.ASSIGNED)
 				.map(resource -> Integer.toString(resource.getId()))
@@ -43,16 +42,16 @@ public class Task implements Comparable<Task>, Serializable {
 
 	public String toString() {
 		StringBuilder stringBuilder = new StringBuilder();
-		String DELIMETER = ",";
+		String DELIMETER = ", ";
 
 		stringBuilder.append(this.orderId + DELIMETER +
 								this.id + DELIMETER +
 								this.start + DELIMETER +
 								this.duration + DELIMETER);
 
-		stringBuilder.append(getUsefulResourceIdsString(requiredHumanResources, " "));
+		stringBuilder.append(getAssignedResourceIdsString(requiredHumanResources, " "));
 		stringBuilder.append(DELIMETER);
-		stringBuilder.append(getUsefulResourceIdsString(requiredMachinesResources, " "));
+		stringBuilder.append(getAssignedResourceIdsString(requiredMachinesResources, " "));
 		return stringBuilder.toString();
 	}
 
@@ -149,10 +148,10 @@ public class Task implements Comparable<Task>, Serializable {
 	}
 
 	public String getHumanResourceString() {
-		return getUsefulResourceIdsString(requiredHumanResources, " ");
+		return getAssignedResourceIdsString(requiredHumanResources, " ");
 	}
 
 	public String getMachineResourceString() {
-		return getUsefulResourceIdsString(requiredMachinesResources, " ");
+		return getAssignedResourceIdsString(requiredMachinesResources, " ");
 	}
 }

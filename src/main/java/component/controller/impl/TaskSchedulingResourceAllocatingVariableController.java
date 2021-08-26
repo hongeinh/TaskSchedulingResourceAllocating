@@ -57,7 +57,7 @@ public class TaskSchedulingResourceAllocatingVariableController extends Variable
 				.penaltyRate(0)
 				.build();
 		List<Task> tasks = createTasks(parameters);
-		setupAllTasksResources(tasks, parameters);
+		setupAllTasksUsableResources(tasks, parameters);
 
 		assignResourcesToAllTask(tasks, k);
 
@@ -137,7 +137,7 @@ public class TaskSchedulingResourceAllocatingVariableController extends Variable
 		return variables;
 	}
 
-	protected List<Task> setupAllTasksResources(List<Task> tasks, Map<Object, Object> parameters) {
+	protected List<Task> setupAllTasksUsableResources(List<Task> tasks, Map<Object, Object> parameters) {
 
 		int numberOfSkills = (Integer) parameters.get("numberOfSkills");
 		int numberOfHumanResources = (Integer) parameters.get("numberOfHumanResources");
@@ -147,16 +147,17 @@ public class TaskSchedulingResourceAllocatingVariableController extends Variable
 		double[] machineCosts = (double[]) parameters.get("machineCosts");
 		double[][] mreq = (double[][]) parameters.get("mreq");
 
-		tasks = setupHumanResourcesAndSkills(tasks, treq, lexp, humanCosts, numberOfSkills, numberOfHumanResources);
-		tasks = setupMachineResources(tasks, (Integer) parameters.get("numberOfMachineResources"), machineCosts, mreq);
+		tasks = setupUsableHumanResourcesAndSkills(tasks, treq, lexp, humanCosts, numberOfSkills, numberOfHumanResources);
+		tasks = setupUsableMachineResources(tasks, (Integer) parameters.get("numberOfMachineResources"), machineCosts, mreq);
 
 		return tasks;
 	}
 
-	protected void assignResourcesToAllTask(List<Task> tasks, double k) {
+	protected List<Task> assignResourcesToAllTask(List<Task> tasks, double k) {
 		for (Task task : tasks) {
-			assignResourceToEachTask(task);
+			task = assignResourceToEachTask(task);
 		}
+		return tasks;
 	}
 
 	protected void calculateAllTasksTimes(List<Task> tasks, double k) {
@@ -187,7 +188,7 @@ public class TaskSchedulingResourceAllocatingVariableController extends Variable
 				start = (predecessor.getStart() + predecessor.getDuration());
 			}
 
-			double rand = NumberUtil.getRandomNumber(0, (int) Math.ceil(k));
+			double rand = NumberUtil.getRandomDoubleNumber(0.0, k);
 			double sign = Math.random() > 0.5 ? 1 : -1;
 
 			task.setStart(NumberUtil.floor2DecimalPoints(start));
@@ -203,12 +204,12 @@ public class TaskSchedulingResourceAllocatingVariableController extends Variable
 
 		List<HumanResource> humanResources = task.getRequiredHumanResources();
 		this.checkHumanResourcesUseful(humanResources);
-		this.randomAssignResource(humanResources);
+		task.setRequiredHumanResources(randomAssignHumanResource(humanResources));
 //		this.bestFitAssignHumanResource(humanResources, task.getSkills());
 
 		List<MachineResource> machineResources = task.getRequiredMachinesResources();
-		this.randomAssignResource(machineResources);
-//		this.bestFitAssignMachineResource(machineResources);
+		task.setRequiredMachinesResources(this.randomAssignMachineResource(machineResources));
+		//		this.bestFitAssignMachineResource(machineResources);
 
 		task.setRequiredHumanResources(humanResources);
 		task.setRequiredMachinesResources(machineResources);
@@ -229,25 +230,48 @@ public class TaskSchedulingResourceAllocatingVariableController extends Variable
 	}
 
 
-	private void randomAssignResource(List<? extends Resource> resources) {
+	private List<HumanResource> randomAssignHumanResource(List<HumanResource> resources) {
 		if (resources.isEmpty()) {
-			return;
+			return resources;
 		}
-		List<? extends Resource> usefulResources = resources.stream()
+		List<HumanResource> usefulResources = resources.stream()
 				.filter(resource -> resource.getStatus() == STATUS.USEFUL)
 				.collect(Collectors.toList());
 		int numOfAssignedResource = 0;
 		while (numOfAssignedResource == 0) {
-			int random = NumberUtil.getRandomNumber(0, usefulResources.size());
+			int random = NumberUtil.getRandomIntNumber(0, usefulResources.size());
 			int randomResourceId = usefulResources.get(random).getId();
-			for (Resource resource : resources) {
+			for (HumanResource resource : resources) {
 				if (resource.getId() == randomResourceId) {
 					resource.setStatus(STATUS.ASSIGNED);
 					numOfAssignedResource++;
 				}
 			}
 		}
+		return resources;
 	}
+
+	private List<MachineResource> randomAssignMachineResource(List<MachineResource> resources) {
+		if (resources.isEmpty()) {
+			return resources;
+		}
+		List<MachineResource> usefulResources = resources.stream()
+				.filter(resource -> resource.getStatus() == STATUS.USEFUL)
+				.collect(Collectors.toList());
+		int numOfAssignedResource = 0;
+		while (numOfAssignedResource == 0) {
+			int random = NumberUtil.getRandomIntNumber(0, usefulResources.size());
+			int randomResourceId = usefulResources.get(random).getId();
+			for (MachineResource resource : resources) {
+				if (resource.getId() == randomResourceId) {
+					resource.setStatus(STATUS.ASSIGNED);
+					numOfAssignedResource++;
+				}
+			}
+		}
+		return resources;
+	}
+
 
 	private void bestFitAssignHumanResource(List<HumanResource> resources, List<Integer> skills) {
 		// TODO
@@ -279,7 +303,7 @@ public class TaskSchedulingResourceAllocatingVariableController extends Variable
 	 * @return variables        The same variables with set skills for each variable.
 	 * @implNote skills[i][j] = 1 means Variable i needs Skill j
 	 */
-	private List<Task> setupHumanResourcesAndSkills(List<Task> tasks, int[][] treq, double[][] lexp, double[] humanCosts, int numberOfSkills, int numberOfHumanResources) {
+	private List<Task> setupUsableHumanResourcesAndSkills(List<Task> tasks, int[][] treq, double[][] lexp, double[] humanCosts, int numberOfSkills, int numberOfHumanResources) {
 		for (Task currentTask : tasks) {
 			int currentTaskId = currentTask.getId();
 			currentTask.setSkills(new ArrayList<>());
@@ -315,7 +339,7 @@ public class TaskSchedulingResourceAllocatingVariableController extends Variable
 		return tasks;
 	}
 
-	protected List<Task> setupMachineResources(List<Task> tasks, Integer numberOfMachineResources, double[] machineCosts, double[][] mreq) {
+	protected List<Task> setupUsableMachineResources(List<Task> tasks, Integer numberOfMachineResources, double[] machineCosts, double[][] mreq) {
 		for (Task task : tasks) {
 			List<MachineResource> machineResource = new ArrayList<>();
 			int id = task.getId();

@@ -30,7 +30,7 @@ public class FileUtil {
 		return new PrintWriter(bufferedWriter);
 	}
 
-	public static String createResultDirectory(String directoryName) {
+	public static String createResultDirectory(String directoryName, int numberOfTasks) {
 		DateFormat df = new SimpleDateFormat("dd-MM-yyyy-HH-mm-ss");
 		Date date = new Date();
 		String resultDirectoryName = RESULT_DIRECTORY + File.separator + directoryName;
@@ -48,24 +48,29 @@ public class FileUtil {
 				e.printStackTrace();
 			}
 		}
-		writeSolutionHeader(resultFileName, "Overall solutions");
+		writeSolutionHeader(resultFileName, "Overall solutions", numberOfTasks);
 
 		return resultFileName;
 	}
 
 
-	public static void writeSolutionHeader(String pathFileName, String sheetName) {
+	public static void writeSolutionHeader(String pathFileName, String sheetName, int numberOfVariables) {
 		try {
 
 			XSSFWorkbook workbook = new XSSFWorkbook();
 			XSSFSheet sheet = workbook.createSheet(sheetName);
 			XSSFRow headerRow = sheet.createRow(0);
 
-			for (int i = 0; i < CSVHeaders.SOLUTION_HEADERS.length; i++) {
+			int i = 0;
+			for (i = 0; i < CSVHeaders.SOLUTION_HEADERS.length; i++) {
 				XSSFCell cell = headerRow.createCell(i);
 				cell.setCellValue(CSVHeaders.SOLUTION_HEADERS[i]);
 			}
 
+			for (int j = 0; j < numberOfVariables; j++) {
+				XSSFCell cell = headerRow.createCell(j + i);
+				cell.setCellValue("Variable #" + j);
+			}
 			OutputStream fileOut = new FileOutputStream(pathFileName);
 			workbook.write(fileOut);
 			fileOut.flush();
@@ -113,26 +118,34 @@ public class FileUtil {
 			Workbook workbook = WorkbookFactory.create(inputStream);
 			XSSFSheet sheet = (XSSFSheet) workbook.getSheet(sheetName);
 
+			int numberOfVariables = solutions.get(0).getVariables().size();
+
 			for (int i = 1; i < numberOfRows; i++) {
+				Solution solution = solutions.get(i - 1);
 				XSSFRow solutionRow = sheet.createRow(i);
 
 				XSSFCell idCell = solutionRow.createCell(0);
-				idCell.setCellValue(solutions.get(i - 1).getId());
+				idCell.setCellValue(solution.getId());
 
 				XSSFCell rankCell = solutionRow.createCell(1);
-				rankCell.setCellValue(solutions.get(i - 1).getFitness()[0]);
+				rankCell.setCellValue(solution.getFitness()[0]);
 
 				XSSFCell distanceCell = solutionRow.createCell(2);
-				distanceCell.setCellValue(solutions.get(i - 1).getFitness()[1]);
+				distanceCell.setCellValue(solution.getFitness()[1]);
 
 				XSSFCell firstObjectiveCell = solutionRow.createCell(3);
-				firstObjectiveCell.setCellValue(solutions.get(i - 1).getObjectives()[0]);
+				firstObjectiveCell.setCellValue(solution.getObjectives()[0]);
 
 				XSSFCell secondObjectiveCell = solutionRow.createCell(4);
-				secondObjectiveCell.setCellValue(solutions.get(i - 1).getObjectives()[1]);
+				secondObjectiveCell.setCellValue(solution.getObjectives()[1]);
 
 				XSSFCell thirdObjectiveCell = solutionRow.createCell(5);
-				thirdObjectiveCell.setCellValue(solutions.get(i - 1).getObjectives()[3]);
+				thirdObjectiveCell.setCellValue(solution.getObjectives()[2]);
+
+				for (int j = 0; j < numberOfVariables; j++) {
+					XSSFCell variableCell = solutionRow.createCell(6 + j);
+					variableCell.setCellValue(solution.getVariables().get(j).toString());
+				}
 			}
 
 			FileOutputStream fileOutputStream = new FileOutputStream(pathFileName);

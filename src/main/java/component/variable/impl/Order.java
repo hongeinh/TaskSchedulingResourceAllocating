@@ -62,11 +62,14 @@ public class Order implements Variable{
 	@Override
 	public String toString() {
 		StringBuilder stringBuilder = new StringBuilder();
-		String DELIMETER = ",";
-		stringBuilder.append(this.id + DELIMETER +
-						this.getTotalTimeAllowed() + DELIMETER +
-						this.getTotalTimeSpent() + DELIMETER +
-						this.getTotalCost() + DELIMETER);
+//		String DELIMETER = ",";
+//		stringBuilder.append(this.id + DELIMETER +
+//						this.getTotalTimeAllowed() + DELIMETER +
+//						this.getTotalTimeSpent() + DELIMETER +
+//						this.getTotalCost() + DELIMETER);
+		for (Task task: tasks) {
+			stringBuilder.append(task.toString() + "\n");
+		}
 
 		return stringBuilder.toString();
 	}

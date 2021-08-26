@@ -39,11 +39,11 @@ public class ProposedCrossoverOperator1 extends CrossoverOperator {
         int position1 = 0;
         int position2 = 0;
         while (position1 >= position2) {
-            position1 = NumberUtil.getRandomNumber(0, chromosomeSize);
-            position2 = NumberUtil.getRandomNumber(0, chromosomeSize);
+            position1 = NumberUtil.getRandomIntNumber(0, chromosomeSize);
+            position2 = NumberUtil.getRandomIntNumber(0, chromosomeSize);
         }
 
-        int variablePosition = NumberUtil.getRandomNumber(0, size);
+        int variablePosition = NumberUtil.getRandomIntNumber(0, size);
         Solution copyA = DataUtil.cloneBean(a);
         Solution copyB = DataUtil.cloneBean(b);
 
@@ -55,11 +55,11 @@ public class ProposedCrossoverOperator1 extends CrossoverOperator {
             double diff = copyVarA.getScheduledTime() - copyVarB.getScheduledTime();
 
             if (diff < 0) {
-                copyVarA.setStart(copyVarA.getScheduledTime() + diff * 0.2);
-                copyVarB.setStart(copyVarB.getScheduledTime() - diff * 0.2);
+                copyVarA.setStart(copyVarA.getScheduledTime() + diff * 0.5);
+                copyVarB.setStart(copyVarB.getScheduledTime() - diff * 0.5);
             } else if (diff > 0) {
-                copyVarA.setStart(copyVarA.getScheduledTime() - diff * 0.2);
-                copyVarB.setStart(copyVarB.getScheduledTime() + diff * 0.2);
+                copyVarA.setStart(copyVarA.getScheduledTime() - diff * 0.5);
+                copyVarB.setStart(copyVarB.getScheduledTime() + diff * 0.5);
             }
 
             int numberOfHumanResources = copyVarA.getRequiredHumanResources().size();

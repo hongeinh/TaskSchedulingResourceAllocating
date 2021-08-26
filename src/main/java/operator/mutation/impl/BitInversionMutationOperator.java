@@ -34,15 +34,15 @@ public class BitInversionMutationOperator extends MutationOperator {
 
                 List<Task> tasks = (List<Task>) variable.getValue();
                 while (pos1 == pos2 && pos1 == 0) {
-                    pos1 = NumberUtil.getRandomNumber(0, ((List<Task>) variable.getValue()).size());
-                    pos2 = NumberUtil.getRandomNumber(0, ((List<Task>)  variable.getValue()).size());
+                    pos1 = NumberUtil.getRandomIntNumber(0, ((List<Task>) variable.getValue()).size());
+                    pos2 = NumberUtil.getRandomIntNumber(0, ((List<Task>)  variable.getValue()).size());
                     if (pos1 > pos2) {
                         int temp = pos1;
                         pos1 = pos2;
                         pos2 = temp;
                     }
                 }
-                int mutatedChromosome = NumberUtil.getRandomNumber(0, tasks.get(0).getRequiredHumanResources().size());
+                int mutatedChromosome = NumberUtil.getRandomIntNumber(0, tasks.get(0).getRequiredHumanResources().size());
                 for (int j = pos1; j <= pos2; j++) {
                     double random = Math.random();
                     HumanResource resource = tasks.get(i).getRequiredHumanResources().get(mutatedChromosome);

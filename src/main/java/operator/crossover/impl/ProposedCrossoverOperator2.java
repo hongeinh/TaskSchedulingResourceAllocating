@@ -14,7 +14,7 @@ public class ProposedCrossoverOperator2 extends CrossoverOperator {
      *
      * */
     @Override
-    public Object execute(Object object) throws CloneNotSupportedException {
+    public Object execute(Object object) {
         List<Solution> solutions = (List<Solution>) object;
         List<Solution> crossoveredSolutions = new ArrayList<>();
 

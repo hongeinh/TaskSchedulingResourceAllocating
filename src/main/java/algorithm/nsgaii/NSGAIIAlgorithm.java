@@ -44,9 +44,11 @@ public class NSGAIIAlgorithm extends Algorithm {
 		this.eliteSetSize = eliteSetSize;
 	}
 
-	public List<Solution> executeAlgorithm(Problem problem) throws CloneNotSupportedException, IOException {
+	public List<Solution> executeAlgorithm(Problem problem) throws IOException {
 		long startTime = System.currentTimeMillis();
 		long executionTime = 0;
+
+		int numberOfOrders = (int) problem.getParameters().get("numberOfOrders");
 
 		/* Step 1: Create initial solution set*/
 		System.out.print("- Create initial solution set -- ");
@@ -57,12 +59,13 @@ public class NSGAIIAlgorithm extends Algorithm {
 		System.out.println("- Evaluate initial solution set");
 		solutions = evaluateSolutionSet(problem, solutions);
 //		displaySolutions(solutions, "parent/", "parent.csv", false);
-		String parentFilePath = FileUtil.createResultDirectory("parent");
-		FileUtil.writeSolutionResult(parentFilePath, solutions);
 
 		/* Step 3: Rank the solution set*/
 		System.out.println("- Rank initial solution set");
 		solutions = this.getComparator().computeRankAndDistance(solutions);
+
+		String parentFilePath = FileUtil.createResultDirectory("parent", numberOfOrders );
+		FileUtil.writeSolutionResult(parentFilePath, solutions);
 
 		/* Step 4: Create offspring solution set*/
 		/* Set up operators */
@@ -75,13 +78,14 @@ public class NSGAIIAlgorithm extends Algorithm {
 		System.out.print("\n- Create offspring solution set -- ");
 		List<Solution> offspringSolutions = reproduceOffspringSolutionSet(solutions, 1);
 		recalculateSolutionDetails(offspringSolutions, problem);
-		System.out.println("Offspring size: " + offspringSolutions.size());
+//		System.out.println("Offspring size: " + offspringSolutions.size());
 
 		/* Step 4: Evaluate the offspring solution set, calculate objectives for each solution */
 		System.out.println("- Evaluate offspring solution set");
 		offspringSolutions = evaluateSolutionSet(problem, offspringSolutions);
+		offspringSolutions = this.getComparator().computeRankAndDistance(offspringSolutions);
 
-		String offspringFilePath = FileUtil.createResultDirectory("offspring");
+		String offspringFilePath = FileUtil.createResultDirectory("offspring", numberOfOrders);
 		FileUtil.writeSolutionResult(offspringFilePath, offspringSolutions);
 
 		/* Step 5: Join two achieved solution sets into one jointSolution set*/
@@ -93,14 +97,19 @@ public class NSGAIIAlgorithm extends Algorithm {
 		/* Step 6: Rank and distance sort for solution set to find Pareto solution set*/
 		System.out.println("\n- Evaluate combined solution set");
 		jointSolutions = this.getComparator().computeRankAndDistance(jointSolutions);
-		System.out.println("Joint size: " + jointSolutions.size());
+		jointSolutions = this.removeIdenticalSolutions(jointSolutions);
 
 		System.out.println("- Computing final results---------------------------------------------------------------------");
-		List<Solution> finalSolutions = jointSolutions.subList(0, eliteSetSize);
-		String finalFilePath = FileUtil.createResultDirectory("final");
+		List<Solution> finalSolutions = null;
+		if (jointSolutions.size() < eliteSetSize) {
+			finalSolutions = jointSolutions;
+		} else {
+			finalSolutions = jointSolutions.subList(0, eliteSetSize);
+		}
+		String finalFilePath = FileUtil.createResultDirectory("final", numberOfOrders);
 		FileUtil.writeSolutionResult(finalFilePath, finalSolutions);
 
-		return jointSolutions.subList(0, 1);
+		return finalSolutions;
 	}
 
 	public void recalculateSolutionDetails(List<Solution> offspringSolutions, Problem problem) {
@@ -123,6 +132,7 @@ public class NSGAIIAlgorithm extends Algorithm {
 	public List<Solution> reproduceOffspringSolutionSet(List<Solution> solutions, int numberOfGenerations) {
 
 		List<Solution> offspringSolutions = reproduceOffspringGenerations(solutions, numberOfGenerations);
+//		offspringSolutions = removeIdenticalSolutions(offspringSolutions);
 		this.getComparator().computeRankAndDistance(offspringSolutions);
 		int size = offspringSolutions.size();
 
@@ -135,7 +145,7 @@ public class NSGAIIAlgorithm extends Algorithm {
 		double currentRank = 1;
 		double currentEliteProbability = 0.75;
 		// Give each solution an elite probability and chosen probability
-		while (i <= size) {
+		while (i < size) {
 			// assign probability
 			if (currentEliteProbability >= 0.1) {
 				if (currentRank == offspringSolutions.get(i).getFitness()[0]) {
@@ -182,10 +192,10 @@ public class NSGAIIAlgorithm extends Algorithm {
 			List<Solution> tempOffspringSolutions = (List<Solution>) operators.get(1).execute(matingParentSolutions);
 			tempOffspringSolutions = (List<Solution>) operators.get(2).execute(tempOffspringSolutions);
 			offspringSolutions.addAll(tempOffspringSolutions);
-			offspringSolutions = removeIdenticalSolutions(offspringSolutions);
+//			offspringSolutions = removeIdenticalSolutions(offspringSolutions);
 		}
 		solutions.addAll(offspringSolutions);
-		solutions = removeIdenticalSolutions(solutions);
+//		solutions = removeIdenticalSolutions(solutions);
 		return reproduceOffspringGenerations(solutions, numberOfGenerations + 1);
 	}
 

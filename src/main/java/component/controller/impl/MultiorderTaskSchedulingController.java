@@ -1,6 +1,7 @@
 package component.controller.impl;
 
 import component.variable.Variable;
+import component.variable.impl.Order;
 import component.variable.impl.Task;
 import representation.Solution;
 
@@ -9,8 +10,6 @@ import java.util.List;
 import java.util.Map;
 
 public class MultiorderTaskSchedulingController extends FixedMultiorderTaskSchedulingController {
-
-
 
 	@Override
 	public List<Variable> setupVariables(Map<Object, Object> parameters, double k) {
@@ -26,24 +25,26 @@ public class MultiorderTaskSchedulingController extends FixedMultiorderTaskSched
 
 		// Create tasks and with precedence constraints
 		List<Task> templateTasks = createTasks(parameters);
-		setupAllTasksResources(templateTasks, parameters);
+		setupAllTasksUsableResources(templateTasks, parameters);
 		cloneTemplateTasksForAllOrders(orders, templateTasks);
 
 		// Assign resources differently to each task of each order
 		for (Variable variable: orders) {
 			List<Task> tasks = (List<Task>) variable.getValue();
-			assignResourcesToAllTask(tasks, k);
+			tasks = assignResourcesToAllTask(tasks, k);
+			((Order) variable).setTasks(tasks);
 		}
 
 		// set up all orders' tasks' default time
 		double maxDuration = (double) parameters.get("maxDuration");
-		setupVariablesDefaultTimes(orders, maxDuration, k);
+		orders = setupVariablesDefaultTimes(orders, maxDuration, k);
 		//TODO: --> calculate time based on the resources used.
 
 
 		// Sort according to task
-		Collections.sort(orders);
-
+		Collections.shuffle(orders);
+//		orders.forEach(item -> System.out.print(((Order) item).getId()));
+//		System.out.println();
 		// Calculate time for the tasks in orders
 		orders = calculateEachTaskTimeInAllOrders(orders, k);
 

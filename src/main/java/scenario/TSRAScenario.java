@@ -20,7 +20,7 @@ public class TSRAScenario {
 
 	public static final double[] scheduledTimes = {0, 1, 2, 4, 7, 9, 9, 11, 13, 12, 15, 17, 19, 22, 23, 26, 28, 28, 31};
 
-	public static final double[] weights = {1.0, 0.5, 2.6, 5, 2, 3, 2.2, 1.6, 1.1, 0.5, 0.5, 3.2};
+	public static final double[] weights = {1.0, 0.5, 1.3, 5, 2, 3, 2.2, 1.6, 1.1, 0.5, 0.5, 3.2};
 
 	public static final double[] humanCosts = {39, 42, 25, 56, 59, 28, 21, 16.5, 19.5, 23, 22};
 

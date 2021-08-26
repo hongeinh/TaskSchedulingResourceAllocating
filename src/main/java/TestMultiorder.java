@@ -58,6 +58,7 @@ public class TestMultiorder {
 		params.put("numberOfHumanResources", TSRAScenario.numberOfHumanResources);
 		params.put("numberOfMachineResources", TSRAScenario.numberOfMachineResources);
 		params.put("numberOfSkills", TSRAScenario.numberOfSkills);
+		params.put("numberOfOrders", TSRAScenario.numberOfOrders);
 
 		params.put("humanCosts", TSRAScenario.humanCosts);
 		params.put("machineCosts", TSRAScenario.machineCosts);

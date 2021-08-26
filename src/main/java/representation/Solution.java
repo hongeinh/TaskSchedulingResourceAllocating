@@ -20,16 +20,10 @@ public class Solution implements Comparable, Serializable {
 	public String toString() {
 		StringBuilder stringBuilder = new StringBuilder();
 
-		int sz = this.getFitness().length;
-
-		stringBuilder.append(",");
-		for (int i = 0; i < sz; i++)
-			stringBuilder.append(fitness[i] + "  ");
-
-		stringBuilder.append(",");
-		sz = this.getObjectives().length;
-		for (int i = 0; i < sz; i++)
-			stringBuilder.append(objectives[i] + "  ");
+		for (Variable variable: variables) {
+			stringBuilder.append(variables.toString());
+			stringBuilder.append("\n++++++++++\n");
+		}
 
 		return stringBuilder.toString();
 	}

@@ -21,7 +21,7 @@ public class FixedMultiorderTaskSchedulingController extends TaskSchedulingResou
 
 		// create template tasks for all orders with resources
 		List<Task> templateTasks = createTasks(parameters);
-		setupAllTasksResources(templateTasks, parameters);
+		setupAllTasksUsableResources(templateTasks, parameters);
 		assignResourcesToAllTask(templateTasks, k);
 		cloneTemplateTasksForAllOrders(orders, templateTasks);
 
@@ -31,6 +31,7 @@ public class FixedMultiorderTaskSchedulingController extends TaskSchedulingResou
 
 		// Sort according to task
 		Collections.sort(orders);
+//		orders.forEach(item -> System.out.println(());
 
 		// Calculate time for the tasks in orders
 		orders = calculateEachTaskTimeInAllOrders(orders, k);
@@ -49,58 +50,55 @@ public class FixedMultiorderTaskSchedulingController extends TaskSchedulingResou
 			Order order = (Order) orders.get(i);
 			List<Task> newTasks = templateTasks.stream().map(templateTask -> DataUtil.cloneBean(templateTask)).collect(Collectors.toList());
 			for (Task task: newTasks) {
-				task.setOrderId(i);
+				task.setOrderId(order.getId());
 			}
 			order.setValue(newTasks);
 		}
 	}
 
-	protected void setupVariablesDefaultTimes(List<Variable> orders, double maxDuration, double k) {
+	protected List<Variable> setupVariablesDefaultTimes(List<Variable> orders, double maxDuration, double k) {
 		for (int i = 0; i < orders.size(); i++) {
 			Order order = (Order) orders.get(i);
-			List<Task> newTasks = (List<Task>) order.getValue();
-
+			List<Task> newTasks =  order.getTasks();
 			for (Task newTask : newTasks) {
 				double duration = newTask.getDuration() * order.getWeight() / newTask.getAverageExperience();
 				newTask.setDuration(NumberUtil.floor2DecimalPoints(duration));
 			}
-
 			// tinh tgian cho task
 			calculateAllTasksTimes(newTasks, k * maxDuration);
-		}
-	}
-
-	protected List<Variable> calculateEachTaskTimeInAllOrders(List<Variable> orders, double k) {
-
-		int size = orders.size();
-		for (int i = 1; i < size; i++) {
-			// viet ham tinh tgian dua vao previous order, khong tinh order dau tien
-			List<Task> currentOrderTasks = (List<Task>) orders.get(i).getValue();
-			List<Task> previousOrderTasks =  (List<Task>)orders.get(i - 1).getValue();
-			calculateTasksTimesAccordingToPreviousOrder(currentOrderTasks, previousOrderTasks, k);
 		}
 		return orders;
 	}
 
-	private void calculateTasksTimesAccordingToPreviousOrder(List<Task> currentOrderTasks, List<Task> previousOrderTasks, double k) {
+	protected List<Variable> calculateEachTaskTimeInAllOrders(List<Variable> orders, double k) {
+		int size = orders.size();
+		for (int i = 1; i < size; i++) {
+			// viet ham tinh tgian dua vao previous order, khong tinh order dau tien
+			List<Task> currentOrderTasks =  ((Order) orders.get(i)).getTasks();
+			List<Task> previousOrderTasks =  ((Order) orders.get(i - 1)).getTasks();
+			calculateTasksTimesAccordingToPreviousOrder(currentOrderTasks, previousOrderTasks, k);
+		}
+//		System.out.println();
+		return orders;
+	}
 
+	private void calculateTasksTimesAccordingToPreviousOrder(List<Task> currentOrderTasks, List<Task> previousOrderTasks, double k) {
 		int numberOfTasks = currentOrderTasks.size();
 
 		for (int i = 0; i < numberOfTasks; i++) {
-			Task coTask = ( currentOrderTasks.get(i));
-			Task poTask = ( previousOrderTasks.get(i));
+			Task currentOrderTask = currentOrderTasks.get(i);
+			Task previousOrderTask = previousOrderTasks.get(i);
 
-			double coTaskStartTime = coTask.getStart();
-			double poTaskEndTime = poTask.getStart() + poTask.getDuration();
+			double curOrderTaskStartTime = currentOrderTask.getStart();
+			double preOrderTaskEndTime = previousOrderTask.getStart() + previousOrderTask.getDuration();
 
-			double currentOrderTaskStartTime = Math.max(poTaskEndTime, coTaskStartTime);
-			coTask.setStart(currentOrderTaskStartTime);
+			curOrderTaskStartTime = Math.max(preOrderTaskEndTime, curOrderTaskStartTime);
+			currentOrderTask.setStart(curOrderTaskStartTime);
 
-			double rand = Math.random() * k;
+			double rand = k;
 			double sign = Math.random() > 0.5 ? 1 : -1;
-			double scheduledStart = currentOrderTaskStartTime + rand * sign;
-			coTask.setScheduledTime(scheduledStart);
-
+			double scheduledStart = curOrderTaskStartTime + rand * sign;
+			currentOrderTask.setScheduledTime(scheduledStart);
 		}
 	}
 
