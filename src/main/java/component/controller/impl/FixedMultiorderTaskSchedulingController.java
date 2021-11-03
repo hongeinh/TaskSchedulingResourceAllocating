@@ -4,7 +4,6 @@ import component.variable.Variable;
 import component.variable.impl.Order;
 import component.variable.impl.Task;
 import utils.DataUtil;
-import utils.NumberUtil;
 
 import java.time.LocalDateTime;
 import java.util.Collections;
@@ -47,10 +46,10 @@ public class FixedMultiorderTaskSchedulingController extends TaskSchedulingResou
 	 *
 	 */
 	protected void cloneTemplateTasksForAllOrders(List<Variable> orders, List<Task> templateTasks) {
-		for (int i = 0; i < orders.size(); i++) {
-			Order order = (Order) orders.get(i);
-			List<Task> newTasks = templateTasks.stream().map(templateTask -> DataUtil.cloneBean(templateTask)).collect(Collectors.toList());
-			for (Task task: newTasks) {
+		for (Variable variable : orders) {
+			Order order = (Order) variable;
+			List<Task> newTasks = templateTasks.stream().map(DataUtil::cloneBean).collect(Collectors.toList());
+			for (Task task : newTasks) {
 				task.setOrderId(order.getId());
 			}
 			order.setValue(newTasks);
@@ -58,9 +57,9 @@ public class FixedMultiorderTaskSchedulingController extends TaskSchedulingResou
 	}
 
 	protected List<Variable> setupVariablesDefaultTimes(List<Variable> orders, double maxDuration, double k) {
-		for (int i = 0; i < orders.size(); i++) {
-			Order order = (Order) orders.get(i);
-			List<Task> newTasks =  order.getTasks();
+		for (Variable variable : orders) {
+			Order order = (Order) variable;
+			List<Task> newTasks = order.getTasks();
 			for (Task newTask : newTasks) {
 				long duration = (long) (newTask.getDuration() * order.getWeight() / newTask.getAverageExperience());
 				newTask.setDuration(duration);
