@@ -6,6 +6,7 @@ import component.variable.impl.Task;
 import utils.DataUtil;
 import utils.NumberUtil;
 
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -61,8 +62,8 @@ public class FixedMultiorderTaskSchedulingController extends TaskSchedulingResou
 			Order order = (Order) orders.get(i);
 			List<Task> newTasks =  order.getTasks();
 			for (Task newTask : newTasks) {
-				double duration = newTask.getDuration() * order.getWeight() / newTask.getAverageExperience();
-				newTask.setDuration(NumberUtil.floor2DecimalPoints(duration));
+				long duration = (long) (newTask.getDuration() * order.getWeight() / newTask.getAverageExperience());
+				newTask.setDuration(duration);
 			}
 			// tinh tgian cho task
 			calculateAllTasksTimes(newTasks, k * maxDuration);
@@ -89,16 +90,21 @@ public class FixedMultiorderTaskSchedulingController extends TaskSchedulingResou
 			Task currentOrderTask = currentOrderTasks.get(i);
 			Task previousOrderTask = previousOrderTasks.get(i);
 
-			double curOrderTaskStartTime = currentOrderTask.getStart();
-			double preOrderTaskEndTime = previousOrderTask.getStart() + previousOrderTask.getDuration();
+			LocalDateTime curOrderTaskStartTime = currentOrderTask.getStartTime();
+			LocalDateTime preOrderTaskEndTime = previousOrderTask.getStartTime().plusMinutes(previousOrderTask.getDuration());
 
-			curOrderTaskStartTime = Math.max(preOrderTaskEndTime, curOrderTaskStartTime);
-			currentOrderTask.setStart(curOrderTaskStartTime);
+			curOrderTaskStartTime = (preOrderTaskEndTime.isAfter(curOrderTaskStartTime)) ? preOrderTaskEndTime : curOrderTaskStartTime;
+			currentOrderTask.setStartTime(curOrderTaskStartTime);
 
-			double rand = k;
+			long rand = (long) k;
 			double sign = Math.random() > 0.5 ? 1 : -1;
-			double scheduledStart = curOrderTaskStartTime + rand * sign;
-			currentOrderTask.setScheduledTime(scheduledStart);
+			LocalDateTime scheduledStart = null;
+			if (sign == 1) {
+				scheduledStart = curOrderTaskStartTime.plusMinutes(rand);
+			} else if (sign == -1) {
+				scheduledStart = curOrderTaskStartTime.minusMinutes(rand);
+			}
+			currentOrderTask.setScheduledStartTime(scheduledStart);
 		}
 	}
 

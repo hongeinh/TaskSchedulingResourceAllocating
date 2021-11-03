@@ -9,7 +9,10 @@ import component.variable.Variable;
 import component.variable.impl.Order;
 import component.variable.impl.Task;
 import representation.Solution;
+import utils.TimeUtils;
 
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Map;
 
@@ -75,13 +78,13 @@ public class MultiorderTaskSchedulingProblem extends TaskSchedulingResourceAlloc
 		return solution;
 	}
 
-	private double calculateElapsedTimeUntilNextOrder(Variable variable, Variable variable1) {
+	private long calculateElapsedTimeUntilNextOrder(Variable variable, Variable variable1) {
 		Task firstTask1 = ((List<Task>) variable.getValue()).get(0);
 		Task firstTask2 = ((List<Task>) variable1.getValue()).get(0);
 
-		double start1 = firstTask1.getStart();
-		double start2 = firstTask2.getStart();
-		double delay = start1 - start2;
+		LocalDateTime start1 = firstTask1.getStartTime();
+		LocalDateTime start2 = firstTask2.getStartTime();
+		long delay = TimeUtils.calculateTimeDifferenceWithTimeUnit(start1, start2, ChronoUnit.MINUTES);
 		return delay > 0 ? delay : 0;
 	}
 
@@ -91,7 +94,7 @@ public class MultiorderTaskSchedulingProblem extends TaskSchedulingResourceAlloc
 	private double calculateEachOrderIdleTime(List<Task> tasks) {
 		double delay = 0;
 		for (Task task: tasks) {
-			double idle = task.getScheduledTime() - task.getStart();
+			double idle = TimeUtils.calculateTimeDifferenceWithTimeUnit(task.getScheduledStartTime(), task.getStartTime(), ChronoUnit.MINUTES);
 			idle = idle <= 0 ? 0 : (1/(1 + idle));
 			delay += idle;
 			task.setIdle(idle);

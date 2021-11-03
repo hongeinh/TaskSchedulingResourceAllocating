@@ -4,11 +4,15 @@ import common.STATUS;
 import component.resource.HumanResource;
 import component.resource.MachineResource;
 import component.resource.Resource;
+import jdk.vm.ci.meta.Local;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
+import utils.TimeUtils;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -20,9 +24,9 @@ public class Task implements Comparable<Task>, Serializable {
 
 	private int orderId;
 	private int id;
-	private double scheduledTime;
-	private double duration;
-	private double start;
+	private LocalDateTime scheduledStartTime;
+	private long duration;
+	private LocalDateTime startTime;
 	private double idle;
 	private double priority;
 	private List<Integer> predecessors;
@@ -46,7 +50,7 @@ public class Task implements Comparable<Task>, Serializable {
 
 		stringBuilder.append(this.orderId + DELIMETER +
 								this.id + DELIMETER +
-								this.start + DELIMETER +
+								this.startTime + DELIMETER +
 								this.duration + DELIMETER);
 
 		stringBuilder.append(getAssignedResourceIdsString(requiredHumanResources, " "));
@@ -62,7 +66,12 @@ public class Task implements Comparable<Task>, Serializable {
 		} else if (o.getDescendants().contains(this)) {
 			return 1;
 		} else {
-			return (int) (this.getScheduledTime() - o.getScheduledTime());
+			int compare = 0;
+			if (this.scheduledStartTime.isBefore(o.getScheduledStartTime()))
+				compare = 1;
+			else if (this.scheduledStartTime.isAfter(o.getScheduledStartTime()))
+				compare = 0;
+			return compare;
 		}
 	}
 
@@ -71,8 +80,8 @@ public class Task implements Comparable<Task>, Serializable {
 		if (value instanceof HashMap ) {
 			HashMap<String, Object> parameters = (HashMap <String, Object>) value;
 			this.id = (Integer) parameters.get("id");
-			this.duration =  (Double) parameters.get("duration");
-			this.scheduledTime = (Double) parameters.get("scheduledTime");
+			this.duration =  (Long) parameters.get("duration");
+			this.scheduledStartTime = LocalDateTime.parse((String) parameters.get("scheduledTime"));
 		}
 	}
 

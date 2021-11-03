@@ -14,6 +14,7 @@ import lombok.Setter;
 import representation.Solution;
 import utils.NumberUtil;
 
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -181,19 +182,26 @@ public class TaskSchedulingResourceAllocatingVariableController extends Variable
 	private void calculateEachTaskTime(Task task, List<Task> predecessorTasks, double k) {
 
 		for (Task predecessor : predecessorTasks) {
-			double start = 0;
-			if (task.getStart() > predecessor.getStart() + predecessor.getDuration()) {
-				start = task.getStart();
+			LocalDateTime start;
+			LocalDateTime previousTaskFinishTime = predecessor.getStartTime().plusHours(predecessor.getDuration());
+			// if current task starts after the previous task's finish time
+			if (task.getStartTime().isAfter(previousTaskFinishTime)) {
+				start = task.getStartTime();
 			} else {
-				start = (predecessor.getStart() + predecessor.getDuration());
+				start = previousTaskFinishTime;
 			}
+
+			task.setStartTime(start);
 
 			double rand = NumberUtil.getRandomDoubleNumber(0.0, k);
 			double sign = Math.random() > 0.5 ? 1 : -1;
-
-			task.setStart(NumberUtil.floor2DecimalPoints(start));
-			double scheduledStart = start + rand * sign;
-			task.setScheduledTime(NumberUtil.floor2DecimalPoints(scheduledStart));
+			LocalDateTime scheduledStart = null;
+			if (sign == 1) {
+				scheduledStart = start.plusHours((long) rand);
+			} else if (sign == -1) {
+				scheduledStart = start.minusHours((long) rand);
+			}
+			task.setScheduledStartTime(scheduledStart);
 		}
 	}
 

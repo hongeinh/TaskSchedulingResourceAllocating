@@ -6,7 +6,9 @@ import operator.crossover.CrossoverOperator;
 import representation.Solution;
 import utils.DataUtil;
 import utils.NumberUtil;
+import utils.TimeUtils;
 
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -52,14 +54,14 @@ public class ProposedCrossoverOperator1 extends CrossoverOperator {
             Task copyVarA =  ((List<Task>) copyA.getVariables().get(variablePosition).getValue()).get(i);
             Task copyVarB = ((List<Task>) copyB.getVariables().get(variablePosition).getValue()).get(i);
 
-            double diff = copyVarA.getScheduledTime() - copyVarB.getScheduledTime();
+            long diff = TimeUtils.calculateTimeDifferenceWithTimeUnit(copyVarA.getScheduledStartTime(), copyVarB.getScheduledStartTime(), ChronoUnit.MINUTES);
 
             if (diff < 0) {
-                copyVarA.setStart(copyVarA.getScheduledTime() + diff * 0.5);
-                copyVarB.setStart(copyVarB.getScheduledTime() - diff * 0.5);
+                copyVarA.setStartTime(copyVarA.getScheduledStartTime().plusMinutes(diff/2));
+                copyVarB.setStartTime(copyVarB.getScheduledStartTime().minusMinutes(diff/2));
             } else if (diff > 0) {
-                copyVarA.setStart(copyVarA.getScheduledTime() - diff * 0.5);
-                copyVarB.setStart(copyVarB.getScheduledTime() + diff * 0.5);
+                copyVarA.setStartTime(copyVarA.getScheduledStartTime().plusMinutes(diff/2));
+                copyVarB.setStartTime(copyVarB.getScheduledStartTime().minusMinutes(diff/2));
             }
 
             int numberOfHumanResources = copyVarA.getRequiredHumanResources().size();

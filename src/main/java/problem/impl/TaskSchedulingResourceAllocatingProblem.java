@@ -7,7 +7,9 @@ import problem.Problem;
 import problem.helper.HumanResourceConflictHelper;
 import problem.helper.MachineResourceConflictHelper;
 import representation.Solution;
+import utils.TimeUtils;
 
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Map;
 
@@ -65,7 +67,7 @@ public class TaskSchedulingResourceAllocatingProblem extends Problem {
 		for (Variable var: solution.getVariables()) {
 			List<Task> tasks = (List<Task>) var.getValue();
 			for (Task task: tasks) {
-				double idle = task.getScheduledTime() - task.getStart();
+				long idle = TimeUtils.calculateTimeDifferenceWithTimeUnit(task.getScheduledStartTime(), task.getStartTime(), ChronoUnit.MINUTES);
 				idle = idle < 0 ? 0 : (1/(1 + idle));
 				delay += idle;
 				task.setIdle(idle);
