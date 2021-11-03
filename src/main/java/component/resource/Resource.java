@@ -18,6 +18,4 @@ public class Resource implements Serializable {
 	protected STATUS status;
 	protected double cost;
 	protected List<TimeFrame> usedTimeFrames;
-
-
 }

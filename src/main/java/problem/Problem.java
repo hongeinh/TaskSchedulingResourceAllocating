@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.Setter;
 import representation.Solution;
 
+import java.time.LocalDateTime;
 import java.util.Map;
 
 @Getter
@@ -15,6 +16,7 @@ public abstract class Problem {
 
 	protected Map<Object, Object> parameters;
 	protected VariableController variableController;
+	protected LocalDateTime startTime;
 
 	public abstract Solution evaluate(Solution solution);
 
