@@ -27,23 +27,30 @@ public class TaskSchedulingResourceAllocatingVariableController extends Variable
 	protected List<MachineResource> allMachineResources;
 	protected List<Task> allTasks;
 
-	public void setAllHumanResources(int numberOfHumanResource) {
+	public void setResources(int numberOfHumanResource, int numberOfMachineResource) {
+		setAllHumanResources(numberOfHumanResource);
+		setAllMachineResources(numberOfMachineResource);
+	}
+	private void setAllHumanResources(int numberOfHumanResource) {
 		this.allHumanResources = new ArrayList<>();
 		for (int i = 0; i < numberOfHumanResource; i++) {
 			HumanResource humanResource = HumanResource.builder()
 					.id(i)
-					.usedTimeFrames(new ArrayList<>())
+					.usedTimeSlots(new ArrayList<>())
 					.build();
+
+			allHumanResources.add(humanResource);
 		}
 	}
 
-	public void setAllMachineResources(int numberOfMachineResource) {
+	private void setAllMachineResources(int numberOfMachineResource) {
 		this.allMachineResources = new ArrayList<>();
 		for (int i = 0; i < numberOfMachineResource; i++) {
 			MachineResource machineResource = MachineResource.builder()
 					.id(i)
-					.usedTimeFrames(new ArrayList<>())
+					.usedTimeSlots(new ArrayList<>())
 					.build();
+			allMachineResources.add(machineResource);
 		}
 	}
 

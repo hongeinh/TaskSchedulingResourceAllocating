@@ -1,5 +1,6 @@
 package component.controller.impl;
 
+import component.resource.config.HumanMachineResourceConfig;
 import component.resource.manager.ResourceManager;
 import component.variable.Variable;
 import component.variable.impl.Order;
@@ -10,13 +11,13 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-public class MultiorderTaskSchedulingController extends FixedMultiorderTaskSchedulingController {
+public class OptimizedMultiorderTaskSchedulingController extends FixedMultiorderTaskSchedulingController {
 
 	private ResourceManager resourceManager;
 
-	public MultiorderTaskSchedulingController() {
+	public OptimizedMultiorderTaskSchedulingController() {
 		super();
-//		this.resourceManager = new HumanMachineResourceManager();
+//		this.resourceManager = new HumanMachineResourceConfig();
 	}
 
 	@Override
@@ -25,7 +26,9 @@ public class MultiorderTaskSchedulingController extends FixedMultiorderTaskSched
 		int numberOfHumanResource = (int) parameters.get("numberOfHumanResources");
 		int numberOfMachineResource = (int) parameters.get("numberOfMachineResources");
 
-		setResources(numberOfHumanResource, numberOfMachineResource);
+		// TODO: tim cach init resource config
+//		resourceManager.setResourceConfig(config);
+		resourceManager.initResourceList();
 
 		// Get the orders
 		List<Variable> orders = (List<Variable>) parameters.get("orders");

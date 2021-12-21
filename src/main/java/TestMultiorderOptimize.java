@@ -16,7 +16,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-public class TestMultiorder {
+public class TestMultiorderOptimize {
 	public static void main(String[] args) throws CloneNotSupportedException, IOException {
 
 		System.out.println("Start flow");

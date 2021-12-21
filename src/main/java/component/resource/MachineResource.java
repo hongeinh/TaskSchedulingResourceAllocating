@@ -1,7 +1,7 @@
 package component.resource;
 
 import common.STATUS;
-import component.timeframe.TimeFrame;
+import component.timeframe.TimeSlot;
 import lombok.*;
 
 import java.util.List;
@@ -11,11 +11,10 @@ import java.util.List;
 public class MachineResource extends Resource{
 
 	private double consumeFactor;
-	private List<TimeFrame> usedTimeFrames;
 
 	@Builder
-	public MachineResource(int id, STATUS status, double cost, List<TimeFrame> usedTimeFrames, double consumeFactor) {
-		super(id, status, cost, usedTimeFrames);
+	public MachineResource(int id, STATUS status, double cost, List<TimeSlot> usedTimeSlots, double consumeFactor) {
+		super(id, status, cost, usedTimeSlots);
 		this.consumeFactor = consumeFactor;
 	}
 }
