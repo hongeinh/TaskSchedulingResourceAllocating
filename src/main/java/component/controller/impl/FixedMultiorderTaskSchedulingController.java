@@ -21,13 +21,13 @@ public class FixedMultiorderTaskSchedulingController extends TaskSchedulingResou
 
 		// create template tasks for all orders with resources
 		List<Task> templateTasks = createTasks(parameters);
-		setupAllTasksUsableResources(templateTasks, parameters);
-		assignResourcesToAllTask(templateTasks, k);
+		setupUsableResources(templateTasks, parameters);
+		assignResourcesToTasks(templateTasks, k);
 		cloneTemplateTasksForAllOrders(orders, templateTasks);
 
 		// set up all orders' tasks' time
 		double maxDuration = (double) parameters.get("maxDuration");
-		setupVariablesDefaultTimes(orders, maxDuration, k);
+		setupVariablesTimes(orders, maxDuration, k);
 
 		// Sort according to task
 		Collections.sort(orders);
@@ -56,7 +56,7 @@ public class FixedMultiorderTaskSchedulingController extends TaskSchedulingResou
 		}
 	}
 
-	protected List<Variable> setupVariablesDefaultTimes(List<Variable> orders, double maxDuration, double k) {
+	protected List<Variable> setupVariablesTimes(List<Variable> orders, double maxDuration, double k) {
 		for (Variable variable : orders) {
 			Order order = (Order) variable;
 			List<Task> newTasks = order.getTasks();
@@ -65,7 +65,7 @@ public class FixedMultiorderTaskSchedulingController extends TaskSchedulingResou
 				newTask.setDuration(duration);
 			}
 			// tinh tgian cho task
-			calculateAllTasksTimes(newTasks, k * maxDuration);
+			calculateTasksTimeSlots(newTasks, k * maxDuration);
 		}
 		return orders;
 	}

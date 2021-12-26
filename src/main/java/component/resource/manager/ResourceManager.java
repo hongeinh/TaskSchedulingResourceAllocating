@@ -1,6 +1,7 @@
 package component.resource.manager;
 
 import component.resource.HumanResource;
+import component.resource.MachineResource;
 import component.resource.Resource;
 import component.resource.config.ResourceConfig;
 import component.timeframe.TimeSlot;
@@ -19,7 +20,7 @@ import java.util.List;
 /**
  * A medium for managing resources
  */
-public abstract class ResourceManager {
+public class ResourceManager {
 
 	/**
 	 * Configuration for resources
@@ -31,8 +32,34 @@ public abstract class ResourceManager {
 	 * */
 	private List<List<Resource>> resourceList;
 
-	public abstract void initResourceList();
+	public void initResourceList(){
+		// TODO
+		List<HumanResource> humanResources = this.setHumanResources();
+		List<MachineResource> machineResources = this.setMachineResources();
 
+	}
+
+	private List<HumanResource> setHumanResources() {
+		List<HumanResource> resources = new ArrayList<>();
+
+		int numberOfHumanResource = this.resourceConfig.getNumberOfHumanResources();
+		for (int i = 0; i < numberOfHumanResource; i++) {
+			HumanResource humanResource = HumanResource.builder()
+					.id(i)
+					.usedTimeSlots(new ArrayList<>())
+					.build();
+
+			resources.add(humanResource);
+		}
+		return resources;
+	}
+
+
+	private List<MachineResource> setMachineResources() {
+		List<MachineResource> resources = new ArrayList<>();
+
+		return resources;
+	}
 	/**
 	 * Check if resource is available at a given timeslot
 	 * @param requiredResource

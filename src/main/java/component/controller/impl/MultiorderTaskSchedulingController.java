@@ -1,6 +1,5 @@
 package component.controller.impl;
 
-import component.resource.manager.ResourceManager;
 import component.variable.Variable;
 import component.variable.impl.Order;
 import component.variable.impl.Task;
@@ -12,11 +11,9 @@ import java.util.Map;
 
 public class MultiorderTaskSchedulingController extends FixedMultiorderTaskSchedulingController {
 
-	private ResourceManager resourceManager;
 
 	public MultiorderTaskSchedulingController() {
 		super();
-//		this.resourceManager = new HumanMachineResourceManager();
 	}
 
 	@Override
@@ -32,28 +29,29 @@ public class MultiorderTaskSchedulingController extends FixedMultiorderTaskSched
 
 		// Create tasks and with precedence constraints
 		List<Task> templateTasks = createTasks(parameters);
-		setupAllTasksUsableResources(templateTasks, parameters);
+		setupUsableResources(templateTasks, parameters);
 		cloneTemplateTasksForAllOrders(orders, templateTasks);
 
 		// Assign resources differently to each task of each order
+		orders = setupVariableResources(orders, parameters, k);
+
+		// Sort according to task
+		Collections.shuffle(orders);
+		orders = calculateEachTaskTimeInAllOrders(orders, k);
+
+		return orders;
+	}
+
+	public List<Variable> setupVariableResources(List<Variable> orders, Map<Object, Object> parameters, double k) {
 		for (Variable variable: orders) {
 			List<Task> tasks = (List<Task>) variable.getValue();
-			tasks = assignResourcesToAllTask(tasks, k);
+			tasks = assignResourcesToTasks(tasks, k);
 			((Order) variable).setTasks(tasks);
 		}
 
 		// set up all orders' tasks' default time
 		double maxDuration = (double) parameters.get("maxDuration");
-		orders = setupVariablesDefaultTimes(orders, maxDuration, k);
-		//TODO: --> calculate time based on the resources used.
-
-
-		// Sort according to task
-		Collections.shuffle(orders);
-//		orders.forEach(item -> System.out.print(((Order) item).getId()));
-//		System.out.println();
-		// Calculate time for the tasks in orders
-		orders = calculateEachTaskTimeInAllOrders(orders, k);
+		orders = setupVariablesTimes(orders, maxDuration, k);
 
 		return orders;
 	}

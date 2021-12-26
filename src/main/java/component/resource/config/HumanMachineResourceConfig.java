@@ -1,8 +1,6 @@
 package component.resource.config;
 
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 /**
  * Configuration for human and machine resources
@@ -10,6 +8,8 @@ import lombok.Setter;
 @Getter
 @Setter
 @Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class HumanMachineResourceConfig extends ResourceConfig {
 
 	int numberOfHumanResources;

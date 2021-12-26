@@ -2,7 +2,7 @@ import algorithm.Algorithm;
 import algorithm.comparator.RankingAndCrowdingDistanceComparator;
 import algorithm.nsgaii.ImprovedNSGAIIAlgorithm;
 import component.controller.VariableController;
-import component.controller.impl.MultiorderTaskSchedulingController;
+import component.controller.impl.OptimizedMultiorderTaskSchedulingController;
 import component.variable.impl.Order;
 import operator.crossover.impl.ProposedCrossoverOperator1;
 import operator.mutation.impl.BitInversionMutationOperator;
@@ -21,7 +21,7 @@ public class TestMultiorderOptimize {
 
 		System.out.println("Start flow");
 		Map<Object, Object> params = createParams();
-		VariableController variableController = new MultiorderTaskSchedulingController();
+		VariableController variableController = new OptimizedMultiorderTaskSchedulingController();
 		Problem problem = new MultiorderTaskSchedulingProblem(params, variableController);
 
 		Algorithm algorithm = setAlgorithm();

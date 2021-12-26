@@ -65,16 +65,18 @@ public class TaskSchedulingResourceAllocatingVariableController extends Variable
 				.penaltyRate(0)
 				.build();
 		List<Task> tasks = createTasks(parameters);
-		setupAllTasksUsableResources(tasks, parameters);
+		setupUsableResources(tasks, parameters);
 
-		assignResourcesToAllTask(tasks, k);
+		assignResourcesToTasks(tasks, k);
 
-		calculateAllTasksTimes(tasks, k);
+		calculateTasksTimeSlots(tasks, k);
 		order.setValue(tasks);
 		List<Variable> orders = new ArrayList<>();
 		orders.add(order);
 		return orders;
 	}
+
+
 
 	// Khong lam gi o day ca
 	@Override
@@ -145,7 +147,7 @@ public class TaskSchedulingResourceAllocatingVariableController extends Variable
 		return variables;
 	}
 
-	protected List<Task> setupAllTasksUsableResources(List<Task> tasks, Map<Object, Object> parameters) {
+	protected List<Task> setupUsableResources(List<Task> tasks, Map<Object, Object> parameters) {
 
 		int numberOfSkills = (Integer) parameters.get("numberOfSkills");
 		int numberOfHumanResources = (Integer) parameters.get("numberOfHumanResources");
@@ -161,14 +163,14 @@ public class TaskSchedulingResourceAllocatingVariableController extends Variable
 		return tasks;
 	}
 
-	protected List<Task> assignResourcesToAllTask(List<Task> tasks, double k) {
+	protected List<Task> assignResourcesToTasks(List<Task> tasks, double k) {
 		for (Task task : tasks) {
 			task = assignResourceToEachTask(task);
 		}
 		return tasks;
 	}
 
-	protected void calculateAllTasksTimes(List<Task> tasks, double k) {
+	protected void calculateTasksTimeSlots(List<Task> tasks, double k) {
 
 		for (Task task : tasks) {
 			List<Integer> predecessorIndexes = task.getPredecessors();
@@ -220,11 +222,9 @@ public class TaskSchedulingResourceAllocatingVariableController extends Variable
 		List<HumanResource> humanResources = task.getRequiredHumanResources();
 		this.checkHumanResourcesUseful(humanResources);
 		task.setRequiredHumanResources(randomAssignHumanResource(humanResources));
-//		this.bestFitAssignHumanResource(humanResources, task.getSkills());
 
 		List<MachineResource> machineResources = task.getRequiredMachinesResources();
 		task.setRequiredMachinesResources(this.randomAssignMachineResource(machineResources));
-		//		this.bestFitAssignMachineResource(machineResources);
 
 		task.setRequiredHumanResources(humanResources);
 		task.setRequiredMachinesResources(machineResources);
